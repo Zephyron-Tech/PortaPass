@@ -5,10 +5,10 @@ import { Container } from "@/components/marketing/Container";
 import { Cta } from "@/components/marketing/Cta";
 import { DeviceShot } from "@/components/marketing/DeviceShot";
 import { HeroCardMotion } from "@/components/marketing/HeroCardMotion";
+import { LeadForm } from "@/components/marketing/LeadForm";
 import { Band, Eyebrow, Section, SectionHeader } from "@/components/marketing/Section";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
-import { CONTACT_MAILTO } from "@/lib/content";
 import { findBookingByToken } from "@/lib/mockData";
 
 export const metadata: Metadata = {
@@ -48,7 +48,7 @@ export default function Home() {
                 <p className="mt-6 max-w-[40ch] text-[18px] leading-[1.6] text-pretty text-ink-2 md:text-[20px]">Ověření hosta a&nbsp;ukázkový klíč do Apple Wallet. Vyzkoušejte, jak by mohl vypadat příjezd do vašeho hotelu.</p>
                 <div className="hero-actions mt-8">
                   <Cta href="/demo">Vyzkoušet demo</Cta>
-                  <Cta href={CONTACT_MAILTO} variant="quiet" external>Domluvit ukázku</Cta>
+                  <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
                 </div>
                 <p className="mt-6 max-w-[46ch] text-[15px] leading-[1.65] text-ink-3">Funkční prototyp, ne video. Bank iD v&nbsp;testovacím režimu nebo označená simulace; vydání průkazu vyžaduje nastavené podpisové certifikáty. Ukázkový klíč neodemyká dveře.</p>
                 <a href="#pilot" className="mt-2 inline-flex min-h-11 items-center text-[15px] text-ink-2 underline underline-offset-4">Co funguje dnes a&nbsp;co stavíme</a>
@@ -141,7 +141,7 @@ export default function Home() {
           </div>
           <div className="mt-12 border-t border-band-hairline pt-10">
             <p className="max-w-[56ch] text-[18px] leading-[1.6] text-band-ink-muted">Odemykání není jen otázka kódu. Bez partnerství s&nbsp;výrobcem zámků nelze vydávat skutečné přístupové klíče. Ukázkový průkaz proto dveře neodemyká.</p>
-            <div className="mt-8"><Cta href={CONTACT_MAILTO} variant="inverse" external>Domluvit ukázku</Cta></div>
+            <div className="mt-8"><Cta href="#kontakt" variant="inverse" external>Domluvit ukázku</Cta></div>
           </div>
         </Band>
         <Section bordered={false}>
@@ -150,8 +150,18 @@ export default function Home() {
             <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.65] text-ink-2">Nejlépe na iPhonu, kde si ukázkový průkaz přidáte do Apple Wallet. Na ostatních zařízeních si můžete projít ověření.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Cta href="/demo">Vyzkoušet demo</Cta>
-              <Cta href={CONTACT_MAILTO} variant="quiet" external>Domluvit ukázku</Cta>
+              <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
             </div>
+          </div>
+        </Section>
+        <Section id="kontakt">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+            <div>
+              <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-ink">Domluvme si ukázku.</h2>
+              <p className="mt-5 max-w-[38ch] text-[17px] leading-relaxed text-ink-2">Napište, pro který hotel PortaPass zvažujete. Ozveme se vám a&nbsp;domluvíme společný průchod ukázkou.</p>
+              <p className="mt-4 text-[15px] leading-relaxed text-ink-3">Stačí název hotelu a&nbsp;e-mail. Telefon i&nbsp;zpráva jsou nepovinné.</p>
+            </div>
+            <LeadForm />
           </div>
         </Section>
       </main>

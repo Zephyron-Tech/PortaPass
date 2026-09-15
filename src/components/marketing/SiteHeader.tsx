@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Container } from "@/components/marketing/Container";
-import { CONTACT_MAILTO } from "@/lib/content";
 
 const link =
   "inline-flex min-h-11 min-w-11 items-center py-2 transition-colors hover:text-ink focus-visible:text-ink";
@@ -20,9 +19,9 @@ export function SiteHeader() {
             <Link href="/demo" className={link}>
               Demo
             </Link>
-            <a href={CONTACT_MAILTO} className={link}>
+            <Link href="/#kontakt" className={link}>
               Kontakt
-            </a>
+            </Link>
           </div>
         </nav>
       </Container>

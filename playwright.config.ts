@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 import { tmpdir } from "node:os";
 
 const mockEnv = {
+  RESEND_API_KEY: "",
   BANKID_CLIENT_ID: "",
   BANKID_CLIENT_SECRET: "",
   BANKID_REDIRECT_URI: "",

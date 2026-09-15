@@ -26,14 +26,30 @@ export default function PrivacyPage() {
       </Section>
 
       <Section heading="Doba uložení">
-        Ve zkušebním provozu neukládáme získané údaje do žádné databáze. Údaje
+        Údaje získané při ověření přes Bank iD neukládáme do databáze. Tyto údaje
         existují pouze po dobu nezbytnou k vydání klíče, v podepsaném dočasném
         cookie s platností 15 minut, a poté zanikají.
       </Section>
 
+      <Section heading="Poptávka ukázky">
+        Při odeslání kontaktního formuláře zpracováváme název hotelu a&nbsp;e-mail,
+        případně vámi uvedený telefon a&nbsp;zprávu. Slouží k&nbsp;vyřízení poptávky
+        a&nbsp;navazující komunikaci, nikoli k&nbsp;rozesílání reklamních sdělení.
+        Zpracování je založeno na našem oprávněném zájmu odpovídat na obchodní poptávky.
+        Zpráva je doručena do naší e-mailové schránky prostřednictvím služby Resend
+        (Plus Five Five, Inc.), která zajišťuje technické zpracování doručení.
+        Korespondenci uchováváme po dobu vyřizování poptávky a&nbsp;navazujícího jednání;
+        po jeho ukončení ji odstraníme, pokud není dále potřebná pro smluvní vztah
+        nebo splnění zákonné povinnosti. Výmaz z&nbsp;e-mailové schránky není automatizován touto aplikací.
+      </Section>
+
       <Section heading="Předávání">
-        Údaje nepředáváme třetím stranám ani je nevyužíváme k marketingu.
         Ověření totožnosti technicky zajišťuje Bankovní identita, a.s.
+        Kontaktní poptávky zpracovávají také poskytovatelé hostingu, služby Resend
+        a&nbsp;naší e-mailové schránky v&nbsp;rozsahu potřebném pro přijetí a&nbsp;doručení zprávy.
+        Služba Resend může údaje zpracovávat mimo Evropský hospodářský prostor;
+        podmínky zpracování a&nbsp;záruky předávání upravuje její smlouva o&nbsp;zpracování údajů.
+        Údaje neprodáváme ani je nepoužíváme k&nbsp;nevyžádanému marketingu.
       </Section>
 
       <Section heading="Vaše práva">
