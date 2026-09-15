@@ -214,7 +214,13 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   .hero-reasons { grid-area: 2 / 1; margin-top: 0; }
   .hero-card-sticky { grid-area: 1 / 2 / 3 / 3; position: sticky; top: 6rem; max-width: none; }
   .hero-actions { align-items: flex-start; }
-  .hero-actions > a { width: 100%; max-width: 22rem; }
+  /* No forced width here: .app-button sets flex-shrink: 0 (correct
+     elsewhere), so a width:100% + max-width cap on these anchors never
+     actually shrinks — both rendered at the full 352px cap regardless of
+     available space. hero-intro is capped near ~500px at any viewport
+     (Container is max-w-[68rem] total, split across two grid columns), so
+     two 352px buttons never fit and overflowed into the card's caption.
+     Sizing to content avoids the conflict entirely. */
 }
 
 /* Deep-link targets must clear the header. */
