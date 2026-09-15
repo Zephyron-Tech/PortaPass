@@ -63,35 +63,26 @@ function KeyCard({ booking }: { booking: MockBooking }) {
   );
 }
 
-function AppleWalletButton({ onClick, loading }: { onClick: () => void; loading: boolean }) {
+function AppleWalletButton({ href }: { href: string }) {
   return (
-    <button
-      onClick={onClick}
-      disabled={loading}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-black py-4 text-base font-medium text-white transition active:scale-[0.98] active:bg-neutral-900 disabled:opacity-50"
+    <a
+      href={href}
+      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-black py-4 text-base font-medium text-white transition active:scale-[0.98] active:bg-neutral-900"
     >
-      {loading ? (
-        "Připravujeme klíč…"
-      ) : (
-        <>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M16.365 1.43c0 1.14-.462 2.15-1.222 2.9-.83.82-2.18 1.45-3.29 1.36-.14-1.1.46-2.24 1.19-2.98.82-.83 2.26-1.45 3.32-1.28ZM20.02 17.24c-.36.83-.79 1.63-1.31 2.38-.7 1.02-1.28 1.73-1.73 2.13-.7.66-1.45 1-2.26 1.02-.58.02-1.28-.16-2.09-.5-.81-.34-1.55-.5-2.24-.5-.72 0-1.48.16-2.29.5-.81.35-1.46.53-1.97.55-.78.03-1.55-.32-2.3-1.06-.49-.45-1.1-1.19-1.83-2.24-.79-1.12-1.44-2.42-1.95-3.9-.55-1.6-.82-3.15-.82-4.65 0-1.72.37-3.2 1.11-4.44a6.5 6.5 0 0 1 2.35-2.38A6.35 6.35 0 0 1 6.02 3.1c.62 0 1.44.19 2.46.57 1.02.38 1.67.57 1.96.57.21 0 .93-.22 2.16-.66 1.16-.41 2.14-.58 2.95-.51 2.18.18 3.82 1.03 4.9 2.58-1.95 1.18-2.92 2.83-2.9 4.94.02 1.64.6 3.01 1.75 4.09.52.5 1.1.88 1.75 1.16-.14.41-.29.8-.44 1.19Z"
-              fill="currentColor"
-            />
-          </svg>
-          Přidat do Apple Wallet
-        </>
-      )}
-    </button>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M16.365 1.43c0 1.14-.462 2.15-1.222 2.9-.83.82-2.18 1.45-3.29 1.36-.14-1.1.46-2.24 1.19-2.98.82-.83 2.26-1.45 3.32-1.28ZM20.02 17.24c-.36.83-.79 1.63-1.31 2.38-.7 1.02-1.28 1.73-1.73 2.13-.7.66-1.45 1-2.26 1.02-.58.02-1.28-.16-2.09-.5-.81-.34-1.55-.5-2.24-.5-.72 0-1.48.16-2.29.5-.81.35-1.46.53-1.97.55-.78.03-1.55-.32-2.3-1.06-.49-.45-1.1-1.19-1.83-2.24-.79-1.12-1.44-2.42-1.95-3.9-.55-1.6-.82-3.15-.82-4.65 0-1.72.37-3.2 1.11-4.44a6.5 6.5 0 0 1 2.35-2.38A6.35 6.35 0 0 1 6.02 3.1c.62 0 1.44.19 2.46.57 1.02.38 1.67.57 1.96.57.21 0 .93-.22 2.16-.66 1.16-.41 2.14-.58 2.95-.51 2.18.18 3.82 1.03 4.9 2.58-1.95 1.18-2.92 2.83-2.9 4.94.02 1.64.6 3.01 1.75 4.09.52.5 1.1.88 1.75 1.16-.14.41-.29.8-.44 1.19Z"
+          fill="currentColor"
+        />
+      </svg>
+      Přidat do Apple Wallet
+    </a>
   );
 }
 
 export default function CheckinFlow({ roomId, token }: { roomId: string; token: string }) {
   const [step, setStep] = useState<Step>("intro");
   const [booking, setBooking] = useState<MockBooking | null>(null);
-  const [passError, setPassError] = useState<string | null>(null);
-  const [downloading, setDownloading] = useState(false);
 
   async function handleVerify() {
     setStep("verifying");
@@ -111,37 +102,6 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
       setStep("verified");
     } catch {
       setStep("error");
-    }
-  }
-
-  async function handleAddToWallet() {
-    setPassError(null);
-    setDownloading(true);
-    try {
-      const res = await fetch("/api/pass", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomId, token }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? "Nepodařilo se vygenerovat klíč");
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `pokoj-${booking?.roomNumber ?? roomId}.pkpass`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setPassError(err instanceof Error ? err.message : "Nepodařilo se vygenerovat klíč");
-    } finally {
-      setDownloading(false);
     }
   }
 
@@ -210,18 +170,9 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
           <KeyCard booking={booking} />
 
           <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_30px_-15px_rgba(0,0,0,0.12)]">
-            <AppleWalletButton onClick={handleAddToWallet} loading={downloading} />
-
-            {passError && (
-              <p className="mt-3 text-sm text-amber-700">
-                {passError}
-                {passError.includes("certifikáty") && (
-                  <span className="mt-1 block text-neutral-400">
-                    Očekávané při lokálním PoC nastavení — viz certs/README.md.
-                  </span>
-                )}
-              </p>
-            )}
+            <AppleWalletButton
+              href={`/api/pass?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(token)}`}
+            />
 
             <p className="mt-4 text-xs leading-relaxed text-neutral-400">
               Proof of concept: tento klíč je vizuální ukázka. Reálné odemykání
