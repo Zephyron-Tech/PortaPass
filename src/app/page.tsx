@@ -4,7 +4,6 @@ import { KeyCard } from "@/components/KeyCard";
 import { Container } from "@/components/marketing/Container";
 import { Cta } from "@/components/marketing/Cta";
 import { DeviceShot } from "@/components/marketing/DeviceShot";
-import { HeroCardMotion } from "@/components/marketing/HeroCardMotion";
 import { LeadForm } from "@/components/marketing/LeadForm";
 import { Band, Eyebrow, Section, SectionHeader } from "@/components/marketing/Section";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
@@ -56,14 +55,21 @@ export default function Home() {
               {demoBooking ? (
                 <div className="hero-card-sticky">
                   <div className="hero-card-scene">
-                    <HeroCardMotion>
+                    {/* Pure CSS scroll-timeline drives the rotation (see
+                        .hero-card in globals.css) — no JS wrapper needed. A
+                        hand-rolled wheel-smoothing layer used to sit here,
+                        overlaying a second Animation on the same transform
+                        and hard-cancelling it on pointerdown/keydown/resize
+                        mid-lerp with no reconciliation, which could snap
+                        visibly against the live CSS value. Removed. */}
+                    <div className="hero-card">
                       <div className="hero-card-front"><KeyCard booking={demoBooking} /></div>
                       <div className="hero-card-back" aria-hidden="true">
                         <span className="text-[12px] font-medium uppercase tracking-[0.22em]">PortaPass</span>
                         <span className="font-serif text-[clamp(1.75rem,3vw,2.75rem)] leading-tight">Váš příjezd.<br />Váš hotel.</span>
                         <span className="border-t border-white/25 pt-3 text-[12px] text-white/75">Ukázkový průkaz · neodemyká dveře</span>
                       </div>
-                    </HeroCardMotion>
+                    </div>
                   </div>
                   <p className="mt-6 text-center text-[14px] leading-relaxed text-ink-3">Ukázkový klíč. Údaje jsou smyšlené. Neodemyká dveře.</p>
                 </div>

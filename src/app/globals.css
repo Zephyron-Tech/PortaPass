@@ -368,7 +368,6 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
       view-timeline-inset: 6rem 0;
     }
 
-    .hero-card-sticky { container-type: inline-size; }
     .hero-card-sticky > p { margin-top: 4rem; line-height: 1.5rem; }
     .hero-card-scene { perspective: 1800px; }
     .hero-card-front, .hero-card-back {
@@ -401,10 +400,19 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: --hero-stage;
-      /* exit-crossing follows the grid past the sticky top, not the much
-         shorter interval in which a tall stage covers the viewport.
-         Subtract the card + caption so the turn ends at sticky release. */
-      animation-range: exit-crossing 0% exit-crossing calc(100% - 100cqw / 1.586 - 5.5rem);
+      /* Was `exit-crossing 0% exit-crossing calc(100% - 100cqw/1.586 - 5.5rem)`.
+         That calc() mixes a phase-relative percentage with absolute cqw/rem
+         lengths inside one <animation-range> value, which is not a
+         resolvable combination — the whole animation-range fails to apply,
+         and per spec that makes the animation's timeline permanently
+         inactive (currentTime/progress stay null at every scroll position,
+         verified end to end: identical rules using plain percentages report
+         a normal progressing timeline). The card never actually rotated —
+         confirmed by disabling the JS wheel-smoothing below and finding it
+         never engaged either, since it seeds itself from this same value.
+         `contain` is the same range used successfully elsewhere in this
+         file and needs no unit mixing. */
+      animation-range: contain 0% contain 100%;
     }
   }
 }
