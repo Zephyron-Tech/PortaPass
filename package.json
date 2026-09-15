@@ -9,12 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@phosphor-icons/react": "^2.1.10",
     "next": "16.3.5",
     "passkit-generator": "^3.6.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "uuid": "^14.0.2"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

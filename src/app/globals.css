@@ -2,42 +2,48 @@
 
 :root {
   --background: #faf9f7;
-  --foreground: #1c1a17;
+  --background-top: #f5efe6;
+  --foreground: #14120f;
+  --muted: #6f6a63;
+  --hairline: rgba(20, 18, 15, 0.09);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
+}
+
+/*
+ * The background MUST live on the root element. Per CSS Backgrounds, the root
+ * element's background propagates to the canvas and paints the *entire*
+ * canvas — including behind the status bar and the overscroll area. A child
+ * element (even `fixed inset-0`) cannot do this, which is why the safe area
+ * was rendering white and cutting the gradient off at the top.
+ *
+ * Safari 26 additionally samples these pixels to tint its Liquid Glass
+ * toolbars; it ignores <meta name="theme-color">. A transparent root falls
+ * back to white, which is the white bar we were seeing.
+ */
+html {
+  background-color: var(--background);
+  background-image: linear-gradient(180deg, var(--background-top) 0%, var(--background) 46%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 body {
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
 }
 
 @keyframes step-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-.animate-step-in {
-  animation: step-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -45,6 +51,17 @@ body {
   }
 }
 
+.animate-step-in {
+  animation: step-in 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .animate-rise-in {
-  animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: step-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-in,
+  .animate-rise-in {
+    animation: none;
+  }
 }

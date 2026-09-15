@@ -1,51 +1,40 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  weight: "400",
+  subsets: ["latin", "latin-ext"],
 });
 
 export const metadata: Metadata = {
   title: "PortaPass",
-  description: "Digitální klíč od pokoje — proof of concept",
+  description: "Digitální klíč od pokoje",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Required for env(safe-area-inset-*) and for content to extend behind
+  // Safari's translucent chrome. Note: Safari 26 ignores themeColor and
+  // samples the root element's CSS background instead (see globals.css).
   viewportFit: "cover",
-  themeColor: "#faf9f7",
+  themeColor: "#f5efe6",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="cs"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#faf9f7] text-[#1c1a17]">
-        {/* Fixed to the viewport (not page content) so it can never clip or
-            show a hard edge as Safari's dynamic toolbar resizes the viewport.
-            Fades to a zero-alpha version of the SAME color (not the keyword
-            "transparent", which is black-alpha-0 and causes a muddy gray
-            ring mid-fade when interpolated against a warm color). */}
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 0%, rgba(202,138,4,0.14), rgba(202,138,4,0) 65%)",
-          }}
-        />
-        {children}
-      </body>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }
