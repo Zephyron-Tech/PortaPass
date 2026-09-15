@@ -9,7 +9,9 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-hairline">
       <Container className="pt-14">
-        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+        {/* justify-between on a wide container with two narrow blocks left a
+            ~570px dead gap between them on desktop. Keep them close instead. */}
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:gap-16 lg:gap-24">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-ink-3">
               PortaPass

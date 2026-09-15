@@ -155,7 +155,7 @@ export default function Home() {
           </div>
         </Section>
         <Section id="kontakt">
-          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-20">
             <div>
               <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-ink">Domluvme si ukázku.</h2>
               <p className="mt-5 max-w-[38ch] text-[17px] leading-relaxed text-ink-2">Napište, pro který hotel PortaPass zvažujete. Ozveme se vám a&nbsp;domluvíme společný průchod ukázkou.</p>

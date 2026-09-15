@@ -61,6 +61,10 @@ html {
   background-image: linear-gradient(180deg, var(--background-top) 0%, var(--background) 46%);
   background-repeat: no-repeat;
   background-attachment: fixed;
+  /* Site-wide smooth scroll for in-page anchors (#kontakt etc). The existing
+     prefers-reduced-motion block below forces this back to `auto` — do not
+     remove that override when touching this. */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -186,7 +190,9 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 .walkthrough-device { width: 100%; max-width: 13rem; margin-inline: auto; }
 .walkthrough-finish { padding-top: 3rem; }
 
-@media (min-width: 40rem) and (max-width: 63.999rem) {
+@media (min-width: 40rem) {
+  /* Was scoped to 40rem–64rem only, so the two hero buttons reverted to
+     stacked at real desktop widths. Row from 40rem up, no upper bound. */
   .hero-actions { flex-direction: row; }
 }
 
@@ -214,6 +220,26 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 /* Deep-link targets must clear the header. */
 [id] {
   scroll-margin-top: 6rem;
+}
+
+/* Arrival cue for #kontakt: confirms the smooth scroll actually landed
+   somewhere, rather than the CTA click appearing to do nothing for the
+   ~600ms the scroll takes. Disabled automatically by the reduced-motion
+   block below (animation-name: none !important). */
+@keyframes kontakt-arrive {
+  from {
+    box-shadow: inset 0 0 0 9999px rgba(245, 196, 94, 0.14);
+  }
+  to {
+    box-shadow: inset 0 0 0 9999px rgba(245, 196, 94, 0);
+  }
+}
+
+#kontakt:target {
+  animation-name: kontakt-arrive;
+  animation-duration: 1.4s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
 }
 
 /* ---- Load-time entrance (hero only, above the fold) ------------------- */
