@@ -1,48 +1,48 @@
+"use client";
+
 import Link from "next/link";
+import { IdentificationCard, DeviceMobileCamera, LockKeyOpen, ArrowRight } from "@phosphor-icons/react";
+import { AppHeader } from "@/components/AppHeader";
+
+const steps = [
+  { icon: IdentificationCard, label: "Ověření totožnosti" },
+  { icon: DeviceMobileCamera, label: "Digitální klíč do peněženky" },
+  { icon: LockKeyOpen, label: "Odemknutí pokoje telefonem" },
+];
 
 export default function Home() {
   return (
     <main
-      className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-1 flex-col justify-start gap-8 px-6 py-16 sm:justify-center"
+      className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-1 flex-col justify-start gap-8 px-5 py-10"
       style={{
-        paddingTop: "max(6rem, env(safe-area-inset-top))",
+        paddingTop: "max(4rem, env(safe-area-inset-top))",
         paddingBottom: "max(2rem, env(safe-area-inset-bottom))",
       }}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_0%,rgba(202,138,4,0.10),transparent_70%)]" />
+      <AppHeader title="Digitální klíč od pokoje" />
 
-      <div className="flex flex-col items-start gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-700/15 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-800">
-          PortaPass
-        </span>
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-neutral-900 sm:text-4xl">
-          Digitální klíč od&nbsp;pokoje
-        </h1>
-        <p className="text-base leading-relaxed text-neutral-500">
-          Proof of concept: ukázka odkazu, který host dostane e-mailem nebo
-          SMS ještě před příjezdem do hotelu.
-        </p>
-      </div>
+      <p className="-mt-4 text-base leading-relaxed text-neutral-500">
+        Ukázka odkazu, který host dostane e-mailem nebo SMS ještě před
+        příjezdem do hotelu.
+      </p>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_30px_-15px_rgba(0,0,0,0.15)]">
-        <div className="flex items-center gap-3 text-sm text-neutral-500">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-400">
-            1
-          </span>
-          Ověření totožnosti
-        </div>
-        <div className="flex items-center gap-3 text-sm text-neutral-500">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-400">
-            2
-          </span>
-          Digitální klíč do peněženky
-        </div>
-        <div className="flex items-center gap-3 text-sm text-neutral-500">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-400">
-            3
-          </span>
-          Odemknutí pokoje telefonem
-        </div>
+      <div className="flex flex-col gap-1 rounded-3xl border border-white/60 bg-white/50 p-2 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_16px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+        {steps.map(({ icon: Icon, label }, i) => (
+          <div
+            key={label}
+            className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm text-neutral-600"
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-amber-700 shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
+              <Icon size={18} weight="duotone" />
+            </span>
+            {label}
+            {i < steps.length - 1 && (
+              <span className="ml-auto text-neutral-300">
+                <ArrowRight size={14} weight="bold" />
+              </span>
+            )}
+          </div>
+        ))}
       </div>
 
       <Link

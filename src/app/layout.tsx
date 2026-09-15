@@ -31,6 +31,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#faf9f7] text-[#1c1a17]">
+        {/* Fixed to the viewport (not page content) so it can never clip or
+            show a hard edge as Safari's dynamic toolbar resizes the viewport. */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 0%, rgba(202,138,4,0.12), transparent 60%)",
+          }}
+        />
         {children}
       </body>
     </html>

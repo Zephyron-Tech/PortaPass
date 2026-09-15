@@ -4,9 +4,10 @@
   "teamIdentifier": "4BMFM373A5",
   "organizationName": "PortaPass",
   "description": "PortaPass digital room key",
-  "backgroundColor": "rgb(20, 24, 33)",
+  "logoText": "PortaPass",
+  "backgroundColor": "rgb(23, 23, 23)",
   "foregroundColor": "rgb(255, 255, 255)",
-  "labelColor": "rgb(160, 174, 192)",
+  "labelColor": "rgb(163, 163, 163)",
   "generic": {
     "headerFields": [],
     "primaryFields": [],

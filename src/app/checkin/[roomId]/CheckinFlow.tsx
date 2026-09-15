@@ -1,6 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import {
+  AppleLogo,
+  CheckCircle,
+  CircleNotch,
+  DoorOpen,
+  WarningCircle,
+} from "@phosphor-icons/react";
+import { AppHeader } from "@/components/AppHeader";
 import type { MockBooking } from "@/lib/mockData";
 
 type Step = "intro" | "verifying" | "verified" | "error";
@@ -39,12 +47,7 @@ function KeyCard({ booking }: { booking: MockBooking }) {
             {booking.roomNumber}
           </p>
         </div>
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="text-amber-300/80">
-          <path
-            d="M12 2C9.24 2 7 4.24 7 7v3H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-1V7c0-2.76-2.24-5-5-5Zm3 8H9V7a3 3 0 0 1 6 0v3Zm-3 3.5a1.5 1.5 0 0 1 1 2.62V18a1 1 0 1 1-2 0v-1.88a1.5 1.5 0 0 1 1-2.62Z"
-            fill="currentColor"
-          />
-        </svg>
+        <DoorOpen size={40} weight="duotone" className="text-amber-300/80" />
       </div>
 
       <div className="relative mt-8 flex items-center justify-between gap-4 border-t border-white/10 pt-4 text-sm">
@@ -67,15 +70,10 @@ function AppleWalletButton({ href }: { href: string }) {
   return (
     <a
       href={href}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-black py-4 text-base font-medium text-white transition active:scale-[0.98] active:bg-neutral-900"
+      className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-black text-[17px] font-semibold text-white transition active:scale-[0.98] active:bg-neutral-900"
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M16.365 1.43c0 1.14-.462 2.15-1.222 2.9-.83.82-2.18 1.45-3.29 1.36-.14-1.1.46-2.24 1.19-2.98.82-.83 2.26-1.45 3.32-1.28ZM20.02 17.24c-.36.83-.79 1.63-1.31 2.38-.7 1.02-1.28 1.73-1.73 2.13-.7.66-1.45 1-2.26 1.02-.58.02-1.28-.16-2.09-.5-.81-.34-1.55-.5-2.24-.5-.72 0-1.48.16-2.29.5-.81.35-1.46.53-1.97.55-.78.03-1.55-.32-2.3-1.06-.49-.45-1.1-1.19-1.83-2.24-.79-1.12-1.44-2.42-1.95-3.9-.55-1.6-.82-3.15-.82-4.65 0-1.72.37-3.2 1.11-4.44a6.5 6.5 0 0 1 2.35-2.38A6.35 6.35 0 0 1 6.02 3.1c.62 0 1.44.19 2.46.57 1.02.38 1.67.57 1.96.57.21 0 .93-.22 2.16-.66 1.16-.41 2.14-.58 2.95-.51 2.18.18 3.82 1.03 4.9 2.58-1.95 1.18-2.92 2.83-2.9 4.94.02 1.64.6 3.01 1.75 4.09.52.5 1.1.88 1.75 1.16-.14.41-.29.8-.44 1.19Z"
-          fill="currentColor"
-        />
-      </svg>
-      Přidat do Apple Wallet
+      <AppleLogo size={20} weight="fill" />
+      <span>Přidat do Apple Wallet</span>
     </a>
   );
 }
@@ -113,19 +111,10 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
         paddingBottom: "max(2rem, env(safe-area-inset-bottom))",
       }}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_0%,rgba(202,138,4,0.10),transparent_70%)]" />
-
-      <div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-700/15 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-800">
-          PortaPass
-        </span>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900">
-          Online check-in
-        </h1>
-      </div>
+      <AppHeader title="Online check-in" />
 
       {step === "intro" && (
-        <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_30px_-15px_rgba(0,0,0,0.12)]">
+        <div className="rounded-3xl border border-white/60 bg-white/50 p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur-xl">
           <p className="leading-relaxed text-neutral-600">
             Ověřte svou totožnost a dokončete check-in. Poté obdržíte digitální
             klíč od pokoje přímo do peněženky ve vašem telefonu.
@@ -143,14 +132,15 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
       )}
 
       {step === "verifying" && (
-        <div className="rounded-3xl border border-neutral-200 bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_30px_-15px_rgba(0,0,0,0.12)]">
-          <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-neutral-200 border-t-amber-600" />
+        <div className="rounded-3xl border border-white/60 bg-white/50 p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+          <CircleNotch size={36} weight="bold" className="mx-auto animate-spin text-amber-600" />
           <p className="mt-5 text-neutral-600">Ověřujeme vaši totožnost…</p>
         </div>
       )}
 
       {step === "error" && (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
+        <div className="flex items-start gap-3 rounded-3xl border border-red-200/70 bg-red-50/70 p-6 backdrop-blur-xl">
+          <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-red-500" />
           <p className="text-red-700">
             Rezervaci se nepodařilo najít. Zkontrolujte odkaz nebo kontaktujte
             recepci hotelu.
@@ -161,24 +151,16 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
       {step === "verified" && booking && (
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-2 text-sm font-medium text-emerald-700">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2Z" fill="currentColor" />
-            </svg>
+            <CheckCircle size={18} weight="fill" />
             Totožnost ověřena
           </div>
 
           <KeyCard booking={booking} />
 
-          <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_30px_-15px_rgba(0,0,0,0.12)]">
+          <div className="rounded-3xl border border-white/60 bg-white/50 p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur-xl">
             <AppleWalletButton
               href={`/api/pass?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(token)}`}
             />
-
-            <p className="mt-4 text-xs leading-relaxed text-neutral-400">
-              Proof of concept: tento klíč je vizuální ukázka. Reálné odemykání
-              dveří vyžaduje integraci s certifikovaným výrobcem zámků — viz
-              ROADMAP.md.
-            </p>
           </div>
         </div>
       )}
