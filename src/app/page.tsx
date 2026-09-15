@@ -29,9 +29,9 @@ const decisions = [
   { title: "Zámky až s partnerem", body: "Skutečný přístup do pokoje vyžaduje smlouvu a integraci s certifikovaným výrobcem zámků." },
 ];
 const steps = [
-  { title: "Jeden odkaz", body: "V demu otevřete smyšlenou rezervaci. V budoucím provozu by host odkaz dostal před příjezdem; rozesílání e-mailů a SMS zatím není součástí prototypu.", alt: "Ukázka odkazu na check-in v telefonu" },
-  { title: "Ověření přes Bank iD", body: "Prototyp podporuje ověření v testovacím prostředí Bank iD. Bez připojení k Bank iD nabídne označenou simulaci. Porovnání totožnosti s držitelem rezervace zatím neprovádíme.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true },
-  { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline. Je to vizuální ukázka, nikoli přístupový klíč: dveře neodemyká.", alt: "Ukázkový průkaz v Apple Wallet, který neodemyká dveře" },
+  { title: "Jeden odkaz", body: "V demu otevřete smyšlenou rezervaci. V budoucím provozu by host odkaz dostal před příjezdem; rozesílání e-mailů a SMS zatím není součástí prototypu.", alt: "Ukázka odkazu na check-in v telefonu", src: "/mockups/mockup1.png" },
+  { title: "Ověření přes Bank iD", body: "Prototyp podporuje ověření v testovacím prostředí Bank iD. Bez připojení k Bank iD nabídne označenou simulaci. Porovnání totožnosti s držitelem rezervace zatím neprovádíme.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true, src: "/mockups/mockup2.png" },
+  { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline. Je to vizuální ukázka, nikoli přístupový klíč: dveře neodemyká.", alt: "Ukázkový klíč připravený k přidání do Apple Wallet", src: "/mockups/mockup3.png" },
 ];
 
 export default function Home() {
@@ -99,7 +99,7 @@ export default function Home() {
                   ) : null}
                   {i === 2 ? <div className="mt-7"><Cta href="/demo">Vyzkoušet demo</Cta></div> : null}
                 </div>
-                <div className="walkthrough-device"><DeviceShot alt={step.alt} /></div>
+                <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} /></div>
               </div>
             ))}
           </div>

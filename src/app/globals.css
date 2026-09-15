@@ -167,7 +167,7 @@ body {
 .walkthrough-step { display: grid; align-items: center; gap: 2rem; }
 .walkthrough-copy { min-width: 0; }
 .walkthrough-device { width: 100%; max-width: 13rem; margin-inline: auto; }
-.walkthrough-finish { border-top: 1px solid var(--hairline); padding-top: 3rem; }
+.walkthrough-finish { padding-top: 3rem; }
 
 @media (min-width: 40rem) and (max-width: 63.999rem) {
   .hero-actions { flex-direction: row; }
@@ -178,7 +178,7 @@ body {
   .walkthrough-reverse { grid-template-columns: 17rem minmax(0, 1fr); }
   .walkthrough-reverse .walkthrough-copy { order: 2; }
   .walkthrough-device { max-width: 17rem; }
-  .walkthrough-finish { grid-template-columns: minmax(0, 1fr) 17rem; padding: 3rem; background: var(--background); }
+  .walkthrough-finish { grid-template-columns: minmax(0, 1fr) 17rem; padding: 3rem; }
 }
 
 @media (min-width: 64rem) {
