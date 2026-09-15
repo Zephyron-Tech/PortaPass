@@ -58,6 +58,10 @@ export class CertificatesNotConfiguredError extends Error {
   }
 }
 
+function formatPassDate(iso: string) {
+  return new Date(iso).toLocaleDateString("cs-CZ", { day: "numeric", month: "numeric" });
+}
+
 export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer> {
   const certificates = loadCertificates();
   if (!certificates) {
@@ -76,25 +80,33 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
 
   pass.headerFields.push({
     key: "room",
-    label: "ROOM",
+    label: "POKOJ",
     value: booking.roomNumber,
   });
 
+  // Sits over the strip image.
   pass.primaryFields.push({
     key: "hotel",
     label: "HOTEL",
     value: booking.hotelName,
   });
 
+  // storeCard allows four secondary + auxiliary fields in total. Dates are
+  // formatted rather than passed as raw ISO, and collapsed into one range so
+  // they don't wrap onto separate rows.
   pass.secondaryFields.push(
-    { key: "guest", label: "GUEST", value: booking.guestName },
-    { key: "checkin", label: "CHECK-IN", value: booking.checkIn },
+    { key: "guest", label: "HOST", value: booking.guestName },
+    {
+      key: "stay",
+      label: "POBYT",
+      value: `${formatPassDate(booking.checkIn)} – ${formatPassDate(booking.checkOut)}`,
+    },
   );
 
   pass.auxiliaryFields.push({
-    key: "checkout",
-    label: "CHECK-OUT",
-    value: booking.checkOut,
+    key: "roomType",
+    label: "KATEGORIE",
+    value: booking.roomType,
   });
 
   // No NFC field: Apple's NFC pass field requires a real EC public key —
