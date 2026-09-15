@@ -97,14 +97,12 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
     value: booking.checkOut,
   });
 
-  // Placeholder NFC payload only — see ROADMAP.md: real door unlock requires
-  // integrating with a certified lock vendor's credential manager (Salto,
-  // VingCard/Assa Abloy, dormakaba), not a self-signed NFC message.
-  pass.setNFC({
-    message: `PORTAPASS-DEMO:${booking.roomId}:${booking.token}`,
-    encryptionPublicKey: "-----BEGIN PUBLIC KEY-----\nDEMOKEY\n-----END PUBLIC KEY-----",
-    requiresAuthentication: false,
-  });
+  // No NFC field: Apple's NFC pass field requires a real EC public key —
+  // a placeholder string fails iOS's install-time validation silently (pass
+  // shows the "Add to Wallet" prompt but never actually installs). Real
+  // door-unlock NFC requires a certified lock vendor's credential manager
+  // (Salto, VingCard/Assa Abloy, dormakaba) anyway — see ROADMAP.md. This
+  // demo pass is visual only.
 
   return pass.getAsBuffer();
 }
