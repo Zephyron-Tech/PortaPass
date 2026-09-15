@@ -38,9 +38,17 @@ async function guestLayout(page: Page, testInfo: TestInfo, state: string) {
   expect(metrics.actionBottom).toBeLessThanOrEqual(metrics.bottom);
   expect(metrics.position).toBe("static");
   expect(metrics.clipped).toBe(false);
-  expect(metrics.bottom - metrics.actionBottom).toBeCloseTo(metrics.paddingBottom, 0);
-  if (metrics.screenHeight <= metrics.viewportHeight) {
-    expect(metrics.actionBottom).toBeGreaterThan(metrics.viewportHeight * 0.75);
+  if (metrics.viewport < 1024) {
+    expect(metrics.bottom - metrics.actionBottom).toBeCloseTo(metrics.paddingBottom, 0);
+    if (metrics.screenHeight <= metrics.viewportHeight) {
+      expect(metrics.actionBottom).toBeGreaterThan(metrics.viewportHeight * 0.75);
+    }
+  } else {
+    const header = (await page.locator(".guest-screen > header").boundingBox())!;
+    const content = (await page.locator(".guest-content").boundingBox())!;
+    expect(content.x).toBeGreaterThanOrEqual(header.x + header.width);
+    expect(metrics.actionLeft).toBeCloseTo(content.x, 0);
+    expect(content.width).toBeGreaterThanOrEqual(380);
   }
   for (const target of await page.locator("a, button, summary").all()) {
     if (!(await target.isVisible())) continue;
@@ -114,6 +122,7 @@ for (const width of widths) {
     await page.getByRole("button", { name: "Spustit simulaci" }).click();
     await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeFocused();
     await expect(page.getByText("Simulace dokončena. Totožnost nebyla ověřena.")).toBeVisible();
+    await expect(page.getByText(/Na iPhonu potvrďte přidání/)).toHaveCount(0);
     await expect(page.locator(".key-card")).toHaveCount(1);
     const card = await page.locator(".key-card").boundingBox();
     expect(card!.width / card!.height).toBeCloseTo(1.586, 2);

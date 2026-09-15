@@ -93,6 +93,36 @@ body {
   padding-top: 2rem;
 }
 
+/* Guest tasks use a two-column reading/action layout on larger screens.
+   Legal pages keep the original reading column; phones keep thumb reach. */
+@media (min-width: 64rem) {
+  .guest-screen-desktop {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    align-content: center;
+    column-gap: clamp(3rem, 6vw, 6rem);
+    max-width: 68rem;
+    padding: 4rem 2rem;
+  }
+  .guest-screen-desktop > header {
+    grid-area: 1 / 1 / 4 / 2;
+    align-self: start;
+    padding-right: 2rem;
+    border-right: 1px solid var(--hairline);
+  }
+  .guest-screen-desktop > header h1 {
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    max-width: 15ch;
+    text-wrap: balance;
+  }
+  .guest-screen-desktop > header > p:last-child { max-width: 35ch; font-size: 1rem; }
+  .guest-screen-desktop > .guest-content { grid-area: 1 / 2; margin-top: 0; }
+  .guest-screen-desktop > [role="status"] { grid-area: 2 / 2; }
+  .guest-screen-desktop > [role="status"]:empty { margin-top: 0; }
+  .guest-screen-desktop > .guest-actions { grid-area: 3 / 2; margin-top: 0; padding-top: 1.5rem; }
+}
+
 @layer components {
 .app-button {
   display: inline-flex;

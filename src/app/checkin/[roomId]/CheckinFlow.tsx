@@ -165,7 +165,7 @@ export default function CheckinFlow({
     : "Načítáme ukázkovou rezervaci…";
 
   return (
-    <Screen>
+    <Screen desktop>
       <PageHeading
         headingRef={headingRef}
         progress={step === "verified" ? "2 ze 2 · Apple Wallet" : "1 ze 2 · Ověření"}
@@ -175,7 +175,7 @@ export default function CheckinFlow({
           : "Ověření a ukázkový průkaz do Apple Wallet. Bez instalace hotelové aplikace."}
       />
 
-      <div className="mt-8 min-w-0">
+      <div className="guest-content mt-8 min-w-0">
         {step !== "verified" && validLink && (
           <p className="text-[15px] leading-relaxed text-ink-2">
             {bankIdEnabled
@@ -230,16 +230,11 @@ export default function CheckinFlow({
 
       <div className="guest-actions" aria-busy={pending}>
         {step === "verified" && booking ? (
-          <>
             <AppleWalletButton
               href={`/api/pass/${encodeURIComponent(roomId)}/${encodeURIComponent(
                 token,
               )}/klic-${encodeURIComponent(booking.roomNumber)}.pkpass`}
             />
-            <p className="mt-4 text-sm leading-relaxed text-ink-3">
-              Na iPhonu potvrďte přidání v&nbsp;Apple Wallet. Jinde se může stáhnout soubor .pkpass.
-            </p>
-          </>
         ) : !validLink ? (
           <Link href="/demo" className="app-button w-full">Zpět na ukázku</Link>
         ) : pending ? (

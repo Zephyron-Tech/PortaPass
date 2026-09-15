@@ -13,7 +13,7 @@ export default function DemoPage() {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <Screen>
+    <Screen desktop>
       <PageHeading
         title="Vyzkoušejte check-in"
         subtitle="Projděte ukázkovou rezervaci až ke kartě do Apple Wallet. Ukázková karta neodemyká dveře."
@@ -27,11 +27,13 @@ export default function DemoPage() {
         }
       />
 
-      <StepList steps={CHECKIN_STEPS} className="mt-10" />
+      <div className="guest-content mt-10">
+      <StepList steps={CHECKIN_STEPS} />
       <p className="mt-6 text-sm leading-relaxed text-ink-2">
         Jde o&nbsp;testovací demo se smyšlenými údaji. Bez připojení k&nbsp;Bank iD
         nabídne označenou simulaci bez ověření totožnosti.
       </p>
+      </div>
 
       <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
         {isPending ? "Otevíráme ukázkovou rezervaci." : ""}
