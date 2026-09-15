@@ -15,7 +15,7 @@ const LOGO_PATH =
 const ASPECT = 192.7559052 / 76.5354309;
 
 export function BankIdLogo({
-  width = 96,
+  width = 108,
   tone = "black",
   title = "Bank iD",
   decorative = false,
@@ -27,6 +27,7 @@ export function BankIdLogo({
 }) {
   return (
     <svg
+      className="shrink-0"
       viewBox="0 0 192.7559052 76.5354309"
       width={width}
       height={width / ASPECT}
@@ -42,7 +43,7 @@ export function BankIdLogo({
 
 /** Wraps the logotype with the mandatory 16% clear zone. */
 export function BankIdLogoLockup({
-  width = 96,
+  width = 108,
   tone = "black",
 }: {
   width?: number;

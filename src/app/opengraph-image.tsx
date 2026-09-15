@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "PortaPass — digitální klíč od pokoje pro nezávislé hotely";
+export const alt = "PortaPass – ukázka check-inu a průkazu do Apple Wallet. Neodemyká dveře.";
 
 /**
  * Generated rather than a checked-in asset, so it can't drift from the brand.
@@ -38,10 +38,10 @@ export default function OpengraphImage() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: 68, lineHeight: 1.1, letterSpacing: -1.5, maxWidth: 900 }}>
-            Klíč od pokoje v telefonu hosta.
+            Check-in začíná před příjezdem.
           </div>
           <div style={{ fontSize: 30, color: "#6f6a63", maxWidth: 820 }}>
-            Online check-in, ověření přes Bank iD a klíč v Apple Wallet.
+            Ukázka ověření a průkazu do Apple Wallet. Neodemyká dveře.
           </div>
         </div>
 

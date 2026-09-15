@@ -24,7 +24,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_BASE_URL ?? "https://portapass.zephyron.tech"),
   title: "PortaPass",
-  description: "Digitální klíč od pokoje",
+  description: "Ukázka online check-inu a průkazu do Apple Wallet. Prototyp neodemyká dveře.",
 };
 
 export const viewport: Viewport = {

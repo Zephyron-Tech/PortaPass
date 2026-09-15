@@ -7,7 +7,7 @@
 
   /* Warm ink ramp. A cool grey ramp (neutral-500/600) on this warm paper
      ground reads dingy at every weight, which was most of the readability
-     problem. Contrast on #faf9f7: ink-2 ≈ 9.6:1, ink-3 ≈ 4.9:1. */
+     problem. Contrast on #faf9f7: ink-2 ≈ 11.2:1, ink-3 ≈ 5.6:1. */
   --ink: #14120f;
   --ink-2: #3c372f;
   --ink-3: #6b6459;
@@ -69,6 +69,101 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.guest-screen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 28rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: calc(env(safe-area-inset-top) + 1.5rem)
+    max(1.5rem, env(safe-area-inset-right))
+    calc(env(safe-area-inset-bottom) + 1.25rem)
+    max(1.5rem, env(safe-area-inset-left));
+}
+
+.guest-actions {
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+@layer components {
+.app-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  background: var(--ink);
+  color: var(--background);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+}
+
+.app-button:focus-visible { outline-color: var(--ink); }
+.app-button:disabled { cursor: wait; }
+.app-button:active:not(:disabled) { background: var(--ink-2); }
+}
+
+.key-card { container-type: inline-size; }
+.key-card-content { position: absolute; inset: 0; padding: 1rem; }
+.key-card-room { font-size: 2.5rem; }
+.key-card-hotel { font-size: 1.125rem; }
+
+@container (min-width: 360px) {
+  .key-card-content { padding: 1.5rem; }
+  .key-card-room { font-size: 3.25rem; }
+  .key-card-hotel { font-size: 1.375rem; }
+}
+
+.hero-grid { display: grid; align-items: start; gap: 3rem; }
+.hero-intro, .hero-reasons { min-width: 0; }
+.hero-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+.hero-card-sticky { position: static; width: 100%; max-width: 28rem; margin-inline: auto; }
+.hero-card-scene, .hero-card { position: relative; aspect-ratio: 1.586; }
+.hero-card-back { display: none; }
+.hero-reasons { margin-top: 1rem; }
+.walkthrough-step { display: grid; align-items: center; gap: 2rem; }
+.walkthrough-copy { min-width: 0; }
+.walkthrough-device { width: 100%; max-width: 13rem; margin-inline: auto; }
+.walkthrough-finish { border-top: 1px solid var(--hairline); padding-top: 3rem; }
+
+@media (min-width: 40rem) and (max-width: 63.999rem) {
+  .hero-actions { flex-direction: row; }
+}
+
+@media (min-width: 48rem) {
+  .walkthrough-step { grid-template-columns: minmax(0, 1fr) 17rem; gap: 4rem; }
+  .walkthrough-reverse { grid-template-columns: 17rem minmax(0, 1fr); }
+  .walkthrough-reverse .walkthrough-copy { order: 2; }
+  .walkthrough-device { max-width: 17rem; }
+  .walkthrough-finish { grid-template-columns: minmax(0, 1fr) 17rem; padding: 3rem; background: var(--background); }
+}
+
+@media (min-width: 64rem) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+    column-gap: 4rem;
+    row-gap: 6rem;
+  }
+  .hero-intro { grid-area: 1 / 1; }
+  .hero-reasons { grid-area: 2 / 1; margin-top: 0; }
+  .hero-card-sticky { grid-area: 1 / 2 / 3 / 3; position: sticky; top: 6rem; max-width: none; }
+  .hero-actions { align-items: flex-start; }
+  .hero-actions > a { width: 100%; max-width: 22rem; }
+}
+
 /* Deep-link targets must clear the header. */
 [id] {
   scroll-margin-top: 6rem;
@@ -87,17 +182,31 @@ body {
 }
 
 .animate-step-in {
-  animation: step-in 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-name: step-in;
+  animation-duration: 0.44s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
 }
 
 .animate-rise-in {
-  animation: step-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-name: step-in;
+  animation-duration: 0.52s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-step-in,
-  .animate-rise-in {
-    animation: none;
+  *, *::before, *::after {
+    animation-name: none !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-step-in, .animate-rise-in, [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  a:active, button:active {
+    transform: none !important;
   }
 }
 
@@ -154,45 +263,69 @@ body {
     [data-reveal="tall"] {
       animation-range: cover 2% cover 30%;
     }
+
+    [data-reveal]:focus-within {
+      animation-name: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
-/* ---- Hero key card: sticky, gently tilting ---------------------------
- * The timeline is named on the STAGE (which scrolls normally), not on the
+/* ---- Hero key card: one physical turn -------------------------------
+ * The timeline is named on the GRID (which scrolls normally), not on the
  * card. A view() timeline measured on the sticky card itself would freeze
  * while the card is stuck, then jump when it unsticks.
  */
-@keyframes key-card-tilt {
-  from {
-    transform: rotate(-2.75deg) translateY(0.35rem);
-  }
-  46% {
-    transform: rotate(0deg) translateY(0);
-  }
-  to {
-    transform: rotate(4deg) translateY(0.35rem);
-  }
+@keyframes key-card-turn {
+  from { transform: rotate3d(0.08, 1, -0.04, 0deg); }
+  to { transform: rotate3d(0.08, 1, -0.04, 360deg); }
 }
 
 @supports (animation-timeline: view()) {
   @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
-    .hero-stage {
+    .hero-grid {
       view-timeline: --hero-stage block;
+      view-timeline-inset: 6rem 0;
+    }
+
+    .hero-card-sticky { container-type: inline-size; }
+    .hero-card-sticky > p { margin-top: 4rem; line-height: 1.5rem; }
+    .hero-card-scene { perspective: 1800px; }
+    .hero-card-front, .hero-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .hero-card-front { transform: translateZ(0.5px); }
+    .hero-card-back {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-radius: 1.375rem;
+      background: var(--ink);
+      color: white;
+      transform: rotateY(180deg) translateZ(0.5px);
+      box-shadow: 0 18px 40px -16px rgba(20, 18, 15, 0.45);
     }
 
     .hero-card {
-      /* Pivot below the card, so it swings like something hanging rather
-         than spinning about its own centre. */
-      transform-origin: 50% 155%;
+      transform-style: preserve-3d;
+      transform-origin: center;
       will-change: transform;
-      animation-name: key-card-tilt;
+      animation-name: key-card-turn;
       animation-duration: auto;
       /* linear is non-negotiable on a progress timeline — easing decouples
          the motion from the finger and reads as lag. */
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: --hero-stage;
-      animation-range: contain 0% contain 100%;
+      /* exit-crossing follows the grid past the sticky top, not the much
+         shorter interval in which a tall stage covers the viewport.
+         Subtract the card + caption so the turn ends at sticky release. */
+      animation-range: exit-crossing 0% exit-crossing calc(100% - 100cqw / 1.586 - 5.5rem);
     }
   }
 }

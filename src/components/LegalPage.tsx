@@ -4,11 +4,11 @@ import { Screen } from "@/components/Screen";
 
 export function Section({ heading, children }: { heading: string; children: ReactNode }) {
   return (
-    <section className="border-b border-neutral-900/10 py-6 last:border-b-0">
-      <h2 className="text-[13px] font-medium uppercase tracking-[0.14em] text-neutral-400">
+    <section className="border-b border-hairline py-6 last:border-b-0">
+      <h2 className="text-[13px] font-medium uppercase tracking-[0.14em] text-ink-3">
         {heading}
       </h2>
-      <div className="mt-3 text-[15px] leading-relaxed text-neutral-700 [&_a]:underline [&_a]:underline-offset-2">
+      <div className="mt-3 text-[15px] leading-relaxed text-ink-2 [&_a]:underline [&_a]:underline-offset-2">
         {children}
       </div>
     </section>
@@ -27,10 +27,10 @@ export function LegalPage({
   return (
     <Screen>
       <Wordmark />
-      <h1 className="mt-6 font-serif text-[2.1rem] leading-[1.1] tracking-[-0.01em] text-neutral-900">
+      <h1 className="mt-6 font-serif text-[2.1rem] leading-[1.1] tracking-[-0.01em] text-ink">
         {title}
       </h1>
-      <p className="mt-2 text-[13px] text-neutral-400">Aktualizováno {updated}</p>
+      <p className="mt-2 text-[13px] text-ink-3">Aktualizováno {updated}</p>
       <div className="mt-6">{children}</div>
     </Screen>
   );

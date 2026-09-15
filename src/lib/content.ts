@@ -10,7 +10,7 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
 export const COMPANY = "Zephyron Tech s.r.o., IČO 23793538";
 
 export const CHECKIN_STEPS = [
-  "Ověření totožnosti",
-  "Digitální klíč do peněženky",
-  "Odemknutí pokoje telefonem",
+  "Otevření ukázkové rezervace",
+  "Ověření nebo simulace podle konfigurace",
+  "Ukázková karta do Apple Wallet",
 ];

@@ -15,32 +15,37 @@ export default function DemoPage() {
   return (
     <Screen>
       <PageHeading
-        title="Digitální klíč od pokoje"
-        subtitle="Ukázka odkazu, který host dostane e-mailem nebo SMS ještě před příjezdem do hotelu."
+        title="Vyzkoušejte check-in"
+        subtitle="Projděte ukázkovou rezervaci až ke kartě do Apple Wallet. Ukázková karta neodemyká dveře."
         aside={
           <Link
             href="/"
-            className="transition-colors hover:text-neutral-900 focus-visible:text-neutral-900"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4 hover:text-ink"
           >
-            Zpět
+            Zpět na web
           </Link>
         }
       />
 
-      <StepList
-        steps={CHECKIN_STEPS}
-        className="animate-rise-in mt-12"
-        style={{ animationDelay: "80ms" }}
-      />
+      <StepList steps={CHECKIN_STEPS} className="mt-10" />
+      <p className="mt-6 text-sm leading-relaxed text-ink-2">
+        Jde o&nbsp;testovací demo se smyšlenými údaji. Bez připojení k&nbsp;Bank iD
+        nabídne označenou simulaci bez ověření totožnosti.
+      </p>
 
-      <button
-        onClick={() => startTransition(() => router.push("/checkin/room-101?token=abc"))}
-        disabled={isPending}
-        className="animate-rise-in mt-10 flex h-[54px] w-full select-none items-center justify-center rounded-2xl bg-neutral-900 text-[16px] font-medium text-white transition duration-150 ease-out active:scale-[0.975] active:bg-neutral-800 disabled:opacity-60"
-        style={{ animationDelay: "140ms" }}
-      >
-        {isPending ? "Otevírání…" : "Otevřít ukázkový check-in"}
-      </button>
+      <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {isPending ? "Otevíráme ukázkovou rezervaci." : ""}
+      </p>
+      <div className="guest-actions" aria-busy={isPending}>
+        <button
+          type="button"
+          onClick={() => startTransition(() => router.push("/checkin/room-101?token=abc"))}
+          disabled={isPending}
+          className="app-button w-full"
+        >
+          {isPending ? "Otevírání rezervace…" : "Otevřít ukázkovou rezervaci"}
+        </button>
+      </div>
     </Screen>
   );
 }

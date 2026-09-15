@@ -84,7 +84,7 @@ export function Section({
 }) {
   return (
     <section id={id} className={bordered ? "border-t border-hairline" : undefined}>
-      <Container className={`py-20 md:py-28 ${className}`}>{children}</Container>
+      <Container className={`py-16 md:py-24 ${className}`}>{children}</Container>
     </section>
   );
 }

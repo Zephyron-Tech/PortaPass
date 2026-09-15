@@ -14,13 +14,13 @@ export function StepList({
   style?: CSSProperties;
 }) {
   return (
-    <ol className={`border-t border-neutral-900/10 ${className}`} style={style}>
+    <ol role="list" className={`border-t border-hairline ${className}`} style={style}>
       {steps.map((label, i) => (
-        <li key={label} className="flex items-baseline gap-5 border-b border-neutral-900/10 py-4">
-          <span className="text-[12px] font-medium tabular-nums text-neutral-400">
+        <li key={label} className="flex items-baseline gap-5 border-b border-hairline py-4">
+          <span aria-hidden="true" className="text-[12px] font-medium tabular-nums text-ink-3">
             {String(i + 1).padStart(2, "0")}
           </span>
-          <span className="text-[15px] text-neutral-700">{label}</span>
+          <span className="text-[15px] text-ink-2">{label}</span>
         </li>
       ))}
     </ol>

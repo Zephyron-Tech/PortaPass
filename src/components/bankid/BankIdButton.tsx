@@ -26,12 +26,15 @@ export function BankIdButton({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`font-bankid flex h-12 w-full select-none items-center justify-center gap-3 rounded-lg bg-black text-white transition duration-150 ease-out active:scale-[0.985] active:bg-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf9f7] ${className}`}
+      aria-label={`${label} s Bank iD`}
+      style={{ height: 48, minHeight: 48, maxHeight: 48, flexShrink: 0 }}
+      className={`font-bankid flex w-full min-w-max select-none items-center justify-center gap-3 rounded-[8px] bg-black px-3 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf9f7] ${className}`}
     >
-      <BankIdLogo width={72} tone="white" decorative />
-      <span aria-hidden className="h-5 w-px bg-white/30" />
-      <span className="text-[15px] font-medium tracking-[-0.01em]">{label}</span>
+      <BankIdLogo width={108} tone="white" decorative />
+      <span aria-hidden className="h-5 w-px shrink-0 bg-white/30" />
+      <span className="whitespace-nowrap text-[15px] font-medium tracking-[-0.01em]">{label}</span>
     </button>
   );
 }

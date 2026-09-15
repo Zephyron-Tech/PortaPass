@@ -21,8 +21,8 @@ export default function PrivacyPage() {
       </Section>
 
       <Section heading="Účel zpracování">
-        Údaje slouží výhradně k ověření, že check-in provádí osoba uvedená na
-        rezervaci, a k vydání digitálního klíče od pokoje.
+        Údaje slouží k ověření totožnosti a k vydání ukázkového digitálního klíče.
+        Prototyp neověřuje shodu totožnosti s rezervací. Ukázkový klíč neodemyká dveře.
       </Section>
 
       <Section heading="Doba uložení">

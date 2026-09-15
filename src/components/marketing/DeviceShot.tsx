@@ -27,7 +27,7 @@ export function DeviceShot({
             src={src}
             alt={alt}
             fill
-            sizes="(min-width: 768px) 18rem, 60vw"
+            sizes="(min-width: 768px) 272px, 208px"
             quality={90}
             className="object-contain"
           />

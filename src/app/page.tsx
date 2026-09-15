@@ -4,6 +4,7 @@ import { KeyCard } from "@/components/KeyCard";
 import { Container } from "@/components/marketing/Container";
 import { Cta } from "@/components/marketing/Cta";
 import { DeviceShot } from "@/components/marketing/DeviceShot";
+import { HeroCardMotion } from "@/components/marketing/HeroCardMotion";
 import { Band, Eyebrow, Section, SectionHeader } from "@/components/marketing/Section";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
@@ -11,333 +12,149 @@ import { CONTACT_MAILTO } from "@/lib/content";
 import { findBookingByToken } from "@/lib/mockData";
 
 export const metadata: Metadata = {
-  title: "PortaPass — online check-in a digitální klíč pro nezávislé hotely",
-  description:
-    "Host se ověří bankovní identitou ještě před příjezdem a klíč od pokoje mu přistane do Apple Wallet. Bez fronty na recepci, bez plastových karet.",
+  title: "PortaPass – ukázka online check-inu pro nezávislé hotely",
+  description: "Vyzkoušejte ověření hosta a ukázkový průkaz do Apple Wallet. Pilotní projekt pro nezávislé hotely; vydaný průkaz neodemyká dveře.",
   alternates: { canonical: "/" },
   openGraph: {
-    type: "website",
-    locale: "cs_CZ",
-    siteName: "PortaPass",
-    title: "PortaPass — digitální klíč od pokoje",
-    description:
-      "Online check-in s ověřením přes Bank iD a digitální klíč od pokoje v Apple Wallet. Pro nezávislé hotely a penziony.",
+    type: "website", locale: "cs_CZ", siteName: "PortaPass",
+    title: "PortaPass – check-in začíná před příjezdem",
+    description: "Funkční prototyp ověření hosta a ukázkového průkazu do Apple Wallet. Odemykání dveří vyžaduje partnerství s výrobcem zámků.",
   },
 };
 
-// Same booking the demo uses, so the hero card and the demo never disagree.
 const demoBooking = findBookingByToken("room-101", "abc");
-
-const facts = [
-  {
-    value: "Září 2026",
-    label: "První česká hotelová síť spustila odemykání pokojů telefonem.",
-  },
-  {
-    value: "~10 000",
-    label: "Ubytovacích zařízení v Česku, z nichž většina jsou nezávislé provozy.",
-  },
-  {
-    value: "3 pracovní dny",
-    label:
-      "Lhůta pro nahlášení zahraničního hosta přes UbyPort. Pokuta až 50 000 Kč.",
-  },
+const decisions = [
+  { title: "Nejdřív zkušenost hosta", body: "Projděte si ukázkový odkaz na vlastním telefonu. Bez instalace hotelové aplikace." },
+  { title: "Potom váš provoz", body: "Společně projdeme způsob rezervací, práci recepce a systém, který už používáte." },
+  { title: "Zámky až s partnerem", body: "Skutečný přístup do pokoje vyžaduje smlouvu a integraci s certifikovaným výrobcem zámků." },
 ];
-
 const steps = [
-  {
-    title: "Odkaz před příjezdem",
-    body: "Host dostane odkaz e-mailem nebo SMS spolu s potvrzením rezervace. Otevře se v prohlížeči, nic se neinstaluje.",
-    alt: "Obrazovka online check-inu v telefonu hosta",
-  },
-  {
-    title: "Ověření totožnosti",
-    body: "Host se přihlásí svou bankou. Máte jistotu, že se ubytovává ten, kdo rezervoval — bez focení dokladů na recepci.",
-    alt: "Ověření totožnosti hosta přes Bank iD",
-    bankId: true,
-  },
-  {
-    title: "Klíč v peněžence",
-    body: "Klíč se uloží do Apple Wallet. Zůstane dostupný i bez signálu a na zamčené obrazovce telefonu.",
-    alt: "Digitální klíč od pokoje uložený v Apple Wallet",
-  },
-];
-
-const capabilities = [
-  {
-    title: "Klíč v Apple Wallet",
-    body: "Host si uloží klíč od pokoje do peněženky v telefonu. Žádná aplikace k instalaci, funguje i offline.",
-    wide: true,
-  },
-  {
-    title: "Ověření přes Bank iD",
-    body: "Totožnost hosta ověří jeho banka. Víte, že check-in provádí skutečně osoba uvedená na rezervaci.",
-  },
-  {
-    title: "Podklady pro evidenci",
-    body: "Ověřené údaje o hostovi jako základ pro domovní knihu a hlášení cizinců přes UbyPort.",
-  },
-  {
-    title: "Napojení na váš systém",
-    body: "Mezivrstva nad vaším PMS — Previo, Mews i další. Nemusíte měnit, na co jste zvyklí.",
-  },
-  {
-    title: "Ve vašem brandu",
-    body: "White-label řešení. Host vidí váš hotel, ne nás.",
-  },
+  { title: "Jeden odkaz", body: "V demu otevřete smyšlenou rezervaci. V budoucím provozu by host odkaz dostal před příjezdem; rozesílání e-mailů a SMS zatím není součástí prototypu.", alt: "Ukázka odkazu na check-in v telefonu" },
+  { title: "Ověření přes Bank iD", body: "Prototyp podporuje ověření v testovacím prostředí Bank iD. Bez připojení k Bank iD nabídne označenou simulaci. Porovnání totožnosti s držitelem rezervace zatím neprovádíme.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true },
+  { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline. Je to vizuální ukázka, nikoli přístupový klíč: dveře neodemyká.", alt: "Ukázkový průkaz v Apple Wallet, který neodemyká dveře" },
 ];
 
 export default function Home() {
   return (
     <>
       <SiteHeader />
-
-      <main className="flex-1">
-        {/* ---- S1: hero + "Proč teď", fused so the card can stay stuck ---- */}
+      <main id="main-content" className="flex-1">
         <section className="hero-stage">
-          <Container className="pt-16 pb-24 md:pt-24 md:pb-32">
-            <div className="grid gap-16 lg:grid-cols-[1.05fr_0.9fr] lg:items-start lg:gap-20">
-              {/* items-start is required: a stretched grid child has zero
-                  sticky travel and would never stick. */}
-              <div>
-                <div className="animate-rise-in">
-                  <Eyebrow>Pilotní program · přijímáme první hotely</Eyebrow>
-
-                  <h1 className="mt-6 max-w-[15ch] font-serif text-[clamp(2.6rem,6.4vw,4.25rem)] leading-[1.02] tracking-[-0.022em] text-balance text-ink">
-                    Online check-in a digitální klíč pro nezávislé hotely
-                  </h1>
-
-                  <p className="mt-7 max-w-[46ch] text-[18px] leading-[1.55] text-pretty text-ink-2 md:text-[20px]">
-                    Host se ověří bankovní identitou ještě před příjezdem
-                    a&nbsp;klíč od pokoje mu přistane do Apple Wallet. Bez
-                    fronty na recepci, bez plastových karet.
-                  </p>
-
-                  <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                    <Cta href="/demo">Vyzkoušet demo</Cta>
-                    <Cta href={CONTACT_MAILTO} variant="quiet" external>
-                      Domluvit ukázku
-                    </Cta>
-                  </div>
-
-                  {/* The honesty beat belongs here, not only in the band far
-                      below — this is the line that actually gets read. */}
-                  <p className="mt-7 max-w-[46ch] text-[15px] leading-[1.6] text-ink-3">
-                    Demo je funkční, ne video — odkaz, ověření přes Bank iD
-                    a&nbsp;podepsaný klíč v&nbsp;Apple Wallet. Samotné
-                    odemykání dveří zatím stavíme;{" "}
-                    <a
-                      href="#pilot"
-                      className="underline decoration-hairline-strong underline-offset-4 transition-colors hover:text-ink"
-                    >
-                      co už funguje a&nbsp;co ne
-                    </a>
-                    .
-                  </p>
+          <Container className="pt-12 pb-20 md:pt-20 md:pb-28">
+            <div className="hero-grid">
+              <div className="hero-intro">
+                <Eyebrow>Pilotní program pro nezávislé hotely</Eyebrow>
+                <h1 className="mt-6 max-w-[16ch] font-serif text-[clamp(2.75rem,5.4vw,4.25rem)] leading-[1.08] tracking-[-0.025em] text-balance text-ink">Check-in začíná před příjezdem.</h1>
+                <p className="mt-6 max-w-[40ch] text-[18px] leading-[1.6] text-pretty text-ink-2 md:text-[20px]">Ověření hosta a&nbsp;ukázkový klíč do Apple Wallet. Vyzkoušejte, jak by mohl vypadat příjezd do vašeho hotelu.</p>
+                <div className="hero-actions mt-8">
+                  <Cta href="/demo">Vyzkoušet demo</Cta>
+                  <Cta href={CONTACT_MAILTO} variant="quiet" external>Domluvit ukázku</Cta>
                 </div>
-
-                {/* "Proč teď" lives in the same column so the card has
-                    something tall to stick against. */}
-                <div className="mt-24 md:mt-32">
-                  <SectionHeader
-                    eyebrow="Proč teď"
-                    heading="Řetězce už začaly. Nezávislé hotely se rozhodnou rychleji."
-                    lead="Host, který si v jednom hotelu odemkne pokoj telefonem, to bude čekat i příště. Nezávislý provoz má přitom výhodu, že nemusí čekat na korporátní centrálu."
-                  />
-
-                  <dl className="mt-16 space-y-12">
-                    {facts.map((fact, i) => (
-                      <div key={fact.value} data-reveal data-reveal-step={i + 1}>
-                        <dt className="font-serif text-[clamp(2.25rem,5vw,3rem)] leading-none text-ink">
-                          {fact.value}
-                        </dt>
-                        <dd className="mt-3 max-w-[38ch] text-[17px] leading-[1.65] text-ink-2">
-                          {fact.label}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
+                <p className="mt-6 max-w-[46ch] text-[15px] leading-[1.65] text-ink-3">Funkční prototyp, ne video. Bank iD v&nbsp;testovacím režimu nebo označená simulace; vydání průkazu vyžaduje nastavené podpisové certifikáty. Ukázkový klíč neodemyká dveře.</p>
+                <a href="#pilot" className="mt-2 inline-flex min-h-11 items-center text-[15px] text-ink-2 underline underline-offset-4">Co funguje dnes a&nbsp;co stavíme</a>
               </div>
-
-              {/* Live component, not a screenshot: sharp at any DPI, never
-                  stale, and it keeps the LCP element as text. */}
               {demoBooking ? (
-                <div className="mx-auto w-full max-w-[26rem] lg:sticky lg:top-24 lg:max-w-none">
-                  <div className="hero-card">
-                    <KeyCard booking={demoBooking} />
+                <div className="hero-card-sticky">
+                  <div className="hero-card-scene">
+                    <HeroCardMotion>
+                      <div className="hero-card-front"><KeyCard booking={demoBooking} /></div>
+                      <div className="hero-card-back" aria-hidden="true">
+                        <span className="text-[12px] font-medium uppercase tracking-[0.22em]">PortaPass</span>
+                        <span className="font-serif text-[clamp(1.75rem,3vw,2.75rem)] leading-tight">Váš příjezd.<br />Váš hotel.</span>
+                        <span className="border-t border-white/25 pt-3 text-[12px] text-white/75">Ukázkový průkaz · neodemyká dveře</span>
+                      </div>
+                    </HeroCardMotion>
                   </div>
-                  <p className="mt-5 text-center text-[14px] text-ink-3">
-                    Ukázkový klíč. Údaje jsou smyšlené.
-                  </p>
+                  <p className="mt-6 text-center text-[14px] leading-relaxed text-ink-3">Ukázkový klíč. Údaje jsou smyšlené. Neodemyká dveře.</p>
                 </div>
               ) : null}
+              <div className="hero-reasons">
+                <SectionHeader heading="Nejdřív si to vyzkoušejte. Pak se rozhodněte." />
+                <dl className="mt-10 space-y-8">
+                  {decisions.map((item, i) => (
+                    <div key={item.title} data-reveal data-reveal-step={i + 1} className="border-t border-hairline pt-6">
+                      <dt className="font-serif text-[1.6rem] leading-tight text-ink">{item.title}</dt>
+                      <dd className="mt-3 max-w-[42ch] text-[17px] leading-[1.65] text-ink-2">{item.body}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
             </div>
           </Container>
         </section>
-
-        {/* ---- S2: the walkthrough — mockups distributed one per step ---- */}
         <Section>
-          <SectionHeader
-            eyebrow="Průběh"
-            heading="Tři obrazovky, žádná aplikace"
-            lead="Host dostane odkaz před příjezdem. Zbytek zvládne z telefonu cestou k vám."
-          />
-
-          <div className="mt-20 space-y-24 md:space-y-32">
+          <SectionHeader heading="Od odkazu po peněženku" lead="Tři části ukázky. Žádná hotelová aplikace." />
+          <div className="mt-14 space-y-16 md:space-y-20">
             {steps.map((step, i) => (
-              <div
-                key={step.title}
-                data-reveal
-                className="grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,17rem)] md:gap-16"
-              >
-                <div className={i % 2 === 1 ? "md:order-last" : undefined}>
-                  <span className="font-serif text-[2.75rem] leading-none tabular-nums text-ink-3/70">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-5 font-serif text-[1.75rem] leading-[1.15] tracking-[-0.015em] text-ink md:text-[2rem]">
-                    {step.title}
-                  </h3>
-                  <p className="mt-4 max-w-[46ch] text-[17px] leading-[1.65] text-pretty text-ink-2">
-                    {step.body}
-                  </p>
-
+              <div key={step.title} className={`walkthrough-step ${i === 1 ? "walkthrough-reverse" : ""} ${i === 2 ? "walkthrough-finish" : ""}`}>
+                <div data-reveal className="walkthrough-copy">
+                  <span aria-hidden="true" className="font-serif text-[2.5rem] leading-none tabular-nums text-ink-3">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="mt-4 font-serif text-[clamp(1.75rem,3vw,2.25rem)] leading-[1.15] tracking-[-0.015em] text-ink">{step.title}</h3>
+                  <p className="mt-4 max-w-[46ch] text-[17px] leading-[1.65] text-pretty text-ink-2">{step.body}</p>
                   {step.bankId ? (
-                    /* Bank iD logotype: black on a plain light ground, well
-                       above the 80px minimum, with its 16% clear zone. */
-                    <div className="mt-8">
-                      <span className="inline-block bg-white px-5 py-4 ring-1 ring-hairline">
-                        <BankIdLogo width={104} title="Bank iD" />
-                      </span>
-                      <p className="mt-3 text-[14px] text-ink-3">
-                        Ověření zajišťuje Bank iD — bankovní identita, kterou
-                        v&nbsp;Česku používají miliony lidí.
-                      </p>
+                    <div className="mt-6">
+                      <span className="inline-block bg-white px-5 py-4 ring-1 ring-hairline"><BankIdLogo width={108} title="Bank iD" /></span>
+                      <p className="mt-3 text-[14px] leading-relaxed text-ink-3">Ověření v&nbsp;testovacím prostředí Bank iD.</p>
                     </div>
                   ) : null}
+                  {i === 2 ? <div className="mt-7"><Cta href="/demo">Vyzkoušet demo</Cta></div> : null}
                 </div>
-
-                <div className="mx-auto w-full max-w-[13rem] md:max-w-[17rem]">
-                  <DeviceShot alt={step.alt} />
-                </div>
+                <div className="walkthrough-device"><DeviceShot alt={step.alt} /></div>
               </div>
             ))}
           </div>
         </Section>
-
-        {/* ---- S3: thin interlude — deliberately breaks the rhythm ---- */}
-        <section className="border-t border-hairline">
-          <Container className="flex flex-col items-center gap-7 py-16 text-center">
-            <p className="max-w-[40ch] text-[18px] leading-[1.55] text-ink-2">
-              Celý průchod si můžete projít sami. Nejlépe rovnou v&nbsp;telefonu.
-            </p>
-            <Cta href="/demo">Otevřít demo</Cta>
-          </Container>
-        </section>
-
-        {/* ---- S4: capabilities — asymmetric grid, not another list ---- */}
         <Section>
-          <SectionHeader eyebrow="Co to řeší" heading="Co PortaPass hotelu přináší" />
-
-          <div className="mt-16 grid gap-px overflow-hidden bg-hairline md:grid-cols-2">
-            {capabilities.map((item) => (
-              <div
-                key={item.title}
-                data-reveal="row"
-                className={`bg-[#faf9f7] px-6 py-10 sm:px-8 ${
-                  item.wide ? "md:col-span-2" : ""
-                }`}
-              >
-                <h3
-                  className={`font-serif tracking-[-0.015em] text-ink ${
-                    item.wide ? "text-[1.75rem] md:text-[2rem]" : "text-[1.35rem]"
-                  }`}
-                >
-                  {item.title}
-                </h3>
-                <p
-                  className={`mt-3 text-[17px] leading-[1.65] text-pretty text-ink-2 ${
-                    item.wide ? "max-w-[52ch]" : "max-w-[42ch]"
-                  }`}
-                >
-                  {item.body}
-                </p>
+          <SectionHeader heading="Co má navazovat na pilot" lead="Tahle propojení zatím nejsou hotová. Jejich rozsah určíme s prvním hotelem." />
+          <div className="mt-10 divide-y divide-hairline border-y border-hairline">
+            {[
+              ["Váš rezervační systém", "Plánujeme napojení na PMS, například Previo nebo Mews. Dnes používáme pouze smyšlenou rezervaci."],
+              ["Evidence hostů", "Údaje z ověření mohou být základem pro evidenci. Domovní knihu ani automatické hlášení přes UbyPort zatím prototyp nevede."],
+              ["Jméno vašeho hotelu", "Vlastní vzhled a komunikaci hotelu připravíme v rámci pilotu. Současná ukázka nese značku PortaPass."],
+            ].map(([title, body]) => (
+              <div key={title} data-reveal className="grid gap-4 py-8 md:grid-cols-[1fr_1.5fr] md:gap-12">
+                <h3 className="font-serif text-[1.6rem] leading-tight text-ink">{title}</h3>
+                <p className="max-w-[50ch] text-[17px] leading-[1.65] text-ink-2">{body}</p>
               </div>
             ))}
           </div>
         </Section>
-
-        {/* ---- S5: the dark band — the honest block ---- */}
         <Band id="pilot">
-          <SectionHeader
-            tone="dark"
-            eyebrow="Pilotní program"
-            heading="Hledáme první hotely, se kterými to dotáhneme"
-            lead="Jsme na začátku a nechceme nic předstírat. Tady je přesně, co dnes funguje a co teprve stavíme."
-          />
-
-          <div className="mt-16 grid gap-12 md:grid-cols-2 md:gap-16">
+          <SectionHeader tone="dark" eyebrow="Pilotní program" heading="Hledáme hotel, se kterým uděláme další krok" lead="Prototyp si můžete projít už dnes. Skutečný provoz vyžaduje další integrace a smlouvy." />
+          <div className="mt-12 grid gap-12 md:grid-cols-2 md:gap-16">
             <div data-reveal>
-              <h3 className="flex items-center gap-3 text-[12px] font-medium uppercase tracking-[0.18em] text-band-ink-faint">
-                <span aria-hidden className="h-px w-6 bg-accent" />
-                Funguje dnes
-              </h3>
-              <ul className="mt-6 space-y-4 text-[17px] leading-[1.6] text-band-ink-muted">
-                <li>Online check-in na telefonu hosta</li>
-                <li>Ověření totožnosti přes Bank iD</li>
-                <li>Vydání digitálního klíče do Apple Wallet</li>
+              <h3 className="flex items-center gap-3 text-[13px] font-medium uppercase tracking-[0.14em] text-band-ink"><span aria-hidden="true" className="h-px w-6 bg-accent" />Funguje dnes</h3>
+              <ul className="mt-6 space-y-4 text-[17px] leading-[1.65] text-band-ink-muted">
+                <li>Ukázkový check-in se smyšlenou rezervací</li>
+                <li>Bank iD v&nbsp;testovacím prostředí, případně označená simulace bez ověření totožnosti</li>
+                <li>Podepsaný ukázkový průkaz do Apple Wallet při nastavených certifikátech</li>
               </ul>
             </div>
             <div data-reveal>
-              <h3 className="text-[12px] font-medium uppercase tracking-[0.18em] text-band-ink-faint">
-                Stavíme
-              </h3>
-              <ul className="mt-6 space-y-4 text-[17px] leading-[1.6] text-band-ink-muted">
-                <li>
-                  Samotné odemykání dveří — vyžaduje integraci s&nbsp;výrobcem
-                  zámků (Salto, ASSA ABLOY / VingCard, dormakaba)
-                </li>
+              <h3 className="text-[13px] font-medium uppercase tracking-[0.14em] text-band-ink">Stavíme</h3>
+              <ul className="mt-6 space-y-4 text-[17px] leading-[1.65] text-band-ink-muted">
+                <li>Odemykání dveří: vyžaduje obchodní partnerství a&nbsp;integraci s&nbsp;výrobcem zámků (Salto, ASSA ABLOY / VingCard, dormakaba)</li>
                 <li>Napojení na PMS a&nbsp;automatické hlášení přes UbyPort</li>
                 <li>Klíč v&nbsp;Google Wallet</li>
               </ul>
             </div>
           </div>
-
-          <div className="mt-16 border-t border-band-hairline pt-12">
-            <p className="max-w-[52ch] text-[18px] leading-[1.6] text-pretty text-band-ink-muted">
-              Odemykání dveří není otázka kódu, ale smlouvy s&nbsp;výrobcem
-              zámků. S&nbsp;konkrétním hotelem za zády se taková smlouva
-              vyjednává jinak než s&nbsp;prezentací.
-            </p>
-            <div className="mt-9">
-              <Cta href={CONTACT_MAILTO} variant="inverse" external>
-                Napsat nám
-              </Cta>
-            </div>
+          <div className="mt-12 border-t border-band-hairline pt-10">
+            <p className="max-w-[56ch] text-[18px] leading-[1.6] text-band-ink-muted">Odemykání není jen otázka kódu. Bez partnerství s&nbsp;výrobcem zámků nelze vydávat skutečné přístupové klíče. Ukázkový průkaz proto dveře neodemyká.</p>
+            <div className="mt-8"><Cta href={CONTACT_MAILTO} variant="inverse" external>Domluvit ukázku</Cta></div>
           </div>
         </Band>
-
-        {/* ---- S6: quiet close. Also keeps the footer hairline off the
-                 band's bottom edge, where it would read as a mistake. ---- */}
         <Section bordered={false}>
-          <div className="flex flex-col items-center gap-7 text-center">
-            <h2 className="max-w-[18ch] font-serif text-[clamp(1.9rem,4vw,2.6rem)] leading-[1.1] tracking-[-0.018em] text-balance text-ink">
-              Podíváte se na to?
-            </h2>
-            <p className="max-w-[44ch] text-[17px] leading-[1.6] text-pretty text-ink-2">
-              Ukázka trvá minutu. Když bude co řešit, ozve se vám člověk, který
-              to staví.
-            </p>
-            <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+          <div className="max-w-[40rem]">
+            <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] tracking-[-0.018em] text-ink">Projděte si příjezd očima hosta.</h2>
+            <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.65] text-ink-2">Nejlépe na iPhonu, kde si ukázkový průkaz přidáte do Apple Wallet. Na ostatních zařízeních si můžete projít ověření.</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Cta href="/demo">Vyzkoušet demo</Cta>
-              <Cta href={CONTACT_MAILTO} variant="quiet" external>
-                Napsat nám
-              </Cta>
+              <Cta href={CONTACT_MAILTO} variant="quiet" external>Domluvit ukázku</Cta>
             </div>
           </div>
         </Section>
       </main>
-
       <SiteFooter />
     </>
   );
