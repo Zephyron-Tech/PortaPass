@@ -14,6 +14,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.APP_BASE_URL ?? "https://portapass.zephyron.tech"),
   title: "PortaPass",
   description: "Digitální klíč od pokoje",
 };
