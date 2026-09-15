@@ -4,16 +4,45 @@
   --background: #faf9f7;
   --background-top: #f5efe6;
   --foreground: #14120f;
-  --muted: #6f6a63;
-  --hairline: rgba(20, 18, 15, 0.09);
+
+  /* Warm ink ramp. A cool grey ramp (neutral-500/600) on this warm paper
+     ground reads dingy at every weight, which was most of the readability
+     problem. Contrast on #faf9f7: ink-2 ≈ 9.6:1, ink-3 ≈ 4.9:1. */
+  --ink: #14120f;
+  --ink-2: #3c372f;
+  --ink-3: #6b6459;
+
+  --hairline: rgba(20, 18, 15, 0.11);
+  --hairline-strong: rgba(20, 18, 15, 0.18);
+
+  /* Dark band. Deliberately one step warmer/lighter than --foreground: a band
+     in exactly the text colour reads as a hole punched in the page. */
+  --band: #191713;
+  --band-ink: #f5efe6;
+  --band-ink-muted: rgba(245, 239, 230, 0.68);
+  --band-ink-faint: rgba(245, 239, 230, 0.52);
+  --band-hairline: rgba(245, 239, 230, 0.14);
+
+  --accent: #f5c45e;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-band: var(--band);
+  --color-band-ink: var(--band-ink);
+  --color-band-ink-muted: var(--band-ink-muted);
+  --color-band-ink-faint: var(--band-ink-faint);
+  --color-band-hairline: var(--band-hairline);
+  --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-instrument-serif);
+  --font-bankid: var(--font-poppins);
 }
 
 /*
@@ -40,6 +69,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Deep-link targets must clear the header. */
+[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* ---- Load-time entrance (hero only, above the fold) ------------------- */
 @keyframes step-in {
   from {
     opacity: 0;
@@ -63,5 +98,101 @@ body {
   .animate-step-in,
   .animate-rise-in {
     animation: none;
+  }
+}
+
+/* ---- Scroll-driven reveals -------------------------------------------
+ * Progressive enhancement with two strict rules:
+ *
+ * 1. The hidden state (opacity: 0) exists ONLY inside @supports. Firefox
+ *    drops `animation-timeline` at parse time, so if the hidden state were
+ *    declared outside, the element would keep opacity: 0 with no timeline to
+ *    ever raise it — permanently invisible content. Here, unsupported
+ *    browsers simply get no animation and fully opaque text.
+ *
+ * 2. Longhands only, never the `animation` shorthand: the shorthand resets
+ *    animation-timeline to auto and animation-range to normal, silently
+ *    reverting these to a 0s document-timeline animation that flashes at load.
+ *
+ * Note animation-delay is IGNORED on a progress timeline — stagger is done by
+ * offsetting animation-range, not by delay.
+ */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+      animation-name: reveal-rise;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+    }
+
+    [data-reveal-step="1"] {
+      animation-range: entry 8% cover 26%;
+    }
+    [data-reveal-step="2"] {
+      animation-range: entry 14% cover 32%;
+    }
+    [data-reveal-step="3"] {
+      animation-range: entry 20% cover 38%;
+    }
+
+    /* A 9:19.5 device shot is taller than many laptop viewports and would
+       never complete an `entry` range — anchor those to cover instead. */
+    [data-reveal="tall"] {
+      animation-range: cover 2% cover 30%;
+    }
+  }
+}
+
+/* ---- Hero key card: sticky, gently tilting ---------------------------
+ * The timeline is named on the STAGE (which scrolls normally), not on the
+ * card. A view() timeline measured on the sticky card itself would freeze
+ * while the card is stuck, then jump when it unsticks.
+ */
+@keyframes key-card-tilt {
+  from {
+    transform: rotate(-2.75deg) translateY(0.35rem);
+  }
+  46% {
+    transform: rotate(0deg) translateY(0);
+  }
+  to {
+    transform: rotate(4deg) translateY(0.35rem);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+    .hero-stage {
+      view-timeline: --hero-stage block;
+    }
+
+    .hero-card {
+      /* Pivot below the card, so it swings like something hanging rather
+         than spinning about its own centre. */
+      transform-origin: 50% 155%;
+      will-change: transform;
+      animation-name: key-card-tilt;
+      animation-duration: auto;
+      /* linear is non-negotiable on a progress timeline — easing decouples
+         the motion from the finger and reads as lag. */
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --hero-stage;
+      animation-range: contain 0% contain 100%;
+    }
   }
 }

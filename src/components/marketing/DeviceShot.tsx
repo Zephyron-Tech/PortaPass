@@ -16,28 +16,31 @@ export function DeviceShot({
 }: {
   src?: string;
   alt: string;
-  caption: string;
+  caption?: string;
   className?: string;
 }) {
   return (
-    <figure className={className}>
+    <figure className={className} data-reveal="tall">
       <div className="relative aspect-[9/19.5] w-full overflow-hidden rounded-[2rem]">
         {src ? (
           <Image
             src={src}
             alt={alt}
             fill
-            sizes="(min-width: 768px) 30vw, 80vw"
+            sizes="(min-width: 768px) 18rem, 60vw"
+            quality={90}
             className="object-contain"
           />
         ) : (
           <div
             aria-hidden
-            className="h-full w-full rounded-[2rem] border border-dashed border-neutral-900/15 bg-neutral-900/[0.03]"
+            className="h-full w-full rounded-[2rem] border border-dashed border-hairline-strong bg-black/[0.02]"
           />
         )}
       </div>
-      <figcaption className="mt-4 text-center text-[13px] text-neutral-500">{caption}</figcaption>
+      {caption ? (
+        <figcaption className="mt-4 text-center text-[14px] text-ink-3">{caption}</figcaption>
+      ) : null}
     </figure>
   );
 }

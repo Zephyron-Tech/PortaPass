@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PageHeading } from "@/components/AppHeader";
 import { AppleWalletButton } from "@/components/AppleWalletButton";
+import { BankIdButton } from "@/components/bankid/BankIdButton";
 import { KeyCard } from "@/components/KeyCard";
 import { Screen } from "@/components/Screen";
 import type { MockBooking } from "@/lib/mockData";
@@ -115,13 +116,8 @@ export default function CheckinFlow({
       <div className="mt-8">
         {step === "intro" && (
           <div key="intro" className="animate-step-in">
-            <button
-              onClick={bankIdEnabled ? startBankId : mockVerify}
-              className="flex h-[54px] w-full select-none items-center justify-center rounded-2xl bg-neutral-900 text-[16px] font-medium text-white transition duration-150 ease-out active:scale-[0.975] active:bg-neutral-800"
-            >
-              Ověřit přes Bank iD
-            </button>
-            <p className="mt-4 text-center text-[13px] text-neutral-400">
+            <BankIdButton onClick={bankIdEnabled ? startBankId : mockVerify} />
+            <p className="mt-4 text-center text-[13px] text-ink-3">
               Bezpečné ověření totožnosti bankovní identitou
             </p>
           </div>
@@ -141,12 +137,9 @@ export default function CheckinFlow({
             <div className="rounded-2xl border border-red-900/10 bg-red-50/60 px-5 py-4">
               <p className="text-[15px] leading-relaxed text-red-900/80">{errorText}</p>
             </div>
-            <button
-              onClick={bankIdEnabled ? startBankId : mockVerify}
-              className="mt-4 flex h-[54px] w-full select-none items-center justify-center rounded-2xl bg-neutral-900 text-[16px] font-medium text-white transition duration-150 ease-out active:scale-[0.975] active:bg-neutral-800"
-            >
-              Zkusit znovu
-            </button>
+            <div className="mt-4">
+              <BankIdButton onClick={bankIdEnabled ? startBankId : mockVerify} />
+            </div>
           </div>
         )}
 

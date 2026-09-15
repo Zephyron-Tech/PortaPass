@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Instrument_Serif } from "next/font/google";
+import { Geist, Instrument_Serif, Poppins } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +10,14 @@ const geistSans = Geist({
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   weight: "400",
+  subsets: ["latin", "latin-ext"],
+});
+
+// Bank iD's brand font. Loaded only so Bank iD surfaces can be rendered to
+// their own spec — the rest of the site stays on Geist.
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "500"],
   subsets: ["latin", "latin-ext"],
 });
 
@@ -33,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="cs"
-      className={`${geistSans.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${instrumentSerif.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
     </html>

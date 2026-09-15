@@ -1,0 +1,7 @@
+<!-- Re-cut of brand/portapass-logo-1024.png for small sizes. The source has
+     ~37% padding and a glyph filling ~43% of its height, which turns to mush
+     at 16px; here the keyhole fills ~67% and the stem stays above 2px. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="PortaPass">
+  <rect width="32" height="32" rx="7" fill="#141210"/>
+  <path fill="#f5c45e" d="M16 5.2a5.6 5.6 0 0 0-2.6 10.56L11.3 26.8h9.4l-2.1-11.04A5.6 5.6 0 0 0 16 5.2Z"/>
+</svg>

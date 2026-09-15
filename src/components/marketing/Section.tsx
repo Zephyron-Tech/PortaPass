@@ -1,49 +1,99 @@
 import type { ReactNode } from "react";
 import { Container } from "@/components/marketing/Container";
 
-export function Eyebrow({ children }: { children: ReactNode }) {
+export function Eyebrow({
+  children,
+  tone = "light",
+}: {
+  children: ReactNode;
+  tone?: "light" | "dark";
+}) {
   return (
-    <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-neutral-500">
+    <p
+      className={`text-[12px] font-medium uppercase tracking-[0.18em] ${
+        tone === "dark" ? "text-band-ink-faint" : "text-ink-3"
+      }`}
+    >
       {children}
     </p>
   );
 }
 
-export function SectionHeading({ children }: { children: ReactNode }) {
+export function SectionHeading({
+  children,
+  tone = "light",
+}: {
+  children: ReactNode;
+  tone?: "light" | "dark";
+}) {
   return (
-    <h2 className="mt-4 max-w-[22ch] font-serif text-[1.85rem] leading-[1.15] tracking-[-0.01em] text-neutral-900 md:text-[2.4rem]">
+    <h2
+      className={`mt-4 max-w-[20ch] font-serif text-[clamp(2rem,4.6vw,3rem)] leading-[1.08] tracking-[-0.018em] text-balance ${
+        tone === "dark" ? "text-band-ink" : "text-ink"
+      }`}
+    >
       {children}
     </h2>
   );
 }
 
-export function Section({
-  id,
+/** The eyebrow / heading / lead trio — the one thing genuinely shared. */
+export function SectionHeader({
   eyebrow,
   heading,
   lead,
-  children,
-  bordered = true,
+  tone = "light",
 }: {
-  id?: string;
   eyebrow?: string;
   heading?: string;
   lead?: string;
-  children?: ReactNode;
-  bordered?: boolean;
+  tone?: "light" | "dark";
 }) {
   return (
-    <section id={id} className={bordered ? "border-t border-neutral-900/10" : undefined}>
-      <Container className="py-20 md:py-28">
-        {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        {heading ? <SectionHeading>{heading}</SectionHeading> : null}
-        {lead ? (
-          <p className="mt-5 max-w-[52ch] text-[16px] leading-relaxed text-neutral-600 md:text-[17px]">
-            {lead}
-          </p>
-        ) : null}
-        {children}
-      </Container>
+    <>
+      {eyebrow ? <Eyebrow tone={tone}>{eyebrow}</Eyebrow> : null}
+      {heading ? <SectionHeading tone={tone}>{heading}</SectionHeading> : null}
+      {lead ? (
+        <p
+          className={`mt-6 max-w-[46ch] text-[18px] leading-[1.55] text-pretty md:text-[20px] ${
+            tone === "dark" ? "text-band-ink-muted" : "text-ink-2"
+          }`}
+        >
+          {lead}
+        </p>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Spacing + hairline primitive. Deliberately has no opinion about content —
+ * each section writes its own grid, which is what stops them all looking the
+ * same.
+ */
+export function Section({
+  id,
+  children,
+  bordered = true,
+  className = "",
+}: {
+  id?: string;
+  children: ReactNode;
+  bordered?: boolean;
+  className?: string;
+}) {
+  return (
+    <section id={id} className={bordered ? "border-t border-hairline" : undefined}>
+      <Container className={`py-20 md:py-28 ${className}`}>{children}</Container>
+    </section>
+  );
+}
+
+/** Full-bleed dark band. The <section> is already edge-to-edge, so no breakout. */
+export function Band({ id, children }: { id?: string; children: ReactNode }) {
+  return (
+    <section id={id} className="bg-band">
+      <Container className="py-24 md:py-32">{children}</Container>
     </section>
   );
 }
