@@ -16,6 +16,13 @@ const stepIndex: Record<Step, number> = {
   error: 0,
 };
 
+const failureMessages: Record<string, string> = {
+  declined: "Ověření bylo v bance zrušeno. Zkuste to prosím znovu.",
+  booking: "K tomuto odkazu se nepodařilo najít rezervaci.",
+  state: "Ověření vypršelo. Začněte prosím znovu.",
+  session: "Ověření vypršelo. Začněte prosím znovu.",
+};
+
 function Progress({ step }: { step: Step }) {
   const current = stepIndex[step];
   return (
@@ -32,27 +39,60 @@ function Progress({ step }: { step: Step }) {
   );
 }
 
-export default function CheckinFlow({ roomId, token }: { roomId: string; token: string }) {
-  const [step, setStep] = useState<Step>("intro");
-  const [booking, setBooking] = useState<MockBooking | null>(null);
+export default function CheckinFlow({
+  roomId,
+  token,
+  bankIdEnabled,
+  verifiedBooking,
+  verifiedName,
+  failureReason,
+}: {
+  roomId: string;
+  token: string;
+  bankIdEnabled: boolean;
+  verifiedBooking: MockBooking | null;
+  verifiedName: string | null;
+  failureReason: string | null;
+}) {
+  const [step, setStep] = useState<Step>(() => {
+    if (verifiedBooking) return "verified";
+    if (failureReason) return "error";
+    return "intro";
+  });
+  const [booking, setBooking] = useState<MockBooking | null>(verifiedBooking);
+  const [errorText, setErrorText] = useState<string | null>(
+    failureReason
+      ? (failureMessages[failureReason] ??
+        "Ověření se nezdařilo. Zkuste to prosím znovu.")
+      : null,
+  );
 
-  async function handleVerify() {
+  // Real BankID: hand off to the bank. Full-page navigation, no fetch.
+  function startBankId() {
+    setStep("verifying");
+    const url = new URL("/api/auth/bankid/start", window.location.origin);
+    url.searchParams.set("roomId", roomId);
+    url.searchParams.set("token", token);
+    window.location.assign(url.toString());
+  }
+
+  // Fallback used when BankID credentials aren't configured, so the demo
+  // still runs end to end.
+  async function mockVerify() {
     setStep("verifying");
     try {
-      // Simulace odezvy BankID.
       await new Promise((r) => setTimeout(r, 1800));
-
       const res = await fetch("/api/checkin/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId, token }),
       });
-
       if (!res.ok) throw new Error("verification failed");
       const data = await res.json();
       setBooking(data.booking);
       setStep("verified");
     } catch {
+      setErrorText("Rezervaci se nepodařilo najít. Zkontrolujte odkaz nebo kontaktujte recepci hotelu.");
       setStep("error");
     }
   }
@@ -76,10 +116,10 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
         {step === "intro" && (
           <div key="intro" className="animate-step-in">
             <button
-              onClick={handleVerify}
+              onClick={bankIdEnabled ? startBankId : mockVerify}
               className="flex h-[54px] w-full select-none items-center justify-center rounded-2xl bg-neutral-900 text-[16px] font-medium text-white transition duration-150 ease-out active:scale-[0.975] active:bg-neutral-800"
             >
-              Ověřit přes BankID
+              Ověřit přes Bank iD
             </button>
             <p className="mt-4 text-center text-[13px] text-neutral-400">
               Bezpečné ověření totožnosti bankovní identitou
@@ -90,24 +130,33 @@ export default function CheckinFlow({ roomId, token }: { roomId: string; token: 
         {step === "verifying" && (
           <div key="verifying" className="animate-step-in flex items-center gap-3 py-2">
             <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-[1.5px] border-neutral-300 border-t-neutral-900" />
-            <p className="text-[15px] text-neutral-500">Ověřujeme vaši totožnost…</p>
+            <p className="text-[15px] text-neutral-500">
+              {bankIdEnabled ? "Přesměrováváme vás do banky…" : "Ověřujeme vaši totožnost…"}
+            </p>
           </div>
         )}
 
         {step === "error" && (
-          <div
-            key="error"
-            className="animate-step-in rounded-2xl border border-red-900/10 bg-red-50/60 px-5 py-4"
-          >
-            <p className="text-[15px] leading-relaxed text-red-900/80">
-              Rezervaci se nepodařilo najít. Zkontrolujte odkaz nebo kontaktujte
-              recepci hotelu.
-            </p>
+          <div key="error" className="animate-step-in">
+            <div className="rounded-2xl border border-red-900/10 bg-red-50/60 px-5 py-4">
+              <p className="text-[15px] leading-relaxed text-red-900/80">{errorText}</p>
+            </div>
+            <button
+              onClick={bankIdEnabled ? startBankId : mockVerify}
+              className="mt-4 flex h-[54px] w-full select-none items-center justify-center rounded-2xl bg-neutral-900 text-[16px] font-medium text-white transition duration-150 ease-out active:scale-[0.975] active:bg-neutral-800"
+            >
+              Zkusit znovu
+            </button>
           </div>
         )}
 
         {step === "verified" && booking && (
           <div key="verified" className="animate-step-in">
+            {verifiedName && (
+              <p className="mb-5 text-[14px] text-neutral-500">
+                Totožnost ověřena přes Bank iD — <span className="text-neutral-800">{verifiedName}</span>
+              </p>
+            )}
             <KeyCard booking={booking} />
             <div className="mt-7">
               <AppleWalletButton
