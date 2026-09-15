@@ -1,7 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { IdentificationCard, DeviceMobileCamera, LockKeyOpen, ArrowRight } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import {
+  IdentificationCard,
+  DeviceMobileCamera,
+  LockKeyOpen,
+  ArrowRight,
+  CircleNotch,
+} from "@phosphor-icons/react";
 import { AppHeader } from "@/components/AppHeader";
 
 const steps = [
@@ -11,6 +18,9 @@ const steps = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   return (
     <main
       className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-1 flex-col justify-start gap-8 px-5 py-10"
@@ -19,14 +29,19 @@ export default function Home() {
         paddingBottom: "max(2rem, env(safe-area-inset-bottom))",
       }}
     >
-      <AppHeader title="Digitální klíč od pokoje" />
+      <div className="animate-rise-in">
+        <AppHeader title="Digitální klíč od pokoje" />
+      </div>
 
-      <p className="-mt-4 text-base leading-relaxed text-neutral-500">
+      <p className="animate-rise-in -mt-4 text-base leading-relaxed text-neutral-500" style={{ animationDelay: "60ms" }}>
         Ukázka odkazu, který host dostane e-mailem nebo SMS ještě před
         příjezdem do hotelu.
       </p>
 
-      <div className="flex flex-col gap-1 rounded-3xl border border-white/60 bg-white/50 p-2 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_16px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+      <div
+        className="animate-rise-in flex flex-col gap-1 rounded-3xl border border-white/60 bg-white/50 p-2 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_16px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+        style={{ animationDelay: "120ms" }}
+      >
         {steps.map(({ icon: Icon, label }, i) => (
           <div
             key={label}
@@ -45,12 +60,15 @@ export default function Home() {
         ))}
       </div>
 
-      <Link
-        href="/checkin/room-101?token=abc"
-        className="flex items-center justify-center rounded-2xl bg-neutral-900 py-4 text-center text-base font-medium text-white shadow-[0_8px_24px_-8px_rgba(0,0,0,0.35)] transition active:scale-[0.98] active:bg-neutral-800"
+      <button
+        onClick={() => startTransition(() => router.push("/checkin/room-101?token=abc"))}
+        disabled={isPending}
+        className="animate-rise-in flex items-center justify-center gap-2 rounded-2xl bg-neutral-900 py-4 text-center text-base font-medium text-white shadow-[0_8px_24px_-8px_rgba(0,0,0,0.35)] transition-all duration-150 active:scale-[0.96] active:bg-neutral-800 disabled:opacity-70"
+        style={{ animationDelay: "180ms" }}
       >
-        Otevřít ukázkový check-in
-      </Link>
+        {isPending && <CircleNotch size={18} weight="bold" className="animate-spin" />}
+        {isPending ? "Otevírání…" : "Otevřít ukázkový check-in"}
+      </button>
     </main>
   );
 }

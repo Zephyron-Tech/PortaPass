@@ -32,13 +32,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-[#faf9f7] text-[#1c1a17]">
         {/* Fixed to the viewport (not page content) so it can never clip or
-            show a hard edge as Safari's dynamic toolbar resizes the viewport. */}
+            show a hard edge as Safari's dynamic toolbar resizes the viewport.
+            Fades to a zero-alpha version of the SAME color (not the keyword
+            "transparent", which is black-alpha-0 and causes a muddy gray
+            ring mid-fade when interpolated against a warm color). */}
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(circle at 50% 0%, rgba(202,138,4,0.12), transparent 60%)",
+              "radial-gradient(circle at 50% 0%, rgba(202,138,4,0.14), rgba(202,138,4,0) 65%)",
           }}
         />
         {children}
