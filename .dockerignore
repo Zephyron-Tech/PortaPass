@@ -1,0 +1,7 @@
+node_modules
+.next
+.git
+certs/*.pem
+certs/*.p12
+.env
+.env.local

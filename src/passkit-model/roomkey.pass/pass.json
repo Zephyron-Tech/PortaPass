@@ -1,0 +1,23 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.tech.zephyron.portapass.roomkey",
+  "teamIdentifier": "4BMFM373A5",
+  "organizationName": "PortaPass",
+  "description": "PortaPass digital room key",
+  "backgroundColor": "rgb(20, 24, 33)",
+  "foregroundColor": "rgb(255, 255, 255)",
+  "labelColor": "rgb(160, 174, 192)",
+  "generic": {
+    "headerFields": [],
+    "primaryFields": [],
+    "secondaryFields": [],
+    "auxiliaryFields": [],
+    "backFields": [
+      {
+        "key": "disclaimer",
+        "label": "PROOF OF CONCEPT",
+        "value": "This is a demo pass generated for evaluation purposes. NFC unlock data is a placeholder and does not open a real lock."
+      }
+    ]
+  }
+}
