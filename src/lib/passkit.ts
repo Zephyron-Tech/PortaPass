@@ -79,16 +79,18 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
   );
 
   pass.headerFields.push({
-    key: "room",
-    label: "POKOJ",
-    value: booking.roomNumber,
-  });
-
-  // Sits over the strip image.
-  pass.primaryFields.push({
     key: "hotel",
     label: "HOTEL",
     value: booking.hotelName,
+  });
+
+  // The primary field renders very large over the strip, so it holds the
+  // short value. A long hotel name here overflowed into the contactless
+  // mark; the room number is the hero on the web card anyway.
+  pass.primaryFields.push({
+    key: "room",
+    label: "POKOJ",
+    value: booking.roomNumber,
   });
 
   // storeCard allows four secondary + auxiliary fields in total. Dates are

@@ -160,7 +160,9 @@ export default function CheckinFlow({
             <KeyCard booking={booking} />
             <div className="mt-7">
               <AppleWalletButton
-                href={`/api/pass?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(token)}`}
+                href={`/api/pass/${encodeURIComponent(roomId)}/${encodeURIComponent(
+                  token,
+                )}/klic-${encodeURIComponent(booking.roomNumber)}.pkpass`}
               />
               <p className="mt-4 text-center text-[13px] text-neutral-400">
                 Klíč se uloží do Apple Wallet a zůstane dostupný i offline.
