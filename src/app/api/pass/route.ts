@@ -14,7 +14,12 @@ async function respondWithPass(roomId: string | null, token: string | null) {
       status: 200,
       headers: {
         "Content-Type": "application/vnd.apple.pkpass",
-        "Content-Disposition": `attachment; filename="room-${booking.roomNumber}.pkpass"`,
+        // "inline", not "attachment": on iOS Safari, "attachment" forces the
+        // file through Safari's own Downloads manager sheet (the "Add to
+        // Wallet / Preview / Cancel" popup) instead of handing off straight
+        // to the native Wallet add screen. Chrome on iOS never had this
+        // issue since it doesn't use Safari's download manager.
+        "Content-Disposition": `inline; filename="room-${booking.roomNumber}.pkpass"`,
       },
     });
   } catch (err) {
