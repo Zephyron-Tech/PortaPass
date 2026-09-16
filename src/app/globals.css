@@ -96,27 +96,43 @@ body {
   font-size: 1rem;
   line-height: 1.5;
   outline: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 .lead-input::placeholder { color: var(--ink-3); }
 .lead-input[aria-invalid="true"] { border-width: 2px; }
 textarea.lead-input { min-height: 8rem; resize: vertical; }
 .lead-form .app-button:focus-visible { outline-color: var(--ink); }
 
-/* Focus state for the lead form's own fields: a crisp border plus a soft
-   amber ring (the same accent used sparingly elsewhere as the one branded
-   highlight) that blooms outward on entry rather than appearing instantly. */
+/* Focus state for the lead form's own fields: a crisp border, a soft amber
+   ring (the one accent colour used sparingly elsewhere), and a slight lift
+   off the page — the field visibly rises toward the user rather than just
+   changing colour. Transform + shadow animate together on entry; the base
+   transition above eases the same properties back down on blur. */
 .lead-input:focus-visible {
   border-color: var(--ink);
-  box-shadow: 0 0 0 4px rgba(245, 196, 94, 0.28);
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 4px rgba(245, 196, 94, 0.28),
+    0 8px 16px -10px rgba(20, 18, 15, 0.35);
   animation: lead-input-focus-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 @keyframes lead-input-focus-in {
-  from { box-shadow: 0 0 0 0 rgba(245, 196, 94, 0.45); }
-  to { box-shadow: 0 0 0 4px rgba(245, 196, 94, 0.28); }
+  from {
+    transform: translateY(0);
+    box-shadow:
+      0 0 0 0 rgba(245, 196, 94, 0.45),
+      0 0 0 0 rgba(20, 18, 15, 0);
+  }
+  to {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 4px rgba(245, 196, 94, 0.28),
+      0 8px 16px -10px rgba(20, 18, 15, 0.35);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .lead-input:focus-visible { animation: none; }
+  .lead-input { transition: border-color 150ms ease, box-shadow 150ms ease; }
 }
 
 .guest-screen {
