@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Wordmark } from "@/components/AppHeader";
 import { Screen } from "@/components/Screen";
@@ -26,7 +27,16 @@ export function LegalPage({
 }) {
   return (
     <Screen>
-      <Wordmark />
+      <Wordmark
+        aside={
+          <Link
+            href="/"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4 hover:text-ink"
+          >
+            Zpět na web
+          </Link>
+        }
+      />
       <h1 className="mt-6 font-serif text-[2.1rem] leading-[1.1] tracking-[-0.01em] text-ink">
         {title}
       </h1>
