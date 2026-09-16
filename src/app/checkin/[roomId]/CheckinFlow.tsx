@@ -109,7 +109,8 @@ export default function CheckinFlow({
     const url = new URL("/api/auth/bankid/start", window.location.origin);
     url.searchParams.set("roomId", roomId);
     url.searchParams.set("token", token);
-    window.location.assign(url.toString());
+    // Let the branded control render its pending state before full navigation.
+    window.setTimeout(() => window.location.assign(url.toString()), 180);
   }
 
   async function mockVerify() {
@@ -251,14 +252,13 @@ export default function CheckinFlow({
             />
         ) : !validLink ? (
           <Link href="/demo" transitionTypes={["nav-back"]} className="app-button w-full">Zpět na ukázku</Link>
-        ) : pending ? (
+        ) : pending && !bankIdEnabled ? (
           <button type="button" disabled className="app-button w-full">
             {bankIdEnabled ? "Přesměrování do Bank iD…" : "Probíhá simulace…"}
           </button>
         ) : bankIdEnabled ? (
           <div className="rounded-2xl border border-hairline-strong p-4">
-            <BankIdButton onClick={startBankId} />
-            <p className="mt-3 text-center text-[13px] text-ink-3">Vzhled tlačítka vyžaduje styleguide Bank iD.</p>
+            <BankIdButton onClick={startBankId} pending={pending} />
           </div>
         ) : (
           <button type="button" onClick={mockVerify} className="app-button w-full">

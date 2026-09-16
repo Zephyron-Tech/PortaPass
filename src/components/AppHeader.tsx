@@ -1,11 +1,10 @@
 import type { ReactNode, Ref } from "react";
+import Image from "next/image";
 
 export function Wordmark({ aside }: { aside?: ReactNode }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-      <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-ink-3">
-        PortaPass
-      </span>
+      <Image src="/brand/PortaPass Logo.png" alt="PortaPass" width={229} height={83} className="h-auto w-[110px]" priority />
       {aside ? <span className="text-[13px] text-ink-2">{aside}</span> : null}
     </div>
   );

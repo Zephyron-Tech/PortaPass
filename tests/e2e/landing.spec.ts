@@ -107,13 +107,8 @@ test("footer destinations and keyboard focus", async ({ page, browserName }) => 
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(heading);
     await page.goto("/");
   }
-  const contact = page.getByRole("contentinfo").getByRole("link", { name: "hello@zephyron.tech" });
-  const href = await contact.getAttribute("href");
-  expect(href).not.toBeNull();
-  const mail = new URL(href!);
-  expect(mail.protocol).toBe("mailto:");
-  expect(mail.pathname).toBe("hello@zephyron.tech");
-  expect(mail.searchParams.get("subject")).toBe("PortaPass – pilotní program");
+  const contact = page.getByRole("contentinfo").getByRole("button", { name: "Kopírovat e-mail hello@zephyron.tech" });
+  await expect(contact).toHaveText("hello@zephyron.tech");
 });
 
 test("CTA variants preserve primary, quiet and inverse hierarchy", async ({ page }) => {

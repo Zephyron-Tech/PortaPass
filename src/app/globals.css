@@ -84,6 +84,19 @@ body {
   transition: outline-color 150ms ease;
 }
 
+@keyframes copy-email-sweep {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(160%); }
+}
+
+.copy-email-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 5%, rgba(245, 196, 94, 0.4) 50%, transparent 95%);
+  animation: copy-email-sweep 700ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
 .lead-input {
   display: block;
   width: 100%;
@@ -328,6 +341,12 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   scroll-margin-top: 6rem;
 }
 
+/* The anchor is on Band, but its heading sits behind generous section padding.
+   Pull target above viewport so clicking from hero lands on meaningful copy. */
+#pilot {
+  scroll-margin-top: -5rem;
+}
+
 /* Arrival cue for #kontakt: confirms the smooth scroll actually landed
    somewhere, rather than the CTA click appearing to do nothing for the
    ~600ms the scroll takes. Disabled automatically by the reduced-motion
@@ -518,13 +537,8 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   }
 }
 
-/* Page-to-page navigation (home <-> /demo) uses React's ViewTransition,
-   which drives the browser's View Transitions API. Old content slides out
-   and fades, new content slides in and fades, so /demo doesn't just pop in
-   as an unrelated page. Direction is tagged per-link via transitionTypes
-   ("nav-forward" going to /demo, "nav-back" coming back) — see page.tsx and
-   demo/page.tsx. Without browser support this simply does nothing; content
-   swaps instantly as it always did. */
+/* Page-to-page navigation (home <-> /demo) uses a sequential fade. Sliding
+   both snapshots exposed both pages at once on slower mobile compositors. */
 ::view-transition {
   /* Restores clicks during the ~350ms transition, which the overlay would
      otherwise swallow. */
@@ -532,16 +546,16 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 }
 
 ::view-transition-old(.nav-forward) {
-  animation: 150ms ease-in both view-fade-out, 360ms ease-in-out both view-slide-out-left;
+  animation: 120ms ease-in both view-fade-out;
 }
 ::view-transition-new(.nav-forward) {
-  animation: 210ms ease-out 150ms both view-fade-in, 360ms ease-in-out both view-slide-in-right;
+  animation: 180ms ease-out 120ms both view-fade-in;
 }
 ::view-transition-old(.nav-back) {
-  animation: 150ms ease-in both view-fade-out, 360ms ease-in-out both view-slide-out-right;
+  animation: 120ms ease-in both view-fade-out;
 }
 ::view-transition-new(.nav-back) {
-  animation: 210ms ease-out 150ms both view-fade-in, 360ms ease-in-out both view-slide-in-left;
+  animation: 180ms ease-out 120ms both view-fade-in;
 }
 
 @keyframes view-fade-out {
@@ -551,22 +565,6 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 @keyframes view-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-@keyframes view-slide-out-left {
-  from { translate: 0; }
-  to { translate: -48px; }
-}
-@keyframes view-slide-in-right {
-  from { translate: 48px; }
-  to { translate: 0; }
-}
-@keyframes view-slide-out-right {
-  from { translate: 0; }
-  to { translate: 48px; }
-}
-@keyframes view-slide-in-left {
-  from { translate: -48px; }
-  to { translate: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

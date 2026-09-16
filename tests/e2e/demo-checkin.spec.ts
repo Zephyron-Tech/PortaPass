@@ -350,6 +350,8 @@ for (const width of widths) {
     expect(await readMetrics()).toEqual(before);
     await page.screenshot({ path: testInfo.outputPath("bankid-active.png"), fullPage: true });
     await page.mouse.up();
+    await expect(button).toHaveText("Přesměrování…");
+    await expect(button).toBeDisabled();
     await expect(page).toHaveTitle("BankID start intercepted");
     expect(starts).toHaveLength(1);
     expect(new URL(starts[0]).searchParams.get("roomId")).toBe("room-101");
