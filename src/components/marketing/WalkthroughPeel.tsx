@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { animate, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import { BankIdLogo } from "@/components/bankid/BankIdLogo";
 import { Cta } from "@/components/marketing/Cta";
 import { DeviceShot } from "@/components/marketing/DeviceShot";
@@ -100,6 +100,123 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
     if (next !== current) setCurrent(next);
   });
 
+  useEffect(() => {
+    const element = target.current;
+    if (!active || !element) return;
+    const section = element;
+    let animation: ReturnType<typeof animate> | undefined;
+    let lastWheel = -Infinity;
+    let intent = 0;
+    let entryGesture = false;
+    let previousDelta = 0;
+    let decelerated = false;
+
+    function cancel() {
+      animation?.stop();
+      animation = undefined;
+      intent = 0;
+      entryGesture = false;
+    }
+
+    function settle(destination: number, arrival = false) {
+      intent = 0;
+      const from = window.scrollY;
+      // Cosine easing peaks at PI/2 times its average speed. Include that
+      // factor so even a tall viewport cannot exceed 650 CSS pixels/second.
+      const duration = arrival
+        ? Math.min(0.45, Math.max(0.18, Math.abs(destination - from) / 1600))
+        : Math.max(1.15, Math.abs(destination - from) * Math.PI / (2 * 650));
+      animation = animate(from, destination, {
+        duration,
+        ease: (t) => (1 - Math.cos(Math.PI * t)) / 2,
+        onUpdate: (top) => window.scrollTo({ top, behavior: "instant" }),
+        onComplete: () => {
+          animation = undefined;
+          intent = 0;
+        },
+      });
+    }
+
+    function advance(event: WheelEvent) {
+      // Preserve zoom, horizontal gestures, and scrollable/editor controls.
+      if (event.ctrlKey || event.metaKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+      if (event.target instanceof HTMLElement) {
+        if (event.target.closest("input, textarea, select, [contenteditable=true]")) return;
+        for (let node: HTMLElement | null = event.target; node && node !== document.body; node = node.parentElement) {
+          if (/(auto|scroll)/.test(getComputedStyle(node).overflowY) && node.scrollHeight > node.clientHeight) return;
+        }
+      }
+      const now = performance.now();
+      const gap = now - lastWheel;
+      const freshGesture = now - lastWheel > 320;
+      lastWheel = now;
+      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
+      if (event.deltaY <= 0) {
+        cancel();
+        return;
+      }
+      const renewedImpulse = decelerated && delta >= 24 && delta > previousDelta * 1.8;
+      if (delta < previousDelta * 0.8) decelerated = true;
+      previousDelta = delta;
+      if (animation) {
+        event.preventDefault();
+        return;
+      }
+      // Only entry consumes the arriving gesture. A short pause or a new
+      // acceleration after a decaying tail re-arms it without a long lockout.
+      if (entryGesture) {
+        if (gap < 180 && !renewedImpulse) {
+          event.preventDefault();
+          return;
+        }
+        entryGesture = false;
+        intent = 0;
+        decelerated = false;
+      }
+      if (freshGesture) intent = 0;
+      const rect = section.getBoundingClientRect();
+      const start = rect.top + scrollY;
+      // Catch the gesture before it crosses the stage, rather than rewinding
+      // after the first card has already peeled away.
+      if (rect.top > 1 && rect.top <= delta + 16) {
+        event.preventDefault();
+        entryGesture = true;
+        decelerated = false;
+        settle(start, true);
+        return;
+      }
+      if (rect.top > 1 || rect.bottom < innerHeight) { intent = 0; return; }
+      const progress = -rect.top / (section.clientHeight - innerHeight);
+      const destination = progress < 0.339 ? 0.34 : progress < 0.779 ? 0.78 : null;
+      if (destination === null) return;
+
+      intent += delta;
+      // Do not let a single large wheel packet skip an entire transition.
+      if (intent < 180) return;
+      event.preventDefault();
+      // The hold intervals are visually identical. Skip their remaining
+      // distance so confirmed input immediately produces visible movement.
+      const peelStart = destination === 0.34 ? 0.16 : 0.58;
+      const distance = section.clientHeight - innerHeight;
+      if (progress < peelStart) window.scrollTo({ top: start + distance * peelStart, behavior: "instant" });
+      settle(start + distance * destination);
+    }
+
+    window.addEventListener("wheel", advance, { passive: false });
+    window.addEventListener("pointerdown", cancel);
+    window.addEventListener("touchstart", cancel, { passive: true });
+    window.addEventListener("keydown", cancel);
+    window.addEventListener("resize", cancel);
+    return () => {
+      cancel();
+      window.removeEventListener("wheel", advance);
+      window.removeEventListener("pointerdown", cancel);
+      window.removeEventListener("touchstart", cancel);
+      window.removeEventListener("keydown", cancel);
+      window.removeEventListener("resize", cancel);
+    };
+  }, [active, scrollYProgress]);
+
   return (
     <div ref={target} className="walkthrough-peel" data-enhanced={active}>
       <div className="walkthrough-peel-sticky">
@@ -112,7 +229,7 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
             <div className="walkthrough-peel-track">
               {steps.map((step, index) => <span key={step.title} data-current={current === index} />)}
             </div>
-            <span>Pokračujte posunutím</span>
+            <span>Posunutím pokračujete</span>
           </div>
         ) : null}
       </div>

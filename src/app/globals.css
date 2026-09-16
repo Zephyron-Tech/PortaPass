@@ -286,7 +286,7 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 .hero-card-scene, .hero-card { position: relative; aspect-ratio: 1.586; }
 .hero-card-back { display: none; }
 .hero-reasons { margin-top: 1rem; }
-.walkthrough-peel { margin-top: 3.5rem; }
+.walkthrough-peel { margin-top: 2rem; }
 .walkthrough-peel-scene { display: grid; gap: 4rem; }
 .walkthrough-peel-content { display: grid; align-items: center; gap: 2rem; }
 .walkthrough-copy { min-width: 0; }
