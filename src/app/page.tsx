@@ -12,7 +12,7 @@ import { WalkthroughPeel, type WalkthroughStep } from "@/components/marketing/Wa
 import { findBookingByToken } from "@/lib/mockData";
 
 export const metadata: Metadata = {
-  title: "Online check-in pro hotely",
+  title: "Online check-in pro hotely | PortaPass",
   description: "PortaPass zjednodušuje příjezd hostů: online check-in, ověření přes Bank iD a digitální klíč v Apple Wallet.",
   alternates: { canonical: "/" },
   openGraph: {
