@@ -22,7 +22,7 @@ export function AppleWalletButton({ href }: { href: string }) {
         timer.current = window.setTimeout(() => setOpening(false), 2400);
       }}
       aria-live="polite"
-      className="app-button flex min-h-[54px] w-full select-none items-center justify-center gap-[7px] rounded-2xl bg-black px-3 text-white transition duration-150 ease-out active:scale-[0.975] active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf9f7]"
+      className="app-button flex min-h-[54px] w-full select-none items-center justify-center gap-[7px] rounded-2xl bg-black px-3 text-white transition duration-150 ease-out hover:bg-neutral-800 active:scale-[0.975] active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf9f7]"
     >
       {/* `leading-none` on the label makes its line box shorter than the
           font's content area (negative half-leading), which pulls the text

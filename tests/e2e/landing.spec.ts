@@ -126,6 +126,18 @@ test("CTA variants preserve primary, quiet and inverse hierarchy", async ({ page
   await expect(inverse).toHaveCSS("color", "rgb(20, 18, 15)");
 });
 
+test("custom controls have branded selection and hover feedback", async ({ page }) => {
+  await page.goto("/");
+  const selection = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement, "::selection");
+    return { background: style.backgroundColor, color: style.color };
+  });
+  expect(selection).toEqual({ background: "rgb(245, 196, 94)", color: "rgb(20, 18, 15)" });
+  const button = page.locator(".hero-actions a").first();
+  await button.hover();
+  await expect(button).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, -2)");
+});
+
 test("device slots reserve the same bounds when an image arrives", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

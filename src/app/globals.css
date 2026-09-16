@@ -84,6 +84,16 @@ body {
   transition: outline-color 150ms ease;
 }
 
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+::-moz-selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
 @keyframes copy-email-sweep {
   from { transform: translateX(-120%); }
   to { transform: translateX(160%); }
@@ -218,8 +228,19 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 .app-button:focus-visible { outline-color: var(--ink); }
 .app-button:disabled { cursor: wait; }
 .app-button:active:not(:disabled) { background: var(--ink-2); transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .app-button:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -14px rgba(20, 18, 15, 0.55);
+  }
+  .app-button:not(:disabled):hover:active {
+    transform: scale(0.97);
+    box-shadow: none;
+  }
+  .copy-email-button:hover svg { transform: translateX(2px); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .app-button { transition: background 150ms ease; }
+  .app-button { transition: background 150ms ease, box-shadow 150ms ease; }
   .app-button:active:not(:disabled) { transform: none; }
 }
 
