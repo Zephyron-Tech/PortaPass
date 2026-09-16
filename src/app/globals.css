@@ -505,3 +505,63 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
     }
   }
 }
+
+/* Page-to-page navigation (home <-> /demo) uses React's ViewTransition,
+   which drives the browser's View Transitions API. Old content slides out
+   and fades, new content slides in and fades, so /demo doesn't just pop in
+   as an unrelated page. Direction is tagged per-link via transitionTypes
+   ("nav-forward" going to /demo, "nav-back" coming back) — see page.tsx and
+   demo/page.tsx. Without browser support this simply does nothing; content
+   swaps instantly as it always did. */
+::view-transition {
+  /* Restores clicks during the ~350ms transition, which the overlay would
+     otherwise swallow. */
+  pointer-events: none;
+}
+
+::view-transition-old(.nav-forward) {
+  animation: 150ms ease-in both view-fade-out, 360ms ease-in-out both view-slide-out-left;
+}
+::view-transition-new(.nav-forward) {
+  animation: 210ms ease-out 150ms both view-fade-in, 360ms ease-in-out both view-slide-in-right;
+}
+::view-transition-old(.nav-back) {
+  animation: 150ms ease-in both view-fade-out, 360ms ease-in-out both view-slide-out-right;
+}
+::view-transition-new(.nav-back) {
+  animation: 210ms ease-out 150ms both view-fade-in, 360ms ease-in-out both view-slide-in-left;
+}
+
+@keyframes view-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes view-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes view-slide-out-left {
+  from { translate: 0; }
+  to { translate: -48px; }
+}
+@keyframes view-slide-in-right {
+  from { translate: 48px; }
+  to { translate: 0; }
+}
+@keyframes view-slide-out-right {
+  from { translate: 0; }
+  to { translate: 48px; }
+}
+@keyframes view-slide-in-left {
+  from { translate: -48px; }
+  to { translate: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

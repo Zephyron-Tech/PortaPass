@@ -31,7 +31,7 @@ export function SiteFooter() {
 
           <nav aria-label="Produkt" className="flex flex-col items-start gap-1">
             <p className={label}>Produkt</p>
-            <Link href="/demo" className={`mt-1 text-[14px] text-ink-2 ${link}`}>
+            <Link href="/demo" transitionTypes={["nav-forward"]} className={`mt-1 text-[14px] text-ink-2 ${link}`}>
               Demo
             </Link>
             <Link href="/#kontakt" className={`text-[14px] text-ink-2 ${link}`}>

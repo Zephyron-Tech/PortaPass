@@ -25,11 +25,13 @@ export function Cta({
   children,
   variant = "primary",
   external = false,
+  transitionTypes,
 }: {
   href: string;
   children: ReactNode;
   variant?: keyof typeof variants;
   external?: boolean;
+  transitionTypes?: string[];
 }) {
   const className = `${base} ${variants[variant]}`;
 
@@ -42,7 +44,7 @@ export function Cta({
   }
 
   return (
-    <Link href={href} className={className}>
+    <Link href={href} className={className} transitionTypes={transitionTypes}>
       {children}
     </Link>
   );

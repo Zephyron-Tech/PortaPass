@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, ViewTransition } from "react";
 import { PageHeading } from "@/components/AppHeader";
 import { Screen } from "@/components/Screen";
 import { StepList } from "@/components/marketing/StepList";
@@ -13,6 +13,11 @@ export default function DemoPage() {
   const [isPending, startTransition] = useTransition();
 
   return (
+    <ViewTransition
+      enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+      exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+      default="none"
+    >
     <Screen desktop>
       <PageHeading
         title="Vyzkoušejte check-in"
@@ -20,6 +25,7 @@ export default function DemoPage() {
         aside={
           <Link
             href="/"
+            transitionTypes={["nav-back"]}
             className="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4 hover:text-ink"
           >
             Zpět na web
@@ -49,5 +55,6 @@ export default function DemoPage() {
         </button>
       </div>
     </Screen>
+    </ViewTransition>
   );
 }

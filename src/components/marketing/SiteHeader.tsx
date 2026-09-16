@@ -16,7 +16,7 @@ export function SiteHeader() {
             PortaPass
           </Link>
           <div className="flex items-center gap-4 text-[14px] text-ink-2 sm:gap-6">
-            <Link href="/demo" className={link}>
+            <Link href="/demo" transitionTypes={["nav-forward"]} className={link}>
               Demo
             </Link>
             <Link href="/#kontakt" className={link}>

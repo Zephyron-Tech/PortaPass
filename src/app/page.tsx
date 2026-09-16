@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewTransition } from "react";
 import { BankIdLogo } from "@/components/bankid/BankIdLogo";
 import { KeyCard } from "@/components/KeyCard";
 import { Container } from "@/components/marketing/Container";
@@ -37,6 +38,11 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
+      <ViewTransition
+        enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+        exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+        default="none"
+      >
       <main id="main-content" className="flex-1">
         <section className="hero-stage">
           <Container className="pt-12 pb-20 md:pt-20 md:pb-28">
@@ -46,7 +52,7 @@ export default function Home() {
                 <h1 className="mt-6 max-w-[16ch] font-serif text-[clamp(2.75rem,5.4vw,4.25rem)] leading-[1.08] tracking-[-0.025em] text-balance text-ink">Check-in začíná před příjezdem.</h1>
                 <p className="mt-6 max-w-[40ch] text-[18px] leading-[1.6] text-pretty text-ink-2 md:text-[20px]">Ověření hosta a&nbsp;ukázkový klíč do Apple Wallet. Vyzkoušejte, jak by mohl vypadat příjezd do vašeho hotelu.</p>
                 <div className="hero-actions mt-8">
-                  <Cta href="/demo">Vyzkoušet demo</Cta>
+                  <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
                   <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
                 </div>
                 <p className="mt-6 max-w-[46ch] text-[15px] leading-[1.65] text-ink-3">Funkční prototyp, ne video. Bank iD v&nbsp;testovacím režimu nebo označená simulace; vydání průkazu vyžaduje nastavené podpisové certifikáty. Ukázkový klíč neodemyká dveře.</p>
@@ -103,7 +109,7 @@ export default function Home() {
                       <p className="mt-3 text-[14px] leading-relaxed text-ink-3">Ověření v&nbsp;testovacím prostředí Bank iD.</p>
                     </div>
                   ) : null}
-                  {i === 2 ? <div className="mt-7"><Cta href="/demo">Vyzkoušet demo</Cta></div> : null}
+                  {i === 2 ? <div className="mt-7"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
                 </div>
                 <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} priority={i === 0} /></div>
               </div>
@@ -155,7 +161,7 @@ export default function Home() {
             <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] tracking-[-0.018em] text-ink">Projděte si příjezd očima hosta.</h2>
             <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.65] text-ink-2">Nejlépe na iPhonu, kde si ukázkový průkaz přidáte do Apple Wallet. Na ostatních zařízeních si můžete projít ověření.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Cta href="/demo">Vyzkoušet demo</Cta>
+              <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
               <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
             </div>
           </div>
@@ -171,6 +177,7 @@ export default function Home() {
           </div>
         </Section>
       </main>
+      </ViewTransition>
       <SiteFooter />
     </>
   );
