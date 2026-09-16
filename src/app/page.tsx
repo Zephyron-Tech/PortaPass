@@ -105,7 +105,7 @@ export default function Home() {
                   ) : null}
                   {i === 2 ? <div className="mt-7"><Cta href="/demo">Vyzkoušet demo</Cta></div> : null}
                 </div>
-                <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} /></div>
+                <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} priority={i === 0} /></div>
               </div>
             ))}
           </div>

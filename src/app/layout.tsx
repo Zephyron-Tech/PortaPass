@@ -41,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="cs"
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${instrumentSerif.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>

@@ -13,11 +13,15 @@ export function DeviceShot({
   alt,
   caption,
   className = "",
+  priority = false,
 }: {
   src?: string;
   alt: string;
   caption?: string;
   className?: string;
+  /** First shot in the walkthrough was flagged as the LCP element and
+   * defaulted to lazy loading — pass true for whichever shot renders first. */
+  priority?: boolean;
 }) {
   return (
     <figure className={className} data-reveal="tall">
@@ -29,6 +33,7 @@ export function DeviceShot({
             fill
             sizes="(min-width: 768px) 272px, 208px"
             quality={90}
+            priority={priority}
             className="object-contain"
           />
         ) : (

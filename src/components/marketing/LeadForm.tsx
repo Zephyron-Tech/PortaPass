@@ -175,7 +175,7 @@ export function LeadForm() {
               autoComplete: field.autoComplete,
               "aria-invalid": fieldErrors[field.name] ? true : undefined,
               "aria-describedby": fieldErrors[field.name] ? errorId : undefined,
-              className: "lead-input mt-2 block min-h-[54px] w-full rounded-xl border border-hairline-strong bg-background px-4 py-3 text-base text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-70",
+              className: "lead-input mt-2 block min-h-[54px] w-full rounded-xl border border-hairline-strong bg-background px-4 py-3 text-base text-ink disabled:opacity-70",
             };
             return (
               <div key={field.name} className={`lead-field min-w-0 ${field.name === "hotel" || field.name === "message" ? "md:col-span-2" : ""}`}>

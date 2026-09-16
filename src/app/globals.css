@@ -73,9 +73,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* currentColor + a 4px offset read as a stark, generic browser default.
+   ink-3 (the muted warm grey already used for captions) plus a tighter
+   offset is quieter without losing visibility, and the transition keeps it
+   from just snapping on. Elements with their own ring treatment (buttons,
+   form fields below) override this. */
 :focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 4px;
+  outline: 2px solid var(--ink-3);
+  outline-offset: 3px;
+  transition: outline-color 150ms ease;
 }
 
 .lead-input {
@@ -89,11 +95,29 @@ body {
   color: var(--ink);
   font-size: 1rem;
   line-height: 1.5;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 .lead-input::placeholder { color: var(--ink-3); }
 .lead-input[aria-invalid="true"] { border-width: 2px; }
 textarea.lead-input { min-height: 8rem; resize: vertical; }
 .lead-form .app-button:focus-visible { outline-color: var(--ink); }
+
+/* Focus state for the lead form's own fields: a crisp border plus a soft
+   amber ring (the same accent used sparingly elsewhere as the one branded
+   highlight) that blooms outward on entry rather than appearing instantly. */
+.lead-input:focus-visible {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px rgba(245, 196, 94, 0.28);
+  animation: lead-input-focus-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes lead-input-focus-in {
+  from { box-shadow: 0 0 0 0 rgba(245, 196, 94, 0.45); }
+  to { box-shadow: 0 0 0 4px rgba(245, 196, 94, 0.28); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lead-input:focus-visible { animation: none; }
+}
 
 .guest-screen {
   display: flex;
