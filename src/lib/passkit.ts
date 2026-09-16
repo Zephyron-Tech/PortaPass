@@ -101,20 +101,18 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
   // The model declares both "generic" (legacy iOS) and "posterGeneric"
   // (iOS/watchOS 27+ poster-style Wallet passes) — see pass.json. Wallet
   // prioritizes posterGeneric over generic whenever both are present, on
-  // devices that support it (Apple's own docs on "Creating a poster
-  // generic pass"), which is what was actually rendering on a real
-  // device — and posterGeneric's layout has NO secondaryFields slot at
-  // all: it's headerFields, primaryFields, footerFields (max 2), and
-  // backFields. Check-in/check-out pushed into secondaryFields there were
-  // silently dropped, not missing data — legacy "generic" needs them in
-  // secondaryFields, posterGeneric needs the exact same two fields in
-  // footerFields instead.
+  // devices that support it, which is what was actually rendering on a
+  // real device. posterGeneric has no secondaryFields slot: per the
+  // reference design built in Pass Designer itself, Host/Check-in/
+  // Check-out all sit together as up to four primaryFields rendered in
+  // one row under the barcode, with footerFields left empty. Legacy
+  // "generic" keeps the dates in secondaryFields as originally exported.
   for (const passType of pass.types) {
     passType.headerFields.push(headerField);
-    passType.primaryFields.push(primaryField);
     if (passType.type === "posterGeneric") {
-      passType.footerFields.push(checkInField, checkOutField);
+      passType.primaryFields.push(primaryField, checkInField, checkOutField);
     } else {
+      passType.primaryFields.push(primaryField);
       passType.secondaryFields.push(checkInField, checkOutField);
     }
   }
