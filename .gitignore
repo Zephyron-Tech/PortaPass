@@ -30,6 +30,7 @@
 *.certSigningRequest
 *.pkpass
 !certs/README.md
+/PortaPass.pkpasstemplate
 
 # debug
 npm-debug.log*
