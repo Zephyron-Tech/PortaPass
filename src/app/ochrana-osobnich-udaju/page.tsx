@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { LegalPage, Section } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Ochrana osobních údajů — PortaPass",
+  title: "Ochrana osobních údajů",
+  description: "Informace o zpracování osobních údajů ve službě PortaPass.",
+  alternates: { canonical: "/ochrana-osobnich-udaju" },
 };
 
 export default function PrivacyPage() {

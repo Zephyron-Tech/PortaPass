@@ -12,13 +12,12 @@ import { WalkthroughPeel, type WalkthroughStep } from "@/components/marketing/Wa
 import { findBookingByToken } from "@/lib/mockData";
 
 export const metadata: Metadata = {
-  title: "PortaPass – ukázka online check-inu pro nezávislé hotely",
-  description: "Vyzkoušejte ověření hosta a ukázkový průkaz do Apple Wallet. Pilotní projekt pro nezávislé hotely; vydaný průkaz neodemyká dveře.",
+  title: "Online check-in pro hotely",
+  description: "PortaPass zjednodušuje příjezd hostů: online check-in, ověření přes Bank iD a digitální klíč v Apple Wallet.",
   alternates: { canonical: "/" },
   openGraph: {
-    type: "website", locale: "cs_CZ", siteName: "PortaPass",
-    title: "PortaPass – check-in začíná před příjezdem",
-    description: "Funkční prototyp ověření hosta a ukázkového průkazu do Apple Wallet. Odemykání dveří vyžaduje partnerství s výrobcem zámků.",
+    title: "Online check-in pro hotely | PortaPass",
+    description: "Online check-in, ověření přes Bank iD a digitální klíč v Apple Wallet. Check-in začíná před příjezdem.",
   },
 };
 

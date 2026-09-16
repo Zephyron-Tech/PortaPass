@@ -6,7 +6,7 @@ import { VERIFICATION_COOKIE, readVerificationCookie } from "@/lib/session";
 import CheckinFlow from "./CheckinFlow";
 
 export const metadata: Metadata = {
-  title: "Ověření a ukázková karta | PortaPass",
+  title: "Ověření a ukázková karta",
   description: "Ověření ukázkové rezervace a karta do Apple Wallet. Karta neodemyká dveře.",
   robots: { index: false, follow: false },
 };

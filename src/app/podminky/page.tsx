@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { LegalPage, Section } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Podmínky použití — PortaPass",
+  title: "Podmínky použití",
+  description: "Podmínky používání služby PortaPass.",
+  alternates: { canonical: "/podminky" },
 };
 
 export default function TermsPage() {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Ukázka check-inu | PortaPass",
+  title: "Ukázka check-inu",
   description: "Vyzkoušejte check-in a ukázkovou kartu do Apple Wallet. Karta neodemyká dveře.",
   robots: { index: false, follow: false },
 };

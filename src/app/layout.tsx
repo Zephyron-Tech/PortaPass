@@ -24,8 +24,20 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_BASE_URL ?? "https://portapass.zephyron.tech"),
-  title: "PortaPass",
-  description: "Ukázka online check-inu a průkazu do Apple Wallet. Prototyp neodemyká dveře.",
+  title: {
+    default: "Online check-in pro hotely | PortaPass",
+    template: "%s | PortaPass",
+  },
+  description: "Online check-in, ověření hosta a digitální klíč v Apple Wallet pro hotely.",
+  applicationName: "PortaPass",
+  category: "Hotelové technologie",
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    locale: "cs_CZ",
+    siteName: "PortaPass",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
