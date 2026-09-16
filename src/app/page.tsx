@@ -175,6 +175,10 @@ export default function Home() {
                 sizes="(min-width: 1024px) 24rem, 80vw"
                 quality={90}
                 className="object-contain"
+                style={{
+                  maskImage: "linear-gradient(to bottom, black 70%, transparent 96%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, black 70%, transparent 96%)",
+                }}
               />
             </div>
           </div>
