@@ -58,10 +58,6 @@ export class CertificatesNotConfiguredError extends Error {
   }
 }
 
-function formatPassDate(iso: string) {
-  return new Date(iso).toLocaleDateString("cs-CZ", { day: "numeric", month: "numeric" });
-}
-
 export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer> {
   const certificates = loadCertificates();
   if (!certificates) {
@@ -78,33 +74,17 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
     },
   );
 
-  const headerField = { key: "hotel", label: "HOTEL", value: booking.hotelName };
-  // The primary field renders very large over the background art, so it
-  // holds the short value. A long hotel name here would overflow the card;
-  // the room number is the hero on the web card anyway.
-  const primaryField = { key: "room", label: "POKOJ", value: booking.roomNumber };
-  const guestField = { key: "guest", label: "HOST", value: booking.guestName };
-  // Dates are formatted rather than passed as raw ISO, and collapsed into
-  // one range so they don't wrap onto separate rows.
-  const stayField = {
-    key: "stay",
-    label: "POBYT",
-    value: `${formatPassDate(booking.checkIn)} – ${formatPassDate(booking.checkOut)}`,
-  };
-  const roomTypeField = { key: "roomType", label: "KATEGORIE", value: booking.roomType };
-
-  // The model declares both "generic" (older iOS) and "posterGeneric" (iOS
-  // 18+ poster-style Wallet passes) so the pass looks right either way —
-  // see pass.json. The legacy .headerFields/.primaryFields/etc accessors
-  // only ever touch the first declared type, so both need the same values
-  // pushed explicitly via .types or the newer style would be stuck showing
-  // the template's placeholder fields.
-  for (const passType of pass.types) {
-    passType.headerFields.push(headerField);
-    passType.primaryFields.push(primaryField);
-    passType.secondaryFields.push(guestField, stayField);
-    passType.auxiliaryFields.push(roomTypeField);
-  }
+  // No headerFields/primaryFields/secondaryFields/auxiliaryFields: the
+  // model's background.png already bakes in the room, guest and dates in
+  // the site's own branded style (it's a render of the web KeyCard). Apple
+  // draws generic/posterGeneric's live fields as their own text rows *on
+  // top of* that image, not instead of it — pushing the same booking data
+  // there just repeats it a second time in the system font. Since this
+  // PoC only ever serves the one hardcoded demo booking (see mockData.ts),
+  // a static baked-in background is accurate today. A real multi-booking
+  // rollout would need the background image itself generated per booking
+  // (e.g. rendering KeyCard to a PNG at pass-generation time) rather than
+  // reintroducing live fields here.
 
   // No NFC field: Apple's NFC pass field requires a real EC public key —
   // a placeholder string fails iOS's install-time validation silently (pass
