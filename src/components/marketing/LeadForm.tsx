@@ -16,10 +16,10 @@ type FieldName = (typeof fields)[number]["name"];
 type FieldErrors = Partial<Record<FieldName, string>>;
 
 const fieldMessages: Record<FieldName, string> = {
-  hotel: "Název hotelu nebo penzionu musí mít 2 až 160 znaků.",
-  email: "Zadejte platný e-mail o\u00a0nejvýše 254 znacích.",
-  phone: "Telefon musí obsahovat alespoň 6 číslic, nejvýše 40 znaků a\u00a0jen číslice, mezery nebo + ( ) . - /.",
-  message: "Zpráva může mít nejvýše 2000 znaků.",
+  hotel: "Zadejte název hotelu.",
+  email: "Zadejte platný e-mail.",
+  phone: "Zadejte platné telefonní číslo.",
+  message: "Zpráva je moc dlouhá.",
 };
 
 const failureMessage = "Poptávku se nepodařilo odeslat. Zkuste to prosím znovu nebo nám napište e-mailem.";
@@ -64,14 +64,18 @@ export function LeadForm() {
   }, []);
 
   useEffect(() => {
+    // preventScroll: the fields are already on screen right where the user
+    // just clicked submit — letting focus() auto-scroll them into view was
+    // causing a jarring jump on every error. The ring is enough to show
+    // where focus landed.
     if (sentEmail !== null) {
-      confirmationRef.current?.focus();
+      confirmationRef.current?.focus({ preventScroll: true });
     } else if (!submitting && error) {
       // Wait for the disabled fieldset to be enabled before moving focus.
       const firstField = fields.find(({ name }) => fieldErrors[name]);
       const input = firstField && formRef.current?.elements.namedItem(firstField.name);
-      if (input instanceof HTMLElement) input.focus();
-      else errorRef.current?.focus();
+      if (input instanceof HTMLElement) input.focus({ preventScroll: true });
+      else errorRef.current?.focus({ preventScroll: true });
     }
   }, [sentEmail, submitting, error, fieldErrors]);
 
