@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Instrument_Serif, Poppins } from "next/font/google";
+import { BackToTop } from "@/components/BackToTop";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -44,7 +45,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${instrumentSerif.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <BackToTop />
+      </body>
     </html>
   );
 }
