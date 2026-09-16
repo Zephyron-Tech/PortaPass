@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ViewTransition } from "react";
-import { BankIdLogo } from "@/components/bankid/BankIdLogo";
 import { KeyCard } from "@/components/KeyCard";
 import { Container } from "@/components/marketing/Container";
 import { Cta } from "@/components/marketing/Cta";
-import { DeviceShot } from "@/components/marketing/DeviceShot";
 import { LeadForm } from "@/components/marketing/LeadForm";
 import { Band, Eyebrow, Section, SectionHeader } from "@/components/marketing/Section";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
+import { WalkthroughPeel, type WalkthroughStep } from "@/components/marketing/WalkthroughPeel";
 import { findBookingByToken } from "@/lib/mockData";
 
 export const metadata: Metadata = {
@@ -29,7 +28,7 @@ const decisions = [
   { title: "Potom váš provoz", body: "Společně projdeme způsob rezervací, práci recepce a systém, který už používáte." },
   { title: "Zámky až s partnerem", body: "Skutečný přístup do pokoje vyžaduje smlouvu a integraci s certifikovaným výrobcem zámků." },
 ];
-const steps = [
+const steps: WalkthroughStep[] = [
   { title: "Jeden odkaz", body: "V demu otevřete smyšlenou rezervaci. V budoucím provozu by host odkaz dostal před příjezdem; rozesílání e-mailů a SMS zatím není součástí prototypu.", alt: "Ukázka odkazu na check-in v telefonu", src: "/mockups/mockup1.png" },
   { title: "Ověření přes Bank iD", body: "Prototyp podporuje ověření v testovacím prostředí Bank iD. Bez připojení k Bank iD nabídne označenou simulaci. Porovnání totožnosti s držitelem rezervace zatím neprovádíme.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true, src: "/mockups/mockup2.png" },
   { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline. Je to vizuální ukázka, nikoli přístupový klíč: dveře neodemyká.", alt: "Ukázkový klíč připravený k přidání do Apple Wallet", src: "/mockups/mockup3.png" },
@@ -98,25 +97,7 @@ export default function Home() {
         </section>
         <Section>
           <SectionHeader heading="Od odkazu po peněženku" lead="Tři části ukázky. Žádná hotelová aplikace." />
-          <div className="mt-14 space-y-16 md:space-y-20">
-            {steps.map((step, i) => (
-              <div key={step.title} className={`walkthrough-step ${i === 1 ? "walkthrough-reverse" : ""} ${i === 2 ? "walkthrough-finish" : ""}`}>
-                <div data-reveal className="walkthrough-copy">
-                  <span aria-hidden="true" className="font-serif text-[2.5rem] leading-none tabular-nums text-ink-3">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="mt-4 font-serif text-[clamp(1.75rem,3vw,2.25rem)] leading-[1.15] tracking-[-0.015em] text-ink">{step.title}</h3>
-                  <p className="mt-4 max-w-[46ch] text-[17px] leading-[1.65] text-pretty text-ink-2">{step.body}</p>
-                  {step.bankId ? (
-                    <div className="mt-6">
-                      <span className="inline-block bg-white px-5 py-4 ring-1 ring-hairline"><BankIdLogo width={108} title="Bank iD" /></span>
-                      <p className="mt-3 text-[14px] leading-relaxed text-ink-3">Ověření v&nbsp;testovacím prostředí Bank iD.</p>
-                    </div>
-                  ) : null}
-                  {i === 2 ? <div className="mt-7"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
-                </div>
-                <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} priority={i === 0} /></div>
-              </div>
-            ))}
-          </div>
+          <WalkthroughPeel steps={steps} />
         </Section>
         <Section>
           <SectionHeader heading="Co má navazovat na pilot" lead="Tahle propojení zatím nejsou hotová. Jejich rozsah určíme s prvním hotelem." />

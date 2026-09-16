@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "jose": "^6.2.12",
+    "motion": "^13.3.0",
     "next": "16.3.5",
     "passkit-generator": "^3.6.0",
     "react": "19.2.8",

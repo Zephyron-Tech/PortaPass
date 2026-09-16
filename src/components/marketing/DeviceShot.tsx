@@ -14,6 +14,8 @@ export function DeviceShot({
   caption,
   className = "",
   priority = false,
+  reveal = true,
+  sizes = "(min-width: 768px) 272px, 208px",
 }: {
   src?: string;
   alt: string;
@@ -22,16 +24,18 @@ export function DeviceShot({
   /** First shot in the walkthrough was flagged as the LCP element and
    * defaulted to lazy loading — pass true for whichever shot renders first. */
   priority?: boolean;
+  reveal?: boolean;
+  sizes?: string;
 }) {
   return (
-    <figure className={className} data-reveal="tall">
+    <figure className={className} data-reveal={reveal ? "tall" : undefined}>
       <div className="relative aspect-[9/19.5] w-full overflow-hidden rounded-[2rem]">
         {src ? (
           <Image
             src={src}
             alt={alt}
             fill
-            sizes="(min-width: 768px) 272px, 208px"
+            sizes={sizes}
             quality={90}
             priority={priority}
             className="object-contain"

@@ -286,10 +286,11 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 .hero-card-scene, .hero-card { position: relative; aspect-ratio: 1.586; }
 .hero-card-back { display: none; }
 .hero-reasons { margin-top: 1rem; }
-.walkthrough-step { display: grid; align-items: center; gap: 2rem; }
+.walkthrough-peel { margin-top: 3.5rem; }
+.walkthrough-peel-scene { display: grid; gap: 4rem; }
+.walkthrough-peel-content { display: grid; align-items: center; gap: 2rem; }
 .walkthrough-copy { min-width: 0; }
 .walkthrough-device { width: 100%; max-width: 13rem; margin-inline: auto; }
-.walkthrough-finish { padding-top: 3rem; }
 
 @media (min-width: 40rem) {
   /* Was scoped to 40rem–64rem only, so the two hero buttons reverted to
@@ -298,11 +299,72 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 }
 
 @media (min-width: 48rem) {
-  .walkthrough-step { grid-template-columns: minmax(0, 1fr) 17rem; gap: 4rem; }
-  .walkthrough-reverse { grid-template-columns: 17rem minmax(0, 1fr); }
-  .walkthrough-reverse .walkthrough-copy { order: 2; }
+  .walkthrough-peel-content { grid-template-columns: minmax(0, 1fr) 17rem; gap: 4rem; }
   .walkthrough-device { max-width: 17rem; }
-  .walkthrough-finish { grid-template-columns: minmax(0, 1fr) 17rem; padding: 3rem; }
+}
+
+@media (min-width: 64rem) and (min-height: 44rem) and (prefers-reduced-motion: no-preference) {
+  .walkthrough-peel[data-enhanced="true"] { height: 320svh; }
+  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-sticky {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    height: 100svh;
+    overflow: clip;
+    padding: 2.5rem 0.75rem;
+    isolation: isolate;
+  }
+  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-scene {
+    position: relative;
+    height: min(42rem, calc(100svh - 9rem));
+    perspective: 1800px;
+    flex-shrink: 0;
+  }
+  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-card {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1.75rem;
+    border: 1px solid rgba(107, 100, 89, 0.13);
+    background: rgba(250, 249, 247, 0.18);
+    box-shadow: 0 12px 30px -24px rgba(60, 55, 47, 0.25), inset 0 1px rgba(255, 255, 255, 0.55);
+    transform-origin: 50% 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+  }
+  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-content {
+    height: 100%;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    padding: clamp(1.5rem, 3vw, 3rem);
+  }
+  .walkthrough-peel[data-enhanced="true"] .walkthrough-device {
+    width: min(18rem, calc((100svh - 14rem) * 9 / 19.5));
+    max-width: 100%;
+    justify-self: center;
+  }
+  .walkthrough-peel-position {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 12px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .walkthrough-peel-track { display: flex; gap: 5px; }
+  .walkthrough-peel-track span { width: 22px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
+  .walkthrough-peel-track [data-current="true"] { background: var(--ink-2); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-card {
+    background: var(--background);
+  }
 }
 
 @media (min-width: 64rem) {

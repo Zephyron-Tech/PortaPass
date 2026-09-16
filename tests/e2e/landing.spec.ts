@@ -46,18 +46,20 @@ for (const width of widths) {
       return offenders;
     })).toEqual([]);
 
-    const reverse = page.locator(".walkthrough-reverse");
-    const copy = await reverse.locator(".walkthrough-copy").boundingBox();
-    const device = await reverse.locator(".walkthrough-device").boundingBox();
+    const panels = page.locator(".walkthrough-peel-card");
+    await expect(panels).toHaveCount(3);
+    const second = panels.nth(1);
+    const copy = await second.locator(".walkthrough-copy").boundingBox();
+    const device = await second.locator(".walkthrough-device").boundingBox();
     expect(copy).not.toBeNull();
     expect(device).not.toBeNull();
     if (width >= 768) {
-      const tracks = await reverse.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").map(Number.parseFloat));
+      const tracks = await second.locator(".walkthrough-peel-content").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").map(Number.parseFloat));
       expect(tracks).toHaveLength(2);
-      expect(tracks[0]).toBeCloseTo(272, 0);
-      expect(tracks[1]).toBeCloseTo(copy!.width, 0);
+      expect(tracks[1]).toBeGreaterThanOrEqual(272);
       expect(device!.width).toBeCloseTo(272, 0);
-      expect(device!.x + device!.width).toBeLessThan(copy!.x);
+      expect(device!.x).toBeGreaterThan(copy!.x + copy!.width);
+      await expect(page.locator(".walkthrough-peel-sticky")).toHaveCSS("position", "static");
     } else {
       expect(device!.y).toBeGreaterThanOrEqual(copy!.y + copy!.height);
     }
