@@ -2,22 +2,94 @@
   "formatVersion": 1,
   "passTypeIdentifier": "pass.tech.zephyron.portapass.roomkey",
   "teamIdentifier": "4BMFM373A5",
-  "organizationName": "PortaPass",
-  "description": "Digitální klíč od pokoje",
-  "logoText": "PortaPass",
-  "backgroundColor": "rgb(23, 23, 23)",
-  "foregroundColor": "rgb(255, 255, 255)",
-  "labelColor": "rgb(163, 163, 163)",
-  "storeCard": {
+  "organizationName": "Zephyron Tech s.r.o.",
+  "description": "Porta Pass",
+  "backgroundColor": "rgb(222,226,214)",
+  "foregroundColor": "rgb(0,0,0)",
+  "labelColor": "rgb(0,0,0)",
+  "suppressHeaderDarkening": false,
+  "barcodes": [
+    {
+      "format": "PKBarcodeFormatQR",
+      "message": "https://portapass.zephyron.tech/",
+      "messageEncoding": "iso-8859-1"
+    }
+  ],
+  "generic": {
     "headerFields": [],
     "primaryFields": [],
     "secondaryFields": [],
     "auxiliaryFields": [],
     "backFields": [
       {
-        "key": "about",
-        "label": "O KLÍČI",
-        "value": "Digitální klíč vydaný službou PortaPass po ověření totožnosti přes Bank iD."
+        "key": "pitch",
+        "label": "O řešení PortaPass",
+        "value": "Plně automatizovaný self check-in a digitální klíče pro moderní hotely. Odstranění front na recepci a bezpečné ověření přes BankID."
+      },
+      {
+        "key": "poskytovatel",
+        "label": "Vyvinuto společností",
+        "value": "Zephyron Tech s.r.o."
+      },
+      {
+        "key": "contact",
+        "label": "Kontakt pro hotely",
+        "value": "jan.vandlicek@zephyron.tech"
+      },
+      {
+        "key": "phone",
+        "value": "+420 722 635 417"
+      },
+      {
+        "key": "companyUrl",
+        "value": "https://www.zephyron.tech/"
+      },
+      {
+        "key": "landingPage",
+        "label": "Více informací",
+        "value": "https://portapass.zephyron.tech"
+      },
+      {
+        "key": "disclaimer",
+        "label": "ZKUŠEBNÍ PROVOZ",
+        "value": "Tento klíč je vizuální ukázka pro účely předvedení služby a neodemyká dveře hotelového pokoje."
+      }
+    ]
+  },
+  "posterGeneric": {
+    "headerFields": [],
+    "primaryFields": [],
+    "secondaryFields": [],
+    "auxiliaryFields": [],
+    "footerFields": [],
+    "backFields": [
+      {
+        "key": "pitch",
+        "label": "O řešení PortaPass",
+        "value": "Plně automatizovaný self check-in a digitální klíče pro moderní hotely. Odstranění front na recepci a bezpečné ověření přes BankID."
+      },
+      {
+        "key": "poskytovatel",
+        "label": "Vyvinuto společností",
+        "value": "Zephyron Tech s.r.o."
+      },
+      {
+        "key": "contact",
+        "label": "Kontakt pro hotely",
+        "value": "jan.vandlicek@zephyron.tech"
+      },
+      {
+        "key": "phone",
+        "value": "+420 722 635 417"
+      },
+      {
+        "key": "companyUrl",
+        "value": "https://www.zephyron.tech/"
+      },
+      {
+        "key": "landingPage",
+        "label": "Více informací",
+        "value": "https://portapass.zephyron.tech"
       },
       {
         "key": "disclaimer",

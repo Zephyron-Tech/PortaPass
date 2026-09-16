@@ -78,38 +78,33 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
     },
   );
 
-  pass.headerFields.push({
-    key: "hotel",
-    label: "HOTEL",
-    value: booking.hotelName,
-  });
+  const headerField = { key: "hotel", label: "HOTEL", value: booking.hotelName };
+  // The primary field renders very large over the background art, so it
+  // holds the short value. A long hotel name here would overflow the card;
+  // the room number is the hero on the web card anyway.
+  const primaryField = { key: "room", label: "POKOJ", value: booking.roomNumber };
+  const guestField = { key: "guest", label: "HOST", value: booking.guestName };
+  // Dates are formatted rather than passed as raw ISO, and collapsed into
+  // one range so they don't wrap onto separate rows.
+  const stayField = {
+    key: "stay",
+    label: "POBYT",
+    value: `${formatPassDate(booking.checkIn)} – ${formatPassDate(booking.checkOut)}`,
+  };
+  const roomTypeField = { key: "roomType", label: "KATEGORIE", value: booking.roomType };
 
-  // The primary field renders very large over the strip, so it holds the
-  // short value. A long hotel name here overflowed into the contactless
-  // mark; the room number is the hero on the web card anyway.
-  pass.primaryFields.push({
-    key: "room",
-    label: "POKOJ",
-    value: booking.roomNumber,
-  });
-
-  // storeCard allows four secondary + auxiliary fields in total. Dates are
-  // formatted rather than passed as raw ISO, and collapsed into one range so
-  // they don't wrap onto separate rows.
-  pass.secondaryFields.push(
-    { key: "guest", label: "HOST", value: booking.guestName },
-    {
-      key: "stay",
-      label: "POBYT",
-      value: `${formatPassDate(booking.checkIn)} – ${formatPassDate(booking.checkOut)}`,
-    },
-  );
-
-  pass.auxiliaryFields.push({
-    key: "roomType",
-    label: "KATEGORIE",
-    value: booking.roomType,
-  });
+  // The model declares both "generic" (older iOS) and "posterGeneric" (iOS
+  // 18+ poster-style Wallet passes) so the pass looks right either way —
+  // see pass.json. The legacy .headerFields/.primaryFields/etc accessors
+  // only ever touch the first declared type, so both need the same values
+  // pushed explicitly via .types or the newer style would be stuck showing
+  // the template's placeholder fields.
+  for (const passType of pass.types) {
+    passType.headerFields.push(headerField);
+    passType.primaryFields.push(primaryField);
+    passType.secondaryFields.push(guestField, stayField);
+    passType.auxiliaryFields.push(roomTypeField);
+  }
 
   // No NFC field: Apple's NFC pass field requires a real EC public key —
   // a placeholder string fails iOS's install-time validation silently (pass
