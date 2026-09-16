@@ -98,15 +98,25 @@ export async function generateRoomKeyPass(booking: MockBooking): Promise<Buffer>
     dateStyle: "PKDateStyleShort" as const,
   };
 
-  // The model declares both "generic" (older iOS) and "posterGeneric" (iOS
-  // 18+ poster-style Wallet passes) — see pass.json. The legacy
-  // .headerFields/.primaryFields/etc accessors only ever touch the first
-  // declared type, so both need the same values pushed explicitly via
-  // .types or the newer style would keep the template's empty fields.
+  // The model declares both "generic" (legacy iOS) and "posterGeneric"
+  // (iOS/watchOS 27+ poster-style Wallet passes) — see pass.json. Wallet
+  // prioritizes posterGeneric over generic whenever both are present, on
+  // devices that support it (Apple's own docs on "Creating a poster
+  // generic pass"), which is what was actually rendering on a real
+  // device — and posterGeneric's layout has NO secondaryFields slot at
+  // all: it's headerFields, primaryFields, footerFields (max 2), and
+  // backFields. Check-in/check-out pushed into secondaryFields there were
+  // silently dropped, not missing data — legacy "generic" needs them in
+  // secondaryFields, posterGeneric needs the exact same two fields in
+  // footerFields instead.
   for (const passType of pass.types) {
     passType.headerFields.push(headerField);
     passType.primaryFields.push(primaryField);
-    passType.secondaryFields.push(checkInField, checkOutField);
+    if (passType.type === "posterGeneric") {
+      passType.footerFields.push(checkInField, checkOutField);
+    } else {
+      passType.secondaryFields.push(checkInField, checkOutField);
+    }
   }
 
   // No NFC field: Apple's NFC pass field requires a real EC public key —
