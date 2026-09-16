@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import { PageHeading } from "@/components/AppHeader";
 import { AppleWalletButton } from "@/components/AppleWalletButton";
 import { BankIdButton } from "@/components/bankid/BankIdButton";
@@ -165,6 +165,11 @@ export default function CheckinFlow({
     : "Načítáme ukázkovou rezervaci…";
 
   return (
+    <ViewTransition
+      enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+      exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+      default="none"
+    >
     <Screen desktop>
       <PageHeading
         headingRef={headingRef}
@@ -236,7 +241,7 @@ export default function CheckinFlow({
               )}/klic-${encodeURIComponent(booking.roomNumber)}.pkpass`}
             />
         ) : !validLink ? (
-          <Link href="/demo" className="app-button w-full">Zpět na ukázku</Link>
+          <Link href="/demo" transitionTypes={["nav-back"]} className="app-button w-full">Zpět na ukázku</Link>
         ) : pending ? (
           <button type="button" disabled className="app-button w-full">
             {bankIdEnabled ? "Přesměrování do Bank iD…" : "Probíhá simulace…"}
@@ -253,5 +258,6 @@ export default function CheckinFlow({
         )}
       </div>
     </Screen>
+    </ViewTransition>
   );
 }

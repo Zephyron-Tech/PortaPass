@@ -47,7 +47,7 @@ export default function DemoPage() {
       <div className="guest-actions" aria-busy={isPending}>
         <button
           type="button"
-          onClick={() => startTransition(() => router.push("/checkin/room-101?token=abc"))}
+          onClick={() => startTransition(() => router.push("/checkin/room-101?token=abc", { transitionTypes: ["nav-forward"] }))}
           disabled={isPending}
           className="app-button w-full"
         >
