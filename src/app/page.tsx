@@ -52,12 +52,6 @@ export default function Home() {
                 <Eyebrow>Pilotní program pro nezávislé hotely</Eyebrow>
                 <h1 className="mt-6 max-w-[16ch] font-serif text-[clamp(2.75rem,5.4vw,4.25rem)] leading-[1.08] tracking-[-0.025em] text-balance text-ink">Check-in začíná před příjezdem.</h1>
                 <p className="mt-6 max-w-[40ch] text-[18px] leading-[1.6] text-pretty text-ink-2 md:text-[20px]">Ověření hosta a&nbsp;ukázkový klíč do Apple Wallet. Vyzkoušejte, jak by mohl vypadat příjezd do vašeho hotelu.</p>
-                <div className="hero-actions mt-8">
-                  <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
-                  <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
-                </div>
-                <p className="mt-6 max-w-[46ch] text-[15px] leading-[1.65] text-ink-3">Funkční prototyp, ne video. Bank iD v&nbsp;testovacím režimu nebo označená simulace; vydání průkazu vyžaduje nastavené podpisové certifikáty. Ukázkový klíč neodemyká dveře.</p>
-                <a href="#pilot" className="mt-2 inline-flex min-h-11 items-center text-[15px] text-ink-2 underline underline-offset-4">Co funguje dnes a&nbsp;co stavíme</a>
               </div>
               {demoBooking ? (
                 <div className="hero-card-sticky">
@@ -78,9 +72,16 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <p className="mt-6 text-center text-[14px] leading-relaxed text-ink-3 lg:hidden">Ukázkový klíč. Údaje jsou smyšlené. Neodemyká dveře.</p>
+                  <p className="mt-6 text-center text-[14px] leading-relaxed text-ink-3 lg:hidden">Ukázkový klíč. Neodemyká dveře.</p>
                 </div>
               ) : null}
+              <div className="hero-actions-block">
+                <div className="hero-actions">
+                  <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
+                  <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
+                </div>
+                <a href="#pilot" className="mt-2 inline-flex min-h-11 items-center text-[15px] text-ink-2 underline underline-offset-4">Co funguje dnes a&nbsp;co stavíme</a>
+              </div>
               <div className="hero-reasons">
                 <SectionHeader heading="Nejdřív si to vyzkoušejte. Pak se rozhodněte." />
                 <dl className="mt-10 space-y-8">

@@ -228,13 +228,13 @@ export function LeadForm() {
         {submitting ? "Odesílání poptávky…" : ""}
       </p>
       {sentEmail !== null && (
-        <p ref={confirmationRef} tabIndex={-1} className="break-words text-ink-2 focus-visible:outline-none">
+        <p ref={confirmationRef} tabIndex={-1} className="break-words text-ink-2 focus:outline-none">
           Poptávka byla odeslána. Ozveme se na {sentEmail}.
         </p>
       )}
       {error && (
         <div className="space-y-2">
-          <p ref={errorRef} tabIndex={-1} role="alert" className="text-sm text-[#9f3124] focus-visible:outline-none">{error}</p>
+          <p ref={errorRef} tabIndex={-1} role="alert" className="text-sm text-[#9f3124] focus:outline-none">{error}</p>
           <a href={CONTACT_MAILTO} className="inline-flex min-h-11 min-w-11 items-center py-2 text-sm text-ink underline underline-offset-4">
             Napsat e-mailem
           </a>

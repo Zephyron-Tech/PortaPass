@@ -178,6 +178,15 @@ export default function CheckinFlow({
         subtitle={step === "verified"
           ? "Průkaz do Apple Wallet. Pouze ukázka, která neodemyká dveře."
           : "Ověření a ukázkový průkaz do Apple Wallet. Bez instalace hotelové aplikace."}
+        aside={
+          <Link
+            href="/demo"
+            transitionTypes={["nav-back"]}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center underline underline-offset-4 hover:text-ink"
+          >
+            Zpět na ukázku
+          </Link>
+        }
       />
 
       <div className="guest-content mt-8 min-w-0">
@@ -193,7 +202,7 @@ export default function CheckinFlow({
           <p
             ref={errorRef}
             tabIndex={-1}
-            className="mt-6 rounded-2xl border border-hairline-strong bg-background px-5 py-4 text-[15px] leading-relaxed text-ink [overflow-wrap:anywhere] focus-visible:outline-none"
+            className="mt-6 rounded-2xl border border-hairline-strong bg-background px-5 py-4 text-[15px] leading-relaxed text-ink [overflow-wrap:anywhere] focus:outline-none"
           >
             {errorText}
           </p>

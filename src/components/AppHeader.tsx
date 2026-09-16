@@ -31,7 +31,7 @@ export function PageHeading({
       <h1
         ref={headingRef}
         tabIndex={-1}
-        className={`${progress ? "mt-3" : "mt-6"} font-serif text-[2.1rem] leading-[1.1] tracking-[-0.01em] text-ink [overflow-wrap:anywhere] focus-visible:outline-none`}
+        className={`${progress ? "mt-3" : "mt-6"} font-serif text-[2.1rem] leading-[1.1] tracking-[-0.01em] text-ink [overflow-wrap:anywhere] focus:outline-none`}
       >
         {title}
       </h1>

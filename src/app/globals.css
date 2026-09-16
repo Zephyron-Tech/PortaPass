@@ -267,7 +267,7 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 }
 
 .hero-grid { display: grid; align-items: start; gap: 3rem; }
-.hero-intro, .hero-reasons { min-width: 0; }
+.hero-intro, .hero-reasons, .hero-actions-block { min-width: 0; }
 .hero-actions { display: flex; flex-direction: column; gap: 0.75rem; }
 .hero-card-sticky { position: static; width: 100%; max-width: 28rem; margin-inline: auto; }
 .hero-card-scene, .hero-card { position: relative; aspect-ratio: 1.586; }
@@ -296,11 +296,23 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   .hero-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
     column-gap: 4rem;
-    row-gap: 6rem;
+    /* 2rem is the exact former mt-8 gap between the subtitle and the CTA
+       row, now reproduced as the row-gap between hero-intro and
+       hero-actions-block instead (they used to be one element). The
+       larger former 6rem gap before hero-reasons is restored below via
+       its own margin-top, since row-gap applies uniformly to every row
+       and can't be 6rem in one place and 2rem in another. */
+    row-gap: 2rem;
   }
   .hero-intro { grid-area: 1 / 1; }
-  .hero-reasons { grid-area: 2 / 1; margin-top: 0; }
-  .hero-card-sticky { grid-area: 1 / 2 / 3 / 3; position: sticky; top: 6rem; max-width: none; }
+  .hero-actions-block { grid-area: 2 / 1; }
+  .hero-reasons { grid-area: 3 / 1; margin-top: 4rem; }
+  /* Mobile order is eyebrow/heading/subtitle, card, CTAs, reasons — see
+     page.tsx. Desktop keeps the original visual order regardless of that
+     source order via explicit grid-area placement, spanning the card
+     across all three rows in column 2 like before (now 3 rows instead
+     of 2, since the actions block split out of hero-intro). */
+  .hero-card-sticky { grid-area: 1 / 2 / 4 / 3; position: sticky; top: 6rem; max-width: none; }
   .hero-actions { align-items: flex-start; }
   /* No forced width here: .app-button sets flex-shrink: 0 (correct
      elsewhere), so a width:100% + max-width cap on these anchors never
