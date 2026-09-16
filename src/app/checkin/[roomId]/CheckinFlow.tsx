@@ -242,7 +242,10 @@ export default function CheckinFlow({
             {bankIdEnabled ? "Přesměrování do Bank iD…" : "Probíhá simulace…"}
           </button>
         ) : bankIdEnabled ? (
-          <BankIdButton onClick={startBankId} />
+          <div className="rounded-2xl border border-hairline-strong p-4">
+            <BankIdButton onClick={startBankId} />
+            <p className="mt-3 text-center text-[13px] text-ink-3">Vzhled tlačítka vyžaduje styleguide Bank iD.</p>
+          </div>
         ) : (
           <button type="button" onClick={mockVerify} className="app-button w-full">
             Spustit simulaci
