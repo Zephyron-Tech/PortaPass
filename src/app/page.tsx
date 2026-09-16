@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ViewTransition } from "react";
 import { BankIdLogo } from "@/components/bankid/BankIdLogo";
 import { KeyCard } from "@/components/KeyCard";
@@ -157,12 +158,24 @@ export default function Home() {
           </div>
         </Band>
         <Section bordered={false}>
-          <div className="max-w-[40rem]">
-            <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] tracking-[-0.018em] text-ink">Projděte si příjezd očima hosta.</h2>
-            <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.65] text-ink-2">Nejlépe na iPhonu, kde si ukázkový průkaz přidáte do Apple Wallet. Na ostatních zařízeních si můžete projít ověření.</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
-              <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
+            <div className="max-w-[40rem]">
+              <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] tracking-[-0.018em] text-ink">Projděte si příjezd očima hosta.</h2>
+              <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.65] text-ink-2">Nejlépe na iPhonu, kde si ukázkový průkaz přidáte do Apple Wallet. Na ostatních zařízeních si můžete projít ověření.</p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
+                <Cta href="#kontakt" variant="quiet" external>Domluvit ukázku</Cta>
+              </div>
+            </div>
+            <div className="relative mx-auto aspect-[2354/2188] w-full max-w-[24rem]">
+              <Image
+                src="/mockups/mockup4.png"
+                alt="Ukázkový průkaz otevřený v Apple Wallet na iPhonu"
+                fill
+                sizes="(min-width: 1024px) 24rem, 80vw"
+                quality={90}
+                className="object-contain"
+              />
             </div>
           </div>
         </Section>
