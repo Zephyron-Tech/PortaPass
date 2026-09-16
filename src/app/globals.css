@@ -457,15 +457,7 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
-    /* Depth box: the back face stays flat at z=0, the front face sits at
-       z=D, and the two edge panels below hinge exactly on the card's own
-       left/right border (transform-origin at 0%/100%) and rotate into
-       that same [0, D] range. Hinging on the true border — instead of
-       positioning a panel nearby and translating it into place — means
-       there is no separate distance calculation that can be off by a
-       pixel: the hinge line IS the card edge, so the panel is flush by
-       construction at every angle. */
-    .hero-card-front { transform: translateZ(var(--card-depth)); }
+    .hero-card-front { transform: translateZ(0.5px); }
     .hero-card-back {
       position: absolute;
       inset: 0;
@@ -476,35 +468,8 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
       border-radius: 1.375rem;
       background: var(--ink);
       color: white;
-      transform: rotateY(180deg);
+      transform: rotateY(180deg) translateZ(0.5px);
       box-shadow: 0 18px 40px -16px rgba(20, 18, 15, 0.45);
-    }
-
-    /* A flat front/back pair vanishes edge-on at the ~90°/270° points of the
-       turn — a plane rotated perpendicular to the viewer has zero apparent
-       width. These two pseudo-elements are the card's left/right sides.
-       Inset from top/bottom by roughly the card's own corner radius so the
-       flat-topped panel doesn't poke out past the rounded corner arc. */
-    .hero-card { --card-depth: 12px; --card-corner: 1.25rem; }
-    .hero-card::before,
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      top: var(--card-corner);
-      bottom: var(--card-corner);
-      width: var(--card-depth);
-      border-radius: 2px;
-      background: linear-gradient(180deg, #2c2822, var(--ink) 45%, #0c0b09);
-    }
-    .hero-card::before {
-      right: 0;
-      transform-origin: 100% 50%;
-      transform: rotateY(-90deg);
-    }
-    .hero-card::after {
-      left: 0;
-      transform-origin: 0% 50%;
-      transform: rotateY(90deg);
     }
 
     .hero-card {
