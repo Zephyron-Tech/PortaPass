@@ -363,11 +363,6 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 
 @supports (animation-timeline: view()) {
   @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
-    .hero-grid {
-      view-timeline: --hero-stage block;
-      view-timeline-inset: 6rem 0;
-    }
-
     .hero-card-sticky > p { margin-top: 4rem; line-height: 1.5rem; }
     .hero-card-scene { perspective: 1800px; }
     .hero-card-front, .hero-card-back {
@@ -399,20 +394,26 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
          the motion from the finger and reads as lag. */
       animation-timing-function: linear;
       animation-fill-mode: both;
-      animation-timeline: --hero-stage;
-      /* Was `exit-crossing 0% exit-crossing calc(100% - 100cqw/1.586 - 5.5rem)`.
-         That calc() mixes a phase-relative percentage with absolute cqw/rem
-         lengths inside one <animation-range> value, which is not a
-         resolvable combination — the whole animation-range fails to apply,
-         and per spec that makes the animation's timeline permanently
-         inactive (currentTime/progress stay null at every scroll position,
-         verified end to end: identical rules using plain percentages report
-         a normal progressing timeline). The card never actually rotated —
-         confirmed by disabling the JS wheel-smoothing below and finding it
-         never engaged either, since it seeds itself from this same value.
-         `contain` is the same range used successfully elsewhere in this
-         file and needs no unit mixing. */
-      animation-range: contain 0% contain 100%;
+      /* A view() timeline (named or not) ties progress to `cover`/`contain`
+         PERCENTAGES, which are relative to the ratio of viewport height to
+         subject height. Every range I calibrated against a 900px-tall
+         viewport (contain 0%/100%, then 35%/88%) broke on a much taller
+         window — a 4K/maximized display changes that ratio entirely, so the
+         same percentage lands at a different, wrong point in the document.
+         scroll(root block) sidesteps this: progress is tied directly to the
+         document's absolute scrollY in pixels, independent of viewport
+         height by construction. It's still (mildly, expectedly) sensitive
+         to viewport WIDTH, since reflow can move content — but width is
+         gated to >=64rem here and the grid's columns are width-capped, so
+         document position is stable across realistic desktop widths. */
+      animation-timeline: scroll(root block);
+      /* 0px = flat at the very top of the page, no fudge factor needed
+         (a scroll() timeline's progress is exactly 0 at scrollY 0, unlike
+         view()'s partial-progress-before-scroll quirk). 1100px is where the
+         third "Nejdřív si to vyzkoušejte" item ("Zámky až s partnerem")
+         sits comfortably near the top of the viewport, fully visible —
+         measured directly against this page's actual layout. */
+      animation-range: 0px 1100px;
     }
   }
 }
