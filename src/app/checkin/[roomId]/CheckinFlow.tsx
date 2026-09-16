@@ -188,7 +188,7 @@ export default function CheckinFlow({
           <p
             ref={errorRef}
             tabIndex={-1}
-            className="mt-6 rounded-2xl border border-hairline-strong bg-background px-5 py-4 text-[15px] leading-relaxed text-ink [overflow-wrap:anywhere]"
+            className="mt-6 rounded-2xl border border-hairline-strong bg-background px-5 py-4 text-[15px] leading-relaxed text-ink [overflow-wrap:anywhere] focus-visible:outline-none"
           >
             {errorText}
           </p>
