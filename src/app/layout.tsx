@@ -36,8 +36,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "cs_CZ",
     siteName: "PortaPass",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "PortaPass online check-in pro hotely" }],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    images: [{ url: "/og-image.png", alt: "PortaPass online check-in pro hotely" }],
+  },
 };
 
 export const viewport: Viewport = {

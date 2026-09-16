@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Online check-in pro hotely | PortaPass",
     description: "Online check-in, ověření přes Bank iD a digitální klíč v Apple Wallet. Check-in začíná před příjezdem.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "PortaPass online check-in pro hotely" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [{ url: "/og-image.png", alt: "PortaPass online check-in pro hotely" }],
   },
 };
 
