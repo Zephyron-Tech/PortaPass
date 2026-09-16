@@ -77,7 +77,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <p className="mt-6 text-center text-[14px] leading-relaxed text-ink-3">Ukázkový klíč. Údaje jsou smyšlené. Neodemyká dveře.</p>
+                  <p className="mt-6 text-center text-[14px] leading-relaxed text-ink-3 lg:hidden">Ukázkový klíč. Údaje jsou smyšlené. Neodemyká dveře.</p>
                 </div>
               ) : null}
               <div className="hero-reasons">
