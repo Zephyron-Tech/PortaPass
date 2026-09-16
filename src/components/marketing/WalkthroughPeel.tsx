@@ -84,7 +84,7 @@ function WalkthroughCard({
         ) : null}
         {index === 2 ? <div className="mt-7"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
       </div>
-      <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} reveal={false} sizes="(min-width: 1024px) 288px, (min-width: 768px) 272px, 208px" /></div>
+      <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} reveal={false} loading={index === 0 ? "eager" : "lazy"} sizes="(min-width: 1024px) 288px, (min-width: 768px) 272px, 208px" /></div>
       </motion.div>
     </motion.article>
   );

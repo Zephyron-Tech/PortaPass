@@ -13,7 +13,7 @@ export function DeviceShot({
   alt,
   caption,
   className = "",
-  priority = false,
+  loading = "lazy",
   reveal = true,
   sizes = "(min-width: 768px) 272px, 208px",
 }: {
@@ -21,9 +21,7 @@ export function DeviceShot({
   alt: string;
   caption?: string;
   className?: string;
-  /** First shot in the walkthrough was flagged as the LCP element and
-   * defaulted to lazy loading — pass true for whichever shot renders first. */
-  priority?: boolean;
+  loading?: "eager" | "lazy";
   reveal?: boolean;
   sizes?: string;
 }) {
@@ -37,7 +35,7 @@ export function DeviceShot({
             fill
             sizes={sizes}
             quality={90}
-            priority={priority}
+            loading={loading}
             className="object-contain"
           />
         ) : (

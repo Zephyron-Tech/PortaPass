@@ -155,6 +155,15 @@ test("device slots reserve the same bounds when an image arrives", async ({ page
   expect(await slot.boundingBox()).toEqual(before);
 });
 
+test("first walkthrough mockup is eagerly loaded; later steps stay lazy", async ({ page }) => {
+  await page.goto("/");
+  const shots = page.locator(".walkthrough-peel .walkthrough-device img");
+  await expect(shots).toHaveCount(3);
+  await expect(shots.nth(0)).toHaveAttribute("loading", "eager");
+  await expect(shots.nth(1)).toHaveAttribute("loading", "lazy");
+  await expect(shots.nth(2)).toHaveAttribute("loading", "lazy");
+});
+
 test("root paints the canvas; real secondary text meets contrast", async ({ page }, testInfo) => {
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
