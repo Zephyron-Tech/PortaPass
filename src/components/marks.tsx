@@ -42,3 +42,39 @@ export function ContactlessMark({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export function CheckMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className={className}
+    >
+      <path d="M5 12.5 9.5 17 19 7.5" />
+    </svg>
+  );
+}
+
+export function WarningMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className={className}
+    >
+      <path d="M12 4 21.5 20.5H2.5Z" />
+      <path d="M12 10v4.5" />
+      <path d="M12 17.8v.1" />
+    </svg>
+  );
+}

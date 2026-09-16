@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CONTACT_MAILTO } from "@/lib/content";
+import { CheckMark, WarningMark } from "@/components/marks";
 
 const fields = [
   { name: "hotel", label: "Hotel nebo penzion", maxLength: 160, required: true, type: "text", autoComplete: "organization" },
@@ -34,7 +35,7 @@ const knownMessages = new Set([
 export function LeadForm() {
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const confirmationRef = useRef<HTMLParagraphElement>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
   const inFlight = useRef(false);
   const submissionRef = useRef<{ payload: string; id: string } | null>(null);
@@ -42,10 +43,15 @@ export function LeadForm() {
     controller: AbortController;
     timer: ReturnType<typeof setTimeout>;
   } | null>(null);
+  const errorFlashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [sentEmail, setSentEmail] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  // Brief "Nepodařilo se" face on the button itself; the persistent error
+  // message/details below is driven by `error` and does not auto-clear.
+  const [errorFlash, setErrorFlash] = useState(false);
+  const status = sentEmail !== null ? "success" : submitting ? "submitting" : errorFlash ? "error" : "idle";
 
   useEffect(() => () => {
     const request = requestRef.current;
@@ -54,11 +60,12 @@ export function LeadForm() {
       clearTimeout(request.timer);
       request.controller.abort();
     }
+    if (errorFlashTimer.current !== null) clearTimeout(errorFlashTimer.current);
   }, []);
 
   useEffect(() => {
     if (sentEmail !== null) {
-      headingRef.current?.focus();
+      confirmationRef.current?.focus();
     } else if (!submitting && error) {
       // Wait for the disabled fieldset to be enabled before moving focus.
       const firstField = fields.find(({ name }) => fieldErrors[name]);
@@ -67,6 +74,12 @@ export function LeadForm() {
       else errorRef.current?.focus();
     }
   }, [sentEmail, submitting, error, fieldErrors]);
+
+  function flashError() {
+    setErrorFlash(true);
+    if (errorFlashTimer.current !== null) clearTimeout(errorFlashTimer.current);
+    errorFlashTimer.current = setTimeout(() => setErrorFlash(false), 1800);
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,6 +96,8 @@ export function LeadForm() {
     setSubmitting(true);
     setError("");
     setFieldErrors({});
+    setErrorFlash(false);
+    if (errorFlashTimer.current !== null) clearTimeout(errorFlashTimer.current);
     const controller = new AbortController();
     const request = {
       controller,
@@ -130,11 +145,13 @@ export function LeadForm() {
         : Object.keys(errors).length > 0
           ? validationMessage
           : res.status === 429 ? rateLimitMessage : failureMessage);
+      flashError();
     } catch {
       if (requestRef.current !== request) return;
       setError(controller.signal.aborted
         ? "Odeslání se nepodařilo potvrdit do 20 sekund. Zkuste to prosím znovu se stejnými údaji nebo nám napište e-mailem."
         : failureMessage);
+      flashError();
     } finally {
       clearTimeout(request.timer);
       if (requestRef.current === request) {
@@ -145,23 +162,12 @@ export function LeadForm() {
     }
   }
 
-  if (sentEmail !== null) {
-    return (
-      <div role="status" className="space-y-3 text-ink">
-        <h3 ref={headingRef} tabIndex={-1} className="font-serif text-3xl">
-          Poptávka byla odeslána
-        </h3>
-        <p className="break-words text-ink-2">Ozveme se na {sentEmail}.</p>
-      </div>
-    );
-  }
-
   return (
-    <form ref={formRef} method="post" action="/api/leads" onSubmit={submit} aria-busy={submitting} className="lead-form space-y-5 text-ink">
+    <form ref={formRef} method="post" action="/api/leads" onSubmit={submit} noValidate aria-busy={submitting} className="lead-form space-y-5 text-ink">
       <noscript>
         <p>Pro odeslání formuláře zapněte JavaScript, nebo nám napište na hello@zephyron.tech.</p>
       </noscript>
-      <fieldset disabled={submitting} className="min-w-0 space-y-5 border-0 p-0">
+      <fieldset disabled={submitting || sentEmail !== null} className="min-w-0 space-y-5 border-0 p-0">
         <legend className="sr-only">Kontaktní údaje pro poptávku</legend>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {fields.map((field) => {
@@ -196,13 +202,32 @@ export function LeadForm() {
           <label htmlFor={`${id}-website`}>Web</label>
           <input id={`${id}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
-        <button type="submit" className="app-button min-h-[54px] w-full px-8 disabled:opacity-70 md:w-auto">
-          {submitting ? "Odesílání…" : "Odeslat poptávku"}
+        <button
+          type="submit"
+          className={`app-button lead-submit min-h-[54px] w-full px-8 disabled:opacity-70 ${status === "success" ? "is-success" : ""} ${status === "error" ? "is-error" : ""}`}
+        >
+          <span aria-hidden={status !== "idle"} className={`lead-submit-face ${status === "idle" ? "is-active" : ""}`}>
+            Odeslat poptávku
+          </span>
+          <span aria-hidden={status !== "submitting"} className={`lead-submit-face ${status === "submitting" ? "is-active" : ""}`}>
+            <span className="lead-spinner" /> Odesílání…
+          </span>
+          <span aria-hidden={status !== "success"} className={`lead-submit-face ${status === "success" ? "is-active" : ""}`}>
+            <CheckMark className="h-5 w-5" /> Odesláno
+          </span>
+          <span aria-hidden={status !== "error"} className={`lead-submit-face ${status === "error" ? "is-active" : ""}`}>
+            <WarningMark className="h-5 w-5" /> Nepodařilo se
+          </span>
         </button>
       </fieldset>
       <p role="status" aria-live="polite" className="text-sm text-ink-2">
         {submitting ? "Odesílání poptávky…" : ""}
       </p>
+      {sentEmail !== null && (
+        <p ref={confirmationRef} tabIndex={-1} className="break-words text-ink-2">
+          Poptávka byla odeslána. Ozveme se na {sentEmail}.
+        </p>
+      )}
       {error && (
         <div className="space-y-2">
           <p ref={errorRef} tabIndex={-1} role="alert" className="text-sm text-[#9f3124]">{error}</p>
