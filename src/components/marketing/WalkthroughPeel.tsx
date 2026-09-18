@@ -100,13 +100,6 @@ function WalkthroughCard({
         {index === 2 ? <div className="mt-7 hidden md:block"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
       </div>
       <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} reveal={false} loading="eager" onLoad={() => onImageLoad(index)} sizes="(min-width: 1024px) 288px, (min-width: 768px) 272px, 208px" /></div>
-      {/* Reserved on every slide (not just index 2), invisible where it
-          doesn't apply, so all three carousel slides land on the same
-          height on mobile — otherwise the shorter slides leave a big gap
-          before the dot indicator instead of a consistent one. */}
-      <div className={`mt-5 flex justify-center md:hidden ${index === 2 ? "" : "invisible"}`} aria-hidden={index !== 2}>
-        <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
-      </div>
       </motion.div>
     </motion.article>
   );
@@ -288,6 +281,9 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
         </div>
         <div className="walkthrough-carousel-dots" aria-hidden="true">
           {steps.map((step, index) => <span key={step.title} data-current={carouselIndex === index} />)}
+        </div>
+        <div className="mt-6 flex justify-center md:hidden">
+          <Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta>
         </div>
         {active ? (
           <div className="walkthrough-peel-position" aria-hidden="true">
