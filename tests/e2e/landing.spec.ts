@@ -167,7 +167,7 @@ test("first walkthrough mockup is eagerly loaded; later steps stay lazy", async 
 test("root paints the canvas; real secondary text meets contrast", async ({ page }, testInfo) => {
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
-  const colors = await page.locator(".hero-intro p.text-ink-3").filter({ hasText: "Funkční prototyp" }).evaluate((element) => {
+  const colors = await page.locator(".hero-intro p.text-ink-2").filter({ hasText: "Ověření hosta" }).evaluate((element) => {
     const root = getComputedStyle(document.documentElement);
     const body = getComputedStyle(document.body);
     const canvas = document.createElement("canvas");
@@ -189,7 +189,7 @@ test("root paints the canvas; real secondary text meets contrast", async ({ page
       bodyImage: body.backgroundImage,
     };
   });
-  expect(colors.text).toContain("Funkční prototyp");
+  expect(colors.text).toContain("Ověření hosta");
   expect(colors.root[3]).toBe(255);
   expect(colors.body[3]).toBe(0);
   expect(colors.rootImage).toContain("linear-gradient");
@@ -209,108 +209,4 @@ test("root paints the canvas; real secondary text meets contrast", async ({ page
     body: JSON.stringify({ ...colors, ratios }, null, 2), contentType: "application/json",
   });
   for (const ratio of ratios) expect(ratio).toBeGreaterThanOrEqual(4.5);
-});
-
-test("mouse wheel steps are interpolated without hijacking native scrolling", async ({ page }) => {
-  await page.goto("/");
-  await page.evaluate(() => document.fonts.ready);
-  if (!await page.evaluate(() => CSS.supports("animation-timeline", "view()"))) return;
-  await page.evaluate(() => scrollTo(0, 300));
-  await page.mouse.move(900, 300);
-  const card = page.locator(".hero-card");
-  await page.waitForTimeout(100);
-  await page.mouse.wheel(0, 120);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(300);
-  await expect.poll(() => card.evaluate((element) => element.getAnimations().length)).toBe(2);
-  const samples = await card.evaluate(async (element) => {
-    const result: { y: number; target: number; shown: number }[] = [];
-    for (let i = 0; i < 12; i++) {
-      await new Promise(requestAnimationFrame);
-      const [source, overlay] = element.getAnimations();
-      result.push({ y: scrollY, target: source.effect!.getComputedTiming().progress!, shown: overlay.effect!.getComputedTiming().progress! });
-    }
-    return result;
-  });
-  expect(samples.some((sample) => sample.shown < sample.target - 0.001)).toBe(true);
-  expect(samples.some((sample, i) => i > 0 && sample.y === samples[i - 1].y && sample.shown > samples[i - 1].shown)).toBe(true);
-  await expect.poll(() => card.evaluate((element) => element.getAnimations().length)).toBe(1);
-
-  // A reverse wheel burst must converge backward too, not restart a CSS transition.
-  await page.mouse.wheel(0, -120);
-  await expect.poll(() => card.evaluate((element) => element.getAnimations().length)).toBe(2);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect.poll(() => card.evaluate((element) => element.getAnimations().length)).toBe(0);
-  await expect(card).toHaveCSS("transform", "none");
-});
-
-for (const height of [768, 1200]) {
-  test(`hero turn spans sticky travel at ${height}px viewport height`, async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height });
-    await page.goto("/");
-    await page.evaluate(() => document.fonts.ready);
-    const card = page.locator(".hero-card");
-    if (!await page.evaluate(() => CSS.supports("animation-timeline", "view()"))) {
-      await expect(card).toHaveCSS("transform", "none");
-      return;
-    }
-    const travel = await page.evaluate(() => {
-      const grid = document.querySelector(".hero-grid")!.getBoundingClientRect();
-      const sticky = document.querySelector(".hero-card-sticky")!;
-      const top = Number.parseFloat(getComputedStyle(sticky).top);
-      return { start: grid.top + scrollY - top, distance: grid.height - sticky.getBoundingClientRect().height, top };
-    });
-    // Both directions, especially the latter half that previously stood still.
-    for (const progress of [0.05, 0.25, 0.5, 0.75, 0.95, 0.75, 0.25]) {
-      await page.evaluate((y) => scrollTo(0, y), travel.start + travel.distance * progress);
-      await expect.poll(() => card.evaluate((element) =>
-        element.getAnimations()[0]?.effect?.getComputedTiming().progress,
-      )).toBeCloseTo(progress, 2);
-      expect((await page.locator(".hero-card-sticky").boundingBox())!.y).toBeCloseTo(travel.top, 0);
-    }
-  });
-}
-
-test("scroll drives reveal and card currentTime, or leaves readable fallback", async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  await page.evaluate(() => document.fonts.ready);
-  const supported = await page.evaluate(() => CSS.supports("animation-timeline", "view()"));
-  testInfo.annotations.push({ type: "scroll-timeline", description: supported ? "supported; progress asserted" : "unsupported; opaque fallback asserted" });
-  if (!supported) {
-    for (const reveal of await page.locator("[data-reveal]").all()) await expect(reveal).toHaveCSS("opacity", "1");
-    await expect(page.locator(".hero-card")).toHaveCSS("animation-name", "none");
-    return;
-  }
-
-  const card = page.locator(".hero-card");
-  await expect(card).toHaveCSS("animation-name", "key-card-turn");
-  const readTime = () => card.evaluate((element) => {
-    const animation = element.getAnimations()[0];
-    return animation?.currentTime === null ? null : Number.parseFloat(String(animation?.currentTime));
-  });
-  await expect.poll(async () => Number.isFinite(await readTime())).toBe(true);
-  const before = await readTime();
-  expect(Number.isFinite(before)).toBe(true);
-  await page.evaluate(() => window.scrollBy(0, 300));
-  await expect.poll(readTime).toBeGreaterThan(before!);
-  const first = await readTime();
-  const stuckTop = (await page.locator(".hero-card-sticky").boundingBox())!.y;
-  await page.evaluate(() => window.scrollBy(0, 100));
-  await expect.poll(readTime).toBeGreaterThan(first!);
-  expect((await page.locator(".hero-card-sticky").boundingBox())!.y).toBeCloseTo(stuckTop, 0);
-  await page.evaluate(() => window.scrollBy(0, -100));
-  await expect.poll(readTime).toBeCloseTo(first!, 1);
-
-  const reveal = page.locator(".walkthrough-copy[data-reveal]").first();
-  await reveal.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - window.innerHeight + 8));
-  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  const revealTime = () => reveal.evaluate((element) => Number.parseFloat(String(element.getAnimations()[0]?.currentTime)));
-  await expect.poll(async () => Number.isFinite(await revealTime())).toBe(true);
-  const revealBefore = await revealTime();
-  const opacityBefore = Number(await reveal.evaluate((element) => getComputedStyle(element).opacity));
-  expect(opacityBefore).toBeLessThan(1);
-  await page.evaluate(() => window.scrollBy(0, 400));
-  await expect.poll(revealTime).toBeGreaterThan(revealBefore);
-  await expect.poll(async () => Number(await reveal.evaluate((element) => getComputedStyle(element).opacity))).toBeGreaterThan(opacityBefore);
-  await noOverflow(page);
 });

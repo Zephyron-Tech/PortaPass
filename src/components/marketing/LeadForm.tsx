@@ -87,6 +87,12 @@ export function LeadForm() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!event.currentTarget.checkValidity()) {
+      event.currentTarget.reportValidity();
+      const invalid = event.currentTarget.querySelector<HTMLElement>(":invalid");
+      invalid?.focus();
+      return;
+    }
     if (inFlight.current || sentEmail !== null) return;
     inFlight.current = true;
     const data = new FormData(event.currentTarget);
@@ -225,12 +231,12 @@ export function LeadForm() {
         </button>
       </fieldset>
       <p role="status" aria-live="polite" className="text-sm text-ink-2">
-        {submitting ? "Odesílání poptávky…" : ""}
+        {submitting ? "Odesílání poptávky…" : sentEmail ? `Poptávka byla odeslána na ${sentEmail}.` : ""}
       </p>
       {sentEmail !== null && (
-        <p ref={confirmationRef} tabIndex={-1} className="break-words text-ink-2 focus:outline-none">
+        <h3 ref={confirmationRef} tabIndex={-1} aria-label="Poptávka byla odeslána" className="break-words text-ink-2 focus:outline-none">
           Poptávka byla odeslána. Ozveme se na {sentEmail}.
-        </p>
+        </h3>
       )}
       {error && (
         <div className="space-y-2">
