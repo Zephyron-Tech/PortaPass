@@ -30,7 +30,7 @@ const demoBooking = findBookingByToken("room-101", "abc");
 const decisions = [
   { title: "Nejdřív zkušenost hosta", body: "Projděte si ukázkový odkaz na vlastním telefonu. Bez instalace hotelové aplikace." },
   { title: "Potom váš provoz", body: "Společně projdeme způsob rezervací, práci recepce a systém, který už používáte." },
-  { title: "Zámky až s partnerem", body: "Skutečný přístup do pokoje vyžaduje smlouvu a integraci s certifikovaným výrobcem zámků." },
+  { title: "Zámky řešíme s partnerem", body: "Napojení na zámkový systém domluvíme s certifikovaným výrobcem (Salto, ASSA ABLOY, dormakaba) přímo pro váš hotel." },
 ];
 const steps: WalkthroughStep[] = [
   { title: "Jeden odkaz", body: "Host dostane odkaz na rezervaci ještě před příjezdem. Stačí kliknout – žádná aplikace, žádné čekání na recepci.", alt: "Ukázka odkazu na check-in v telefonu", src: "/mockups/mockup1.png" },
@@ -103,21 +103,6 @@ export default function Home() {
           <SectionHeader heading="Od odkazu po peněženku" lead="Tři části ukázky. Žádná hotelová aplikace." />
           <WalkthroughPeel steps={steps} />
         </Section>
-        <Section>
-          <SectionHeader heading="Co má navazovat na pilot" lead="Tahle propojení zatím nejsou hotová. Jejich rozsah určíme s prvním hotelem." />
-          <div className="mt-10 divide-y divide-hairline border-y border-hairline">
-            {[
-              ["Váš rezervační systém", "Plánujeme napojení na PMS, například Previo nebo Mews. Dnes používáme pouze smyšlenou rezervaci."],
-              ["Evidence hostů", "Údaje z ověření mohou být základem pro evidenci. Domovní knihu ani automatické hlášení přes UbyPort zatím prototyp nevede."],
-              ["Jméno vašeho hotelu", "Vlastní vzhled a komunikaci hotelu připravíme v rámci pilotu. Současná ukázka nese značku PortaPass."],
-            ].map(([title, body]) => (
-              <div key={title} data-reveal className="grid gap-4 py-8 md:grid-cols-[1fr_1.5fr] md:gap-12">
-                <h3 className="font-serif text-[1.6rem] leading-tight text-ink">{title}</h3>
-                <p className="max-w-[50ch] text-[17px] leading-[1.65] text-ink-2">{body}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
         <Band id="pilot">
           <SectionHeader tone="dark" eyebrow="Pilotní program" heading="Hledáme hotel, se kterým uděláme další krok" lead="Prototyp si můžete projít už dnes. Skutečný provoz vyžaduje další integrace a smlouvy." />
           <div className="mt-12 grid gap-12 md:grid-cols-2 md:gap-16">
@@ -135,6 +120,7 @@ export default function Home() {
                 <li>Odemykání dveří: vyžaduje obchodní partnerství a&nbsp;integraci s&nbsp;výrobcem zámků (Salto, ASSA ABLOY / VingCard, dormakaba)</li>
                 <li>Napojení na PMS a&nbsp;automatické hlášení přes UbyPort</li>
                 <li>Klíč v&nbsp;Google Wallet</li>
+                <li>Vzhled a&nbsp;značka vašeho hotelu — vlastní branding místo PortaPass</li>
               </ul>
             </div>
           </div>
