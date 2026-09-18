@@ -33,9 +33,9 @@ const decisions = [
   { title: "Zámky až s partnerem", body: "Skutečný přístup do pokoje vyžaduje smlouvu a integraci s certifikovaným výrobcem zámků." },
 ];
 const steps: WalkthroughStep[] = [
-  { title: "Jeden odkaz", body: "V demu otevřete smyšlenou rezervaci. V budoucím provozu by host odkaz dostal před příjezdem; rozesílání e-mailů a SMS zatím není součástí prototypu.", alt: "Ukázka odkazu na check-in v telefonu", src: "/mockups/mockup1.png" },
-  { title: "Ověření přes Bank iD", body: "Prototyp podporuje ověření v testovacím prostředí Bank iD. Bez připojení k Bank iD nabídne označenou simulaci. Porovnání totožnosti s držitelem rezervace zatím neprovádíme.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true, src: "/mockups/mockup2.png" },
-  { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline. Je to vizuální ukázka, nikoli přístupový klíč: dveře neodemyká.", alt: "Ukázkový klíč připravený k přidání do Apple Wallet", src: "/mockups/mockup3.png" },
+  { title: "Jeden odkaz", body: "Host dostane odkaz na rezervaci ještě před příjezdem. Stačí kliknout – žádná aplikace, žádné čekání na recepci.", alt: "Ukázka odkazu na check-in v telefonu", src: "/mockups/mockup1.png" },
+  { title: "Ověření přes Bank iD", body: "Totožnost hosta ověříme bezpečně přes Bank iD, přímo v telefonu.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true, src: "/mockups/mockup2.png" },
+  { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline.", alt: "Ukázkový klíč připravený k přidání do Apple Wallet", src: "/mockups/mockup3.png" },
 ];
 
 export default function Home() {

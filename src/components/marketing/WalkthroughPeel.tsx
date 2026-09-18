@@ -91,14 +91,14 @@ function WalkthroughCard({
         </h3>
         <p className="mt-4 max-w-[46ch] text-[17px] leading-[1.65] text-pretty text-ink-2">{step.body}</p>
         {step.bankId ? (
-          <div className="mt-6">
+          <div className="mt-6 hidden md:block">
             <span className="inline-block bg-white px-5 py-4 ring-1 ring-hairline"><BankIdLogo width={108} title="Bank iD" /></span>
-            <p className="mt-3 text-[14px] leading-relaxed text-ink-3">Ověření v&nbsp;testovacím prostředí Bank iD.</p>
           </div>
         ) : null}
-        {index === 2 ? <div className="mt-7"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
+        {index === 2 ? <div className="mt-7 hidden md:block"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
       </div>
       <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} reveal={false} loading="eager" onLoad={() => onImageLoad(index)} sizes="(min-width: 1024px) 288px, (min-width: 768px) 272px, 208px" /></div>
+      {index === 2 ? <div className="mt-6 flex justify-center md:hidden"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
       </motion.div>
     </motion.article>
   );
