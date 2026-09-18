@@ -24,8 +24,6 @@ function subscribeToStack(notify: () => void) {
 
 const getStackSnapshot = () => window.matchMedia(stackQuery).matches;
 const getServerSnapshot = () => false;
-const subscribeToHydration = () => () => {};
-const getHydrationSnapshot = () => true;
 
 function segment(value: number, start: number, end: number) {
   return Math.min(1, Math.max(0, (value - start) / (end - start)));
@@ -97,7 +95,6 @@ function WalkthroughCard({
 export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   const target = useRef<HTMLDivElement>(null);
   const active = useSyncExternalStore(subscribeToStack, getStackSnapshot, getServerSnapshot);
-  const hydrated = useSyncExternalStore(subscribeToHydration, getHydrationSnapshot, getServerSnapshot);
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set());
   const [current, setCurrent] = useState(0);
   const { scrollYProgress } = useScroll({ target, offset: ["start start", "end end"] });
@@ -229,7 +226,7 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   }, [active, scrollYProgress]);
 
   return (
-    <div ref={target} className="walkthrough-peel" data-enhanced={active} data-loading={!hydrated || (active && !ready)} data-ready={active && ready}>
+    <div ref={target} className="walkthrough-peel" data-enhanced={active} data-loading={!ready} data-ready={ready}>
       <div className="walkthrough-peel-sticky">
         <div className="walkthrough-peel-skeleton" aria-hidden="true">
           <div className="walkthrough-peel-skeleton-copy">
