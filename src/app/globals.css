@@ -369,6 +369,16 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 
 @media (min-width: 64rem) and (min-height: 44rem) and (prefers-reduced-motion: no-preference) {
   .walkthrough-peel[data-enhanced="true"] { height: 320svh; }
+  .walkthrough-peel[data-loading="true"] { height: 100svh; }
+  .walkthrough-peel[data-loading="true"] .walkthrough-peel-sticky {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+    padding: 2.5rem 0.75rem;
+  }
   .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-sticky {
     position: sticky;
     top: 0;
@@ -381,13 +391,51 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
     padding: 2.5rem 0.75rem;
     isolation: isolate;
   }
-  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-scene {
+  .walkthrough-peel[data-loading="true"] .walkthrough-peel-scene,
+  .walkthrough-peel[data-loading="true"] .walkthrough-peel-position {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .walkthrough-peel-skeleton { display: none; }
+  .walkthrough-peel[data-loading="true"] .walkthrough-peel-skeleton {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4rem);
+    width: 100%;
+    height: min(42rem, calc(100svh - 9rem));
+    padding: clamp(1.5rem, 3vw, 3rem);
+    border: 1px solid rgba(107, 100, 89, 0.13);
+    border-radius: 1.75rem;
+    background: rgba(250, 249, 247, 0.18);
+    box-shadow: 0 12px 30px -24px rgba(60, 55, 47, 0.25), inset 0 1px rgba(255, 255, 255, 0.55);
+  }
+  .walkthrough-peel-skeleton-copy { display: grid; gap: 1.25rem; align-content: center; }
+  .walkthrough-peel-skeleton-copy span,
+  .walkthrough-peel-skeleton-device {
+    background: linear-gradient(90deg, rgba(20, 18, 15, 0.05), rgba(20, 18, 15, 0.1), rgba(20, 18, 15, 0.05));
+    background-size: 200% 100%;
+    animation: walkthrough-skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+  .walkthrough-peel-skeleton-copy span { height: 1rem; border-radius: 999px; }
+  .walkthrough-peel-skeleton-copy span:nth-child(1) { width: 3.5rem; }
+  .walkthrough-peel-skeleton-copy span:nth-child(2) { width: min(18rem, 80%); height: 2.5rem; }
+  .walkthrough-peel-skeleton-copy span:nth-child(3) { width: min(28rem, 96%); }
+  .walkthrough-peel-skeleton-copy span:nth-child(4) { width: min(23rem, 78%); }
+  .walkthrough-peel-skeleton-device {
+    justify-self: center;
+    width: min(18rem, calc((100svh - 14rem) * 9 / 19.5));
+    aspect-ratio: 9 / 19.5;
+    border-radius: 2rem;
+  }
+  .walkthrough-peel[data-ready="true"] .walkthrough-peel-skeleton { display: none; }
+  .walkthrough-peel[data-ready="true"] .walkthrough-peel-scene {
     position: relative;
     height: min(42rem, calc(100svh - 9rem));
     perspective: 1800px;
     flex-shrink: 0;
   }
-  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-card {
+  .walkthrough-peel[data-ready="true"] .walkthrough-peel-card {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -400,13 +448,13 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
     overflow: hidden;
     backface-visibility: hidden;
   }
-  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-content {
+  .walkthrough-peel[data-ready="true"] .walkthrough-peel-content {
     height: 100%;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
     gap: clamp(2rem, 4vw, 4rem);
     padding: clamp(1.5rem, 3vw, 3rem);
   }
-  .walkthrough-peel[data-enhanced="true"] .walkthrough-device {
+  .walkthrough-peel[data-ready="true"] .walkthrough-device {
     width: min(18rem, calc((100svh - 14rem) * 9 / 19.5));
     max-width: 100%;
     justify-self: center;
@@ -423,6 +471,11 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   .walkthrough-peel-track { display: flex; gap: 5px; }
   .walkthrough-peel-track span { width: 22px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
   .walkthrough-peel-track [data-current="true"] { background: var(--ink-2); }
+}
+
+@keyframes walkthrough-skeleton-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
 }
 
 @media (prefers-reduced-transparency: reduce) {

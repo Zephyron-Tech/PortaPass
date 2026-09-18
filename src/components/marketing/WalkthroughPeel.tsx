@@ -24,6 +24,8 @@ function subscribeToStack(notify: () => void) {
 
 const getStackSnapshot = () => window.matchMedia(stackQuery).matches;
 const getServerSnapshot = () => false;
+const subscribeToHydration = () => () => {};
+const getHydrationSnapshot = () => true;
 
 function segment(value: number, start: number, end: number) {
   return Math.min(1, Math.max(0, (value - start) / (end - start)));
@@ -93,12 +95,37 @@ function WalkthroughCard({
 export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   const target = useRef<HTMLDivElement>(null);
   const active = useSyncExternalStore(subscribeToStack, getStackSnapshot, getServerSnapshot);
+  const hydrated = useSyncExternalStore(subscribeToHydration, getHydrationSnapshot, getServerSnapshot);
+  const [ready, setReady] = useState(false);
   const [current, setCurrent] = useState(0);
   const { scrollYProgress } = useScroll({ target, offset: ["start start", "end end"] });
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     const next = value < 0.26 ? 0 : value < 0.68 ? 1 : 2;
     if (next !== current) setCurrent(next);
   });
+
+  useEffect(() => {
+    if (!active) return;
+    let cancelled = false;
+    const first = new Image();
+    const preload = (src?: string) => {
+      if (!src) return;
+      const image = new Image();
+      image.src = src;
+    };
+    const finish = () => {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (!cancelled) setReady(true);
+      }));
+    };
+
+    first.onload = finish;
+    first.onerror = finish;
+    first.src = steps[0]?.src ?? "";
+    if (first.complete) finish();
+    steps.slice(1).forEach((step) => preload(step.src));
+    return () => { cancelled = true; };
+  }, [active, steps]);
 
   useEffect(() => {
     const element = target.current;
@@ -218,8 +245,14 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   }, [active, scrollYProgress]);
 
   return (
-    <div ref={target} className="walkthrough-peel" data-enhanced={active}>
+    <div ref={target} className="walkthrough-peel" data-enhanced={active} data-loading={!hydrated || (active && !ready)} data-ready={active && ready}>
       <div className="walkthrough-peel-sticky">
+        <div className="walkthrough-peel-skeleton" aria-hidden="true">
+          <div className="walkthrough-peel-skeleton-copy">
+            <span /><span /><span /><span />
+          </div>
+          <div className="walkthrough-peel-skeleton-device" />
+        </div>
         <div className="walkthrough-peel-scene">
           {steps.map((step, index) => <WalkthroughCard key={step.title} step={step} index={index} progress={scrollYProgress} active={active} current={current} />)}
         </div>

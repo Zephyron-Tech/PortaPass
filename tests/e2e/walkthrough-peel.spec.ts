@@ -1,10 +1,24 @@
 import { expect, test } from "@playwright/test";
 
+test("desktop first paint is a stable peel skeleton", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("/");
+  const section = page.locator(".walkthrough-peel");
+  await expect(section).toHaveAttribute("data-loading", "true");
+  await expect(section.locator(".walkthrough-peel-skeleton")).toBeVisible();
+  await expect(section.locator(".walkthrough-peel-scene")).toHaveCSS("opacity", "0");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => innerWidth));
+  await context.close();
+});
+
 test("peel preserves readable width and never blends two steps", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const section = page.locator(".walkthrough-peel");
   await expect(section).toHaveAttribute("data-enhanced", "true");
+  await expect(section).toHaveAttribute("data-loading", "false");
+  await expect(section.locator(".walkthrough-peel-skeleton")).toBeHidden();
   const content = section.locator(".walkthrough-peel-content");
   for (const progress of [0, 0.2, 0.28, 0.4, 0.62, 0.72, 0.86, 1, 0.4, 0]) {
     await section.evaluate((element, value) => {
