@@ -351,7 +351,6 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 .hero-card-back { display: none; }
 .hero-reasons { margin-top: 1rem; }
 .walkthrough-peel { margin-top: 2rem; }
-.walkthrough-peel-scene { display: grid; gap: 4rem; }
 .walkthrough-peel-content { display: grid; align-items: center; gap: 2rem; }
 .walkthrough-copy { min-width: 0; }
 .walkthrough-device { width: 100%; max-width: 13rem; margin-inline: auto; }
@@ -362,30 +361,78 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   .hero-actions { flex-direction: row; }
 }
 
-.walkthrough-carousel-dots { display: none; }
-
-/* ---- Walkthrough: phone carousel (<48rem only) -----------------------
- * Tablet (>=48rem) and desktop keep the vertical stack / peel scene
- * defined below untouched. Below 48rem, the same three
- * .walkthrough-peel-card nodes become horizontal scroll-snap slides
- * instead of a vertical stack — no separate markup, same DOM.
+/* ---- Walkthrough: horizontal carousel (phone + desktop) ---------------
+ * Tablet (48rem-64rem) keeps its own vertical stack, defined further below.
+ * Everywhere else the same three .walkthrough-peel-card nodes are
+ * horizontal scroll-snap slides — swiped on phone, driven by arrows/dots
+ * on desktop. Same DOM and mechanics at both widths.
  */
+.walkthrough-peel-nav { display: flex; align-items: center; gap: 0; }
+.walkthrough-peel-arrow { display: none; }
+
+.walkthrough-peel-scene {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  /* Desktop scrolls only via the arrow/dot handlers' explicit scrollTo —
+     overflow-x: hidden still permits that (it clips native wheel/drag input,
+     not programmatic scrollLeft), which stops a page-scroll wheel gesture
+     from being reinterpreted as sideways carousel scroll. Phone reinstates
+     overflow-x: auto + scroll-snap below, since swipe there is intentional. */
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.walkthrough-peel-card {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.walkthrough-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1rem;
+}
+.walkthrough-carousel-dots button {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--hairline-strong);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.walkthrough-carousel-dots [data-current="true"] {
+  background: var(--ink-2);
+  transform: scale(1.35);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Non-current slides sit dimmed/shrunk until scrolled into focus. `scale`
+     (the standalone CSS property, distinct from the `transform` shorthand)
+     composes independently of any other transform on this element. */
+  .walkthrough-peel-card {
+    scale: 0.96;
+    opacity: 0.5;
+    transition: opacity 0.35s ease, scale 0.35s ease;
+  }
+  .walkthrough-peel-card[data-active="true"] {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
 @media (max-width: 47.9375rem) {
   .walkthrough-peel-scene {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
     overflow-x: auto;
-    overflow-y: visible;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     margin-inline: -1.5rem;
   }
   .walkthrough-peel-scene::-webkit-scrollbar { display: none; }
-
   .walkthrough-peel-card {
-    flex: 0 0 100%;
-    min-width: 0;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     padding-inline: 1.5rem;
@@ -407,42 +454,6 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
     .walkthrough-peel-scene { margin-inline: -2rem; }
     .walkthrough-peel-card { padding-inline: 2rem; }
   }
-
-  .walkthrough-carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 1rem;
-  }
-  .walkthrough-carousel-dots span {
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: var(--hairline-strong);
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-  .walkthrough-carousel-dots [data-current="true"] {
-    background: var(--ink-2);
-    transform: scale(1.35);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    /* framer-motion sets inline style={opacity:1, transform:...} on this
-       card whenever the desktop peel is inactive (always true on phone),
-       which beats a plain class rule. `scale` (the standalone CSS
-       property, distinct from the `transform` shorthand motion writes to)
-       composes independently and needs no override; opacity is the same
-       property motion sets inline, so it needs !important to win here. */
-    .walkthrough-peel-card {
-      scale: 0.96;
-      opacity: 0.5 !important;
-      transition: opacity 0.35s ease, scale 0.35s ease;
-    }
-    .walkthrough-peel-card[data-active="true"] {
-      scale: 1;
-      opacity: 1 !important;
-    }
-  }
 }
 
 @media (min-width: 48rem) {
@@ -450,120 +461,38 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   .walkthrough-device { max-width: 17rem; }
 }
 
-@media (min-width: 64rem) and (min-height: 44rem) and (prefers-reduced-motion: no-preference) {
-  .walkthrough-peel[data-enhanced="true"] { height: 320svh; }
-  .walkthrough-peel[data-loading="true"] { height: 100svh; }
-  .walkthrough-peel[data-loading="true"] .walkthrough-peel-sticky {
-    position: sticky;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100svh;
-    padding: 2.5rem 0.75rem;
-  }
-  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-sticky {
-    position: sticky;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2rem;
-    height: 100svh;
-    overflow: clip;
-    padding: 2.5rem 0.75rem;
-    isolation: isolate;
-  }
-  .walkthrough-peel[data-loading="true"] .walkthrough-peel-scene,
-  .walkthrough-peel[data-loading="true"] .walkthrough-peel-position {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .walkthrough-peel-skeleton { display: none; }
-  .walkthrough-peel[data-loading="true"] .walkthrough-peel-skeleton {
+/* Tablet only: keep the plain vertical stack (all 3 steps visible, no
+   carousel) — the carousel query above deliberately excludes this band. */
+@media (min-width: 48rem) and (max-width: 63.9375rem) {
+  .walkthrough-peel-scene { display: grid; gap: 4rem; overflow: visible; }
+  .walkthrough-peel-card { flex: initial; scale: 1; opacity: 1; }
+  .walkthrough-carousel-dots { display: none; }
+}
+
+@media (min-width: 64rem) {
+  .walkthrough-peel-nav { gap: 1rem; }
+  .walkthrough-peel-scene { flex: 1 1 auto; min-width: 0; }
+  .walkthrough-peel-card { padding-inline: clamp(1.5rem, 3vw, 3rem); }
+  .walkthrough-peel-content { gap: clamp(2rem, 4vw, 4rem); }
+  .walkthrough-device { max-width: 19rem; }
+  .walkthrough-peel-arrow {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-    align-items: center;
-    gap: clamp(2rem, 4vw, 4rem);
-    width: 100%;
-    height: min(42rem, calc(100svh - 9rem));
-    padding: clamp(1.5rem, 3vw, 3rem);
-    border: 1px solid rgba(107, 100, 89, 0.13);
-    border-radius: 1.75rem;
-    background: rgba(250, 249, 247, 0.18);
-    box-shadow: 0 12px 30px -24px rgba(60, 55, 47, 0.25), inset 0 1px rgba(255, 255, 255, 0.55);
-  }
-  .walkthrough-peel-skeleton-copy { display: grid; gap: 1.25rem; align-content: center; }
-  .walkthrough-peel-skeleton-copy span,
-  .walkthrough-peel-skeleton-device {
-    background: linear-gradient(90deg, rgba(20, 18, 15, 0.05), rgba(20, 18, 15, 0.1), rgba(20, 18, 15, 0.05));
-    background-size: 200% 100%;
-    animation: walkthrough-skeleton-shimmer 1.4s ease-in-out infinite;
-  }
-  .walkthrough-peel-skeleton-copy span { height: 1rem; border-radius: 999px; }
-  .walkthrough-peel-skeleton-copy span:nth-child(1) { width: 3.5rem; }
-  .walkthrough-peel-skeleton-copy span:nth-child(2) { width: min(18rem, 80%); height: 2.5rem; }
-  .walkthrough-peel-skeleton-copy span:nth-child(3) { width: min(28rem, 96%); }
-  .walkthrough-peel-skeleton-copy span:nth-child(4) { width: min(23rem, 78%); }
-  .walkthrough-peel-skeleton-device {
-    justify-self: center;
-    width: min(18rem, calc((100svh - 14rem) * 9 / 19.5));
-    aspect-ratio: 9 / 19.5;
-    border-radius: 2rem;
-  }
-  .walkthrough-peel[data-ready="true"] .walkthrough-peel-skeleton { display: none; }
-  .walkthrough-peel[data-ready="true"] .walkthrough-peel-scene {
-    position: relative;
-    height: min(42rem, calc(100svh - 9rem));
-    perspective: 1800px;
-    flex-shrink: 0;
-  }
-  .walkthrough-peel[data-ready="true"] .walkthrough-peel-card {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 1.75rem;
-    border: 1px solid rgba(107, 100, 89, 0.13);
-    background: rgba(250, 249, 247, 0.18);
-    box-shadow: 0 12px 30px -24px rgba(60, 55, 47, 0.25), inset 0 1px rgba(255, 255, 255, 0.55);
-    transform-origin: 50% 0;
-    overflow: hidden;
-    backface-visibility: hidden;
-  }
-  .walkthrough-peel[data-ready="true"] .walkthrough-peel-content {
-    height: 100%;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-    gap: clamp(2rem, 4vw, 4rem);
-    padding: clamp(1.5rem, 3vw, 3rem);
-  }
-  .walkthrough-peel[data-ready="true"] .walkthrough-device {
-    width: min(18rem, calc((100svh - 14rem) * 9 / 19.5));
-    max-width: 100%;
-    justify-self: center;
-  }
-  .walkthrough-peel-position {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    font-size: 12px;
-    color: var(--ink-3);
-    font-variant-numeric: tabular-nums;
-  }
-  .walkthrough-peel-track { display: flex; gap: 5px; }
-  .walkthrough-peel-track span { width: 22px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
-  .walkthrough-peel-track [data-current="true"] { background: var(--ink-2); }
-}
-
-@keyframes walkthrough-skeleton-shimmer {
-  from { background-position: 100% 0; }
-  to { background-position: -100% 0; }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .walkthrough-peel[data-enhanced="true"] .walkthrough-peel-card {
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--hairline-strong);
     background: var(--background);
+    color: var(--ink-2);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, opacity 150ms ease;
+  }
+  .walkthrough-peel-arrow:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .walkthrough-peel-arrow:not(:disabled):hover { border-color: var(--ink); }
   }
 }
 

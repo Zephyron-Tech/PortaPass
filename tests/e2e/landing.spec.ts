@@ -53,21 +53,35 @@ for (const width of widths) {
     const device = await second.locator(".walkthrough-device").boundingBox();
     expect(copy).not.toBeNull();
     expect(device).not.toBeNull();
-    if (width >= 768) {
+    if (width >= 1024) {
+      // Desktop: single-slide carousel, same copy-beside-device layout as
+      // tablet, navigated by arrows and dots instead of scroll-jacking.
+      const tracks = await second.locator(".walkthrough-peel-content").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").map(Number.parseFloat));
+      expect(tracks).toHaveLength(2);
+      expect(device!.x).toBeGreaterThan(copy!.x + copy!.width);
+      await expect(page.locator(".walkthrough-peel-sticky")).toHaveCSS("position", "static");
+      await expect(page.locator(".walkthrough-peel-arrow")).toHaveCount(2);
+      const dots = page.locator(".walkthrough-carousel-dots button");
+      await expect(dots).toHaveCount(3);
+      await expect(dots.first()).toHaveAttribute("data-current", "true");
+      await page.getByRole("button", { name: "Další krok" }).click();
+      await expect.poll(() => dots.nth(1).getAttribute("data-current")).toBe("true");
+    } else if (width >= 768) {
+      // Tablet: vertical stack, no carousel, no arrows.
       const tracks = await second.locator(".walkthrough-peel-content").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").map(Number.parseFloat));
       expect(tracks).toHaveLength(2);
       expect(tracks[1]).toBeGreaterThanOrEqual(272);
       expect(device!.width).toBeCloseTo(272, 0);
       expect(device!.x).toBeGreaterThan(copy!.x + copy!.width);
       await expect(page.locator(".walkthrough-peel-sticky")).toHaveCSS("position", "static");
-      await expect(page.locator(".walkthrough-carousel-dots")).toBeHidden();
+      for (const arrow of await page.locator(".walkthrough-peel-arrow").all()) await expect(arrow).toBeHidden();
     } else {
       // Below 768px the three cards become a horizontal scroll-snap
       // carousel; each card keeps its own internal copy-above-device
       // stacking (checked above), but the scene itself scrolls sideways
       // and a dot indicator tracks the snapped slide.
       expect(device!.y).toBeGreaterThanOrEqual(copy!.y + copy!.height);
-      const dots = page.locator(".walkthrough-carousel-dots span");
+      const dots = page.locator(".walkthrough-carousel-dots button");
       await expect(dots).toHaveCount(3);
       await expect(dots.first()).toHaveAttribute("data-current", "true");
       await page.locator(".walkthrough-peel-scene").evaluate(
