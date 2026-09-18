@@ -1,6 +1,4 @@
-import { NextResponse } from "next/server";
-import { findBookingByToken } from "@/lib/mockData";
-import { CertificatesNotConfiguredError, generateRoomKeyPass } from "@/lib/passkit";
+import { respondWithPass } from "@/lib/apple-wallet/respond";
 
 /**
  * Same pass, but reached at a URL whose path ends in `.pkpass`
@@ -16,26 +14,5 @@ export async function GET(
 ) {
   const { parts } = await params;
   const [roomId, token] = parts;
-
-  const booking = roomId && token ? findBookingByToken(roomId, token) : undefined;
-  if (!booking) {
-    return NextResponse.json({ error: "Booking not found" }, { status: 404 });
-  }
-
-  try {
-    const buffer = await generateRoomKeyPass(booking);
-    return new NextResponse(new Uint8Array(buffer), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/vnd.apple.pkpass",
-        "Cache-Control": "no-store",
-      },
-    });
-  } catch (err) {
-    if (err instanceof CertificatesNotConfiguredError) {
-      return NextResponse.json({ error: err.message }, { status: 501 });
-    }
-    console.error(err);
-    return NextResponse.json({ error: "Failed to generate pass" }, { status: 500 });
-  }
+  return respondWithPass(roomId, token);
 }

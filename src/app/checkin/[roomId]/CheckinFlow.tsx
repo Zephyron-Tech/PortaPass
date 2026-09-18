@@ -7,35 +7,11 @@ import { AppleWalletButton } from "@/components/AppleWalletButton";
 import { BankIdButton } from "@/components/bankid/BankIdButton";
 import { KeyCard } from "@/components/KeyCard";
 import { Screen } from "@/components/Screen";
+import { useAbortableRequest } from "@/hooks/useAbortableRequest";
 import type { MockBooking } from "@/lib/mockData";
+import { failureMessages, isBooking } from "./helpers";
 
 type Step = "intro" | "verifying" | "verified" | "error";
-
-const failureMessages: Record<string, string> = {
-  declined: "Ověření bylo v bance zrušeno. Zkuste to prosím znovu.",
-  booking: "K tomuto odkazu se nepodařilo najít rezervaci. Zkontrolujte celý odkaz nebo kontaktujte recepci.",
-  state: "Ověření vypršelo. Začněte prosím znovu.",
-  session: "Ověření vypršelo. Začněte prosím znovu.",
-};
-
-function isBooking(value: unknown): value is MockBooking {
-  if (!value || typeof value !== "object") return false;
-  const booking = value as Record<string, unknown>;
-  const fields = [
-    "token", "roomId", "roomNumber", "roomType", "hotelName", "guestName", "checkIn", "checkOut",
-  ];
-  if (!fields.every((field) =>
-    Object.hasOwn(booking, field) &&
-    typeof booking[field] === "string" && booking[field].trim().length > 0,
-  )) return false;
-
-  return [booking.checkIn, booking.checkOut].every((value) => {
-    const date = value as string;
-    const timestamp = Date.parse(date);
-    return /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(timestamp) &&
-      new Date(timestamp).toISOString().slice(0, 10) === date;
-  }) && (booking.checkOut as string) >= (booking.checkIn as string);
-}
 
 export default function CheckinFlow({
   roomId,
@@ -69,10 +45,7 @@ export default function CheckinFlow({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
   const inFlight = useRef(false);
-  const requestRef = useRef<{
-    controller: AbortController;
-    timer: ReturnType<typeof setTimeout>;
-  } | null>(null);
+  const { start, isCurrent, finish } = useAbortableRequest();
 
   useEffect(() => {
     // A full-page bank redirect can leave "verifying" in the back/forward cache.
@@ -86,13 +59,7 @@ export default function CheckinFlow({
     window.addEventListener("pageshow", restoreFromBank);
     return () => {
       window.removeEventListener("pageshow", restoreFromBank);
-      const request = requestRef.current;
-      requestRef.current = null;
       inFlight.current = false;
-      if (request) {
-        clearTimeout(request.timer);
-        request.controller.abort();
-      }
     };
   }, [bankIdEnabled]);
 
@@ -117,19 +84,14 @@ export default function CheckinFlow({
     if (!validLink || bankIdEnabled || inFlight.current || step === "verified") return;
     inFlight.current = true;
     setStep("verifying");
-    const controller = new AbortController();
-    const request = {
-      controller,
-      timer: setTimeout(() => controller.abort(), 15_000),
-    };
-    requestRef.current = request;
+    const request = start(15_000);
     let failure = "Spojení se nezdařilo. Zkontrolujte připojení a spusťte simulaci znovu.";
     try {
       const res = await fetch("/api/checkin/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId, token }),
-        signal: controller.signal,
+        signal: request.controller.signal,
       });
       failure = res.status === 404
         ? failureMessages.booking
@@ -142,21 +104,17 @@ export default function CheckinFlow({
         data.booking.roomId !== roomId || data.booking.token !== token) {
         throw new Error("Invalid verification response");
       }
-      if (requestRef.current !== request) return;
+      if (!isCurrent(request)) return;
       setBooking(data.booking);
       setStep("verified");
     } catch {
-      if (requestRef.current !== request) return;
-      setErrorText(controller.signal.aborted
+      if (!isCurrent(request)) return;
+      setErrorText(request.controller.signal.aborted
         ? "Simulace neodpověděla do 15 sekund. Zkuste ji prosím znovu."
         : failure);
       setStep("error");
     } finally {
-      clearTimeout(request.timer);
-      if (requestRef.current === request) {
-        requestRef.current = null;
-        inFlight.current = false;
-      }
+      if (finish(request)) inFlight.current = false;
     }
   }
 

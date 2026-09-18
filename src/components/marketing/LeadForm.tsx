@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { CONTACT_MAILTO } from "@/lib/content";
 import { CheckMark, WarningMark } from "@/components/marks";
+import { useAbortableRequest } from "@/hooks/useAbortableRequest";
+import { CONTACT_MAILTO } from "@/lib/content";
 
 const fields = [
   { name: "hotel", label: "Hotel nebo penzion", maxLength: 160, required: true, type: "text", autoComplete: "organization" },
@@ -39,10 +40,7 @@ export function LeadForm() {
   const errorRef = useRef<HTMLParagraphElement>(null);
   const inFlight = useRef(false);
   const submissionRef = useRef<{ payload: string; id: string } | null>(null);
-  const requestRef = useRef<{
-    controller: AbortController;
-    timer: ReturnType<typeof setTimeout>;
-  } | null>(null);
+  const { start, isCurrent, finish } = useAbortableRequest();
   const errorFlashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [sentEmail, setSentEmail] = useState<string | null>(null);
@@ -54,12 +52,6 @@ export function LeadForm() {
   const status = sentEmail !== null ? "success" : submitting ? "submitting" : errorFlash ? "error" : "idle";
 
   useEffect(() => () => {
-    const request = requestRef.current;
-    requestRef.current = null;
-    if (request) {
-      clearTimeout(request.timer);
-      request.controller.abort();
-    }
     if (errorFlashTimer.current !== null) clearTimeout(errorFlashTimer.current);
   }, []);
 
@@ -108,12 +100,7 @@ export function LeadForm() {
     setFieldErrors({});
     setErrorFlash(false);
     if (errorFlashTimer.current !== null) clearTimeout(errorFlashTimer.current);
-    const controller = new AbortController();
-    const request = {
-      controller,
-      timer: setTimeout(() => controller.abort(), 20_000),
-    };
-    requestRef.current = request;
+    const request = start(20_000);
 
     try {
       const normalized = JSON.stringify(payload);
@@ -125,11 +112,11 @@ export function LeadForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...payload, submissionId: submissionRef.current.id }),
-        signal: controller.signal,
+        signal: request.controller.signal,
       });
       const json: unknown = await res.json();
-      if (requestRef.current !== request) return;
-      if (controller.signal.aborted) throw new Error("Request timed out");
+      if (!isCurrent(request)) return;
+      if (request.controller.signal.aborted) throw new Error("Request timed out");
       const result = json && typeof json === "object" && !Array.isArray(json)
         ? json as Record<string, unknown>
         : null;
@@ -157,15 +144,13 @@ export function LeadForm() {
           : res.status === 429 ? rateLimitMessage : failureMessage);
       flashError();
     } catch {
-      if (requestRef.current !== request) return;
-      setError(controller.signal.aborted
+      if (!isCurrent(request)) return;
+      setError(request.controller.signal.aborted
         ? "Odeslání se nepodařilo potvrdit do 20 sekund. Zkuste to prosím znovu se stejnými údaji nebo nám napište e-mailem."
         : failureMessage);
       flashError();
     } finally {
-      clearTimeout(request.timer);
-      if (requestRef.current === request) {
-        requestRef.current = null;
+      if (finish(request)) {
         inFlight.current = false;
         setSubmitting(false);
       }

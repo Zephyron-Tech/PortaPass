@@ -8,7 +8,8 @@ import { LeadForm } from "@/components/marketing/LeadForm";
 import { Band, Eyebrow, Section, SectionHeader } from "@/components/marketing/Section";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
-import { WalkthroughPeel, type WalkthroughStep } from "@/components/marketing/WalkthroughPeel";
+import { WalkthroughPeel } from "@/components/marketing/WalkthroughPeel";
+import { HOME_WALKTHROUGH_STEPS, PILOT_DECISIONS } from "@/lib/content";
 import { findBookingByToken } from "@/lib/mockData";
 
 export const metadata: Metadata = {
@@ -27,16 +28,6 @@ export const metadata: Metadata = {
 };
 
 const demoBooking = findBookingByToken("room-101", "abc");
-const decisions = [
-  { title: "Nejdřív zkušenost hosta", body: "Projděte si ukázkový odkaz na vlastním telefonu. Bez instalace hotelové aplikace." },
-  { title: "Potom váš provoz", body: "Společně projdeme způsob rezervací, práci recepce a systém, který už používáte." },
-  { title: "Zámky řešíme s partnerem", body: "Napojení na zámkový systém domluvíme s certifikovaným výrobcem (Salto, ASSA ABLOY, dormakaba) přímo pro váš hotel." },
-];
-const steps: WalkthroughStep[] = [
-  { title: "Jeden odkaz", body: "Host dostane odkaz na rezervaci ještě před příjezdem. Stačí kliknout – žádná aplikace, žádné čekání na recepci.", alt: "Ukázka odkazu na check-in v telefonu", src: "/mockups/mockup1.png" },
-  { title: "Ověření přes Bank iD", body: "Totožnost hosta ověříme bezpečně přes Bank iD, přímo v telefonu.", alt: "Ukázka ověření totožnosti přes Bank iD", bankId: true, src: "/mockups/mockup2.png" },
-  { title: "Ukázkový klíč ve Wallet", body: "Na iPhonu si uložíte podepsaný ukázkový průkaz do Apple Wallet. Zůstane dostupný i offline.", alt: "Ukázkový klíč připravený k přidání do Apple Wallet", src: "/mockups/mockup3.png" },
-];
 
 export default function Home() {
   return (
@@ -88,7 +79,7 @@ export default function Home() {
               <div className="hero-reasons">
                 <SectionHeader heading="Nejdřív si to vyzkoušejte. Pak se rozhodněte." />
                 <dl className="mt-10 space-y-8">
-                  {decisions.map((item, i) => (
+                  {PILOT_DECISIONS.map((item, i) => (
                     <div key={item.title} data-reveal data-reveal-step={i + 1} className="border-t border-hairline pt-6">
                       <dt className="font-serif text-[1.6rem] leading-tight text-ink">{item.title}</dt>
                       <dd className="mt-3 max-w-[42ch] text-[17px] leading-[1.65] text-ink-2">{item.body}</dd>
@@ -101,7 +92,7 @@ export default function Home() {
         </section>
         <Section>
           <SectionHeader heading="Od odkazu po peněženku" lead="Tři části ukázky. Žádná hotelová aplikace." />
-          <WalkthroughPeel steps={steps} />
+          <WalkthroughPeel steps={HOME_WALKTHROUGH_STEPS} />
         </Section>
         <Band id="pilot">
           <SectionHeader tone="dark" eyebrow="Pilotní program" heading="Hledáme hotel, se kterým uděláme další krok" lead="Prototyp si můžete projít už dnes. Skutečný provoz vyžaduje další integrace a smlouvy." />
