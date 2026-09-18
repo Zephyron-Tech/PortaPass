@@ -16,7 +16,17 @@ export function BackToTop() {
   return (
     <button
       type="button"
-      onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" })}
+      onClick={(event) => {
+        // A real click can leave the button focused in some browsers; the
+        // scroll this triggers is what makes `visible` (and so
+        // aria-hidden) go false a moment later, which would otherwise
+        // hide a still-focused element from assistive tech. Blur it
+        // up front rather than reaching for `inert` — toggling `inert`
+        // on a focused element mid-animation was found to abort
+        // window.scrollTo's smooth-scroll outright in Chromium.
+        event.currentTarget.blur();
+        window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" });
+      }}
       className="back-to-top"
       aria-label="Zpět nahoru"
       aria-hidden={!visible}
