@@ -25,6 +25,18 @@ function subscribeToStack(notify: () => void) {
 const getStackSnapshot = () => window.matchMedia(stackQuery).matches;
 const getServerSnapshot = () => false;
 
+// Tablet (48rem-64rem) keeps the vertical stack; only genuine phone widths
+// get the horizontal swipe carousel (see the matching CSS breakpoint).
+const carouselQuery = "(max-width: 47.9375rem)";
+
+function subscribeToCarousel(notify: () => void) {
+  const media = window.matchMedia(carouselQuery);
+  media.addEventListener("change", notify);
+  return () => media.removeEventListener("change", notify);
+}
+
+const getCarouselSnapshot = () => window.matchMedia(carouselQuery).matches;
+
 function segment(value: number, start: number, end: number) {
   return Math.min(1, Math.max(0, (value - start) / (end - start)));
 }
@@ -94,9 +106,12 @@ function WalkthroughCard({
 
 export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   const target = useRef<HTMLDivElement>(null);
+  const scene = useRef<HTMLDivElement>(null);
   const active = useSyncExternalStore(subscribeToStack, getStackSnapshot, getServerSnapshot);
+  const isCarousel = useSyncExternalStore(subscribeToCarousel, getCarouselSnapshot, getServerSnapshot);
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set());
   const [current, setCurrent] = useState(0);
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const { scrollYProgress } = useScroll({ target, offset: ["start start", "end end"] });
   const ready = loaded.size === steps.length;
   useMotionValueEvent(scrollYProgress, "change", (value) => {
@@ -225,6 +240,32 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
     };
   }, [active, scrollYProgress]);
 
+  // Phone only: track which slide is currently snapped into view, purely to
+  // drive the dot indicator and each slide's dimmed/focused state. Separate
+  // from the desktop peel's scroll-jack machinery above, which never runs
+  // here since isCarousel and active are mutually exclusive by breakpoint.
+  useEffect(() => {
+    const element = scene.current;
+    if (!isCarousel || !element) return;
+    const slides = Array.from(element.children) as HTMLElement[];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        const index = slides.indexOf(visible.target as HTMLElement);
+        if (index === -1) return;
+        setCarouselIndex(index);
+        for (const slide of slides) slide.dataset.active = String(slide === visible.target);
+      },
+      { root: element, threshold: 0.6 },
+    );
+    for (const slide of slides) observer.observe(slide);
+    slides[0].dataset.active = "true";
+    return () => observer.disconnect();
+  }, [isCarousel, steps.length]);
+
   return (
     <div ref={target} className="walkthrough-peel" data-enhanced={active} data-loading={!ready} data-ready={ready}>
       <div className="walkthrough-peel-sticky">
@@ -234,8 +275,11 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
           </div>
           <div className="walkthrough-peel-skeleton-device" />
         </div>
-        <div className="walkthrough-peel-scene">
+        <div ref={scene} className="walkthrough-peel-scene">
           {steps.map((step, index) => <WalkthroughCard key={step.title} step={step} index={index} progress={scrollYProgress} active={active} current={current} onImageLoad={markImageLoaded} />)}
+        </div>
+        <div className="walkthrough-carousel-dots" aria-hidden="true">
+          {steps.map((step, index) => <span key={step.title} data-current={carouselIndex === index} />)}
         </div>
         {active ? (
           <div className="walkthrough-peel-position" aria-hidden="true">

@@ -362,6 +362,78 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
   .hero-actions { flex-direction: row; }
 }
 
+.walkthrough-carousel-dots { display: none; }
+
+/* ---- Walkthrough: phone carousel (<48rem only) -----------------------
+ * Tablet (>=48rem) and desktop keep the vertical stack / peel scene
+ * defined below untouched. Below 48rem, the same three
+ * .walkthrough-peel-card nodes become horizontal scroll-snap slides
+ * instead of a vertical stack — no separate markup, same DOM.
+ */
+@media (max-width: 47.9375rem) {
+  .walkthrough-peel-scene {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: -1.5rem;
+  }
+  .walkthrough-peel-scene::-webkit-scrollbar { display: none; }
+
+  .walkthrough-peel-card {
+    flex: 0 0 100%;
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 40rem) {
+    /* Mirrors Container's own px-6 -> sm:px-8 switch so the bleed stays
+       flush with the section's gutter instead of drifting 0.5rem short. */
+    .walkthrough-peel-scene { margin-inline: -2rem; }
+    .walkthrough-peel-card { padding-inline: 2rem; }
+  }
+
+  .walkthrough-carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+  }
+  .walkthrough-carousel-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--hairline-strong);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .walkthrough-carousel-dots [data-current="true"] {
+    background: var(--ink-2);
+    transform: scale(1.35);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* framer-motion sets inline style={opacity:1, transform:...} on this
+       card whenever the desktop peel is inactive (always true on phone),
+       which beats a plain class rule. `scale` (the standalone CSS
+       property, distinct from the `transform` shorthand motion writes to)
+       composes independently and needs no override; opacity is the same
+       property motion sets inline, so it needs !important to win here. */
+    .walkthrough-peel-card {
+      scale: 0.96;
+      opacity: 0.5 !important;
+      transition: opacity 0.35s ease, scale 0.35s ease;
+    }
+    .walkthrough-peel-card[data-active="true"] {
+      scale: 1;
+      opacity: 1 !important;
+    }
+  }
+}
+
 @media (min-width: 48rem) {
   .walkthrough-peel-content { grid-template-columns: minmax(0, 1fr) 17rem; gap: 4rem; }
   .walkthrough-device { max-width: 17rem; }

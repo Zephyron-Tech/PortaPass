@@ -60,8 +60,21 @@ for (const width of widths) {
       expect(device!.width).toBeCloseTo(272, 0);
       expect(device!.x).toBeGreaterThan(copy!.x + copy!.width);
       await expect(page.locator(".walkthrough-peel-sticky")).toHaveCSS("position", "static");
+      await expect(page.locator(".walkthrough-carousel-dots")).toBeHidden();
     } else {
+      // Below 768px the three cards become a horizontal scroll-snap
+      // carousel; each card keeps its own internal copy-above-device
+      // stacking (checked above), but the scene itself scrolls sideways
+      // and a dot indicator tracks the snapped slide.
       expect(device!.y).toBeGreaterThanOrEqual(copy!.y + copy!.height);
+      const dots = page.locator(".walkthrough-carousel-dots span");
+      await expect(dots).toHaveCount(3);
+      await expect(dots.first()).toHaveAttribute("data-current", "true");
+      await page.locator(".walkthrough-peel-scene").evaluate(
+        (element, slideWidth) => element.scrollTo({ left: slideWidth, behavior: "instant" }),
+        width,
+      );
+      await expect(dots.nth(1)).toHaveAttribute("data-current", "true");
     }
 
     const links = page.locator("a");
