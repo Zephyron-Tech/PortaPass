@@ -373,6 +373,7 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
 @media (max-width: 47.9375rem) {
   .walkthrough-peel-scene {
     display: flex;
+    align-items: flex-start;
     gap: 0;
     overflow-x: auto;
     overflow-y: visible;
@@ -390,6 +391,16 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
     padding-inline: 1.5rem;
   }
 
+  /* Bodies run one to three lines depending on the step; a floor here
+     keeps the device mockup starting at the same Y on every slide rather
+     than shifting up/down with the copy's own length. */
+  .walkthrough-copy { min-height: 8.75rem; }
+  /* Tighter than the 2rem used at tablet/desktop — a phone slide is
+     already a tall, narrow column, and the wider gap plus the dot
+     indicator's own margin below it added up to a noticeably dead strip
+     under the mockup. */
+  .walkthrough-peel-content { gap: 1.25rem; }
+
   @media (min-width: 40rem) {
     /* Mirrors Container's own px-6 -> sm:px-8 switch so the bleed stays
        flush with the section's gutter instead of drifting 0.5rem short. */
@@ -401,7 +412,7 @@ textarea.lead-input { min-height: 8rem; resize: vertical; }
     display: flex;
     justify-content: center;
     gap: 8px;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
   }
   .walkthrough-carousel-dots span {
     width: 6px;
