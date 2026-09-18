@@ -65,6 +65,27 @@ test("horizontal trackpad scroll steps to the next/prev slide", async ({ page })
   await expect.poll(() => dots.nth(0).getAttribute("data-current")).toBe("true");
 });
 
+test("small trackpad jitter below the step threshold does not advance", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const dots = page.locator(".walkthrough-carousel-dots button");
+  const scene = page.locator(".walkthrough-peel-scene");
+  await scene.scrollIntoViewIfNeeded();
+  const box = (await scene.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+
+  // A handful of tiny same-gesture deltas, well under the 60px threshold,
+  // must not add up to a step even though each one is horizontal-dominant.
+  for (let i = 0; i < 5; i++) await page.mouse.wheel(8, 0);
+  await page.waitForTimeout(200);
+  await expect(dots.first()).toHaveAttribute("data-current", "true");
+
+  // A real gesture immediately after still moves exactly one slide.
+  await page.mouse.wheel(200, 0);
+  await expect.poll(() => dots.nth(1).getAttribute("data-current")).toBe("true");
+  await expect(dots.nth(2)).not.toHaveAttribute("data-current", "true");
+});
+
 test("vertical wheel over the carousel still scrolls the page, not the slides", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");

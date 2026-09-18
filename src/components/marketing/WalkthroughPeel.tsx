@@ -96,19 +96,33 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   // comment) so a page-scroll wheel gesture never gets misread as sideways
   // carousel movement. A genuine horizontal trackpad/wheel gesture (deltaX
   // dominant) is still a valid second way to step next/prev, alongside the
-  // arrows — one step per gesture, with a short cooldown so one flick
-  // doesn't fire several steps.
+  // arrows — one step per gesture. A single trackpad swipe fires dozens of
+  // small wheel events, so steps only trigger once accumulated horizontal
+  // movement clears a threshold, then the accumulator locks until the
+  // gesture pauses (or reverses) — this is what makes it move exactly one
+  // slide per swipe instead of racing through several.
   useEffect(() => {
     const element = scene.current;
     if (!isCarousel || !element || !matchMedia("(min-width: 64rem)").matches) return;
-    let cooling = false;
+    const threshold = 60;
+    const gestureGapMs = 150;
+    let accumulated = 0;
+    let lastEventTime = 0;
+    let locked = false;
     function onWheel(event: WheelEvent) {
       if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
       event.preventDefault();
-      if (cooling) return;
-      cooling = true;
-      goTo(carouselIndexRef.current + (event.deltaX > 0 ? 1 : -1));
-      setTimeout(() => { cooling = false; }, 500);
+      const now = performance.now();
+      if (now - lastEventTime > gestureGapMs) {
+        accumulated = 0;
+        locked = false;
+      }
+      lastEventTime = now;
+      if (locked) return;
+      accumulated += event.deltaX;
+      if (Math.abs(accumulated) < threshold) return;
+      locked = true;
+      goTo(carouselIndexRef.current + (accumulated > 0 ? 1 : -1));
     }
     element.addEventListener("wheel", onWheel, { passive: false });
     return () => element.removeEventListener("wheel", onWheel);
