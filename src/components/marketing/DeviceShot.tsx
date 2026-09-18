@@ -16,6 +16,7 @@ export function DeviceShot({
   loading = "lazy",
   reveal = true,
   sizes = "(min-width: 768px) 272px, 208px",
+  onLoad,
 }: {
   src?: string;
   alt: string;
@@ -24,6 +25,7 @@ export function DeviceShot({
   loading?: "eager" | "lazy";
   reveal?: boolean;
   sizes?: string;
+  onLoad?: () => void;
 }) {
   return (
     <figure className={className} data-reveal={reveal ? "tall" : undefined}>
@@ -36,6 +38,7 @@ export function DeviceShot({
             sizes={sizes}
             quality={90}
             loading={loading}
+            onLoad={onLoad}
             className="object-contain"
           />
         ) : (

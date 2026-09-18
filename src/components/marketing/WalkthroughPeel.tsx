@@ -37,12 +37,14 @@ function WalkthroughCard({
   progress,
   active,
   current,
+  onImageLoad,
 }: {
   step: WalkthroughStep;
   index: number;
   progress: MotionValue<number>;
   active: boolean;
   current: number;
+  onImageLoad: (index: number) => void;
 }) {
   // Surfaces can overlap; readable content never crossfades through another step.
   const lift = useTransform(() => index === 0 ? segment(progress.get(), 0.16, 0.32) : segment(progress.get(), 0.58, 0.76));
@@ -86,7 +88,7 @@ function WalkthroughCard({
         ) : null}
         {index === 2 ? <div className="mt-7"><Cta href="/demo" transitionTypes={["nav-forward"]}>Vyzkoušet demo</Cta></div> : null}
       </div>
-      <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} reveal={false} loading={index === 0 ? "eager" : "lazy"} sizes="(min-width: 1024px) 288px, (min-width: 768px) 272px, 208px" /></div>
+      <div className="walkthrough-device"><DeviceShot src={step.src} alt={step.alt} reveal={false} loading="eager" onLoad={() => onImageLoad(index)} sizes="(min-width: 1024px) 288px, (min-width: 768px) 272px, 208px" /></div>
       </motion.div>
     </motion.article>
   );
@@ -96,36 +98,18 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   const target = useRef<HTMLDivElement>(null);
   const active = useSyncExternalStore(subscribeToStack, getStackSnapshot, getServerSnapshot);
   const hydrated = useSyncExternalStore(subscribeToHydration, getHydrationSnapshot, getServerSnapshot);
-  const [ready, setReady] = useState(false);
+  const [loaded, setLoaded] = useState<Set<number>>(() => new Set());
   const [current, setCurrent] = useState(0);
   const { scrollYProgress } = useScroll({ target, offset: ["start start", "end end"] });
+  const ready = loaded.size === steps.length;
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     const next = value < 0.26 ? 0 : value < 0.68 ? 1 : 2;
     if (next !== current) setCurrent(next);
   });
 
-  useEffect(() => {
-    if (!active) return;
-    let cancelled = false;
-    const first = new Image();
-    const preload = (src?: string) => {
-      if (!src) return;
-      const image = new Image();
-      image.src = src;
-    };
-    const finish = () => {
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        if (!cancelled) setReady(true);
-      }));
-    };
-
-    first.onload = finish;
-    first.onerror = finish;
-    first.src = steps[0]?.src ?? "";
-    if (first.complete) finish();
-    steps.slice(1).forEach((step) => preload(step.src));
-    return () => { cancelled = true; };
-  }, [active, steps]);
+  function markImageLoaded(index: number) {
+    setLoaded((previous) => previous.has(index) ? previous : new Set(previous).add(index));
+  }
 
   useEffect(() => {
     const element = target.current;
@@ -254,7 +238,7 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
           <div className="walkthrough-peel-skeleton-device" />
         </div>
         <div className="walkthrough-peel-scene">
-          {steps.map((step, index) => <WalkthroughCard key={step.title} step={step} index={index} progress={scrollYProgress} active={active} current={current} />)}
+          {steps.map((step, index) => <WalkthroughCard key={step.title} step={step} index={index} progress={scrollYProgress} active={active} current={current} onImageLoad={markImageLoaded} />)}
         </div>
         {active ? (
           <div className="walkthrough-peel-position" aria-hidden="true">
