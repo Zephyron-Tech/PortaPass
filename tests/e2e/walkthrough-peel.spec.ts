@@ -48,6 +48,37 @@ test("clicking a dot jumps directly to that slide", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Další krok" })).toBeDisabled();
 });
 
+test("horizontal trackpad scroll steps to the next/prev slide", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const dots = page.locator(".walkthrough-carousel-dots button");
+  const scene = page.locator(".walkthrough-peel-scene");
+  await scene.scrollIntoViewIfNeeded();
+  const box = (await scene.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+
+  await page.mouse.wheel(200, 0);
+  await expect.poll(() => dots.nth(1).getAttribute("data-current")).toBe("true");
+
+  await page.waitForTimeout(600);
+  await page.mouse.wheel(-200, 0);
+  await expect.poll(() => dots.nth(0).getAttribute("data-current")).toBe("true");
+});
+
+test("vertical wheel over the carousel still scrolls the page, not the slides", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const scene = page.locator(".walkthrough-peel-scene");
+  const dots = page.locator(".walkthrough-carousel-dots button");
+  await scene.scrollIntoViewIfNeeded();
+  const box = (await scene.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  const before = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 400);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
+  await expect(dots.first()).toHaveAttribute("data-current", "true");
+});
+
 test("arrows and dots are keyboard reachable with a visible focus ring", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce" });

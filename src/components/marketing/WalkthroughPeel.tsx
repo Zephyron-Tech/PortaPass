@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BankIdLogo } from "@/components/bankid/BankIdLogo";
 import { Cta } from "@/components/marketing/Cta";
 import { DeviceShot } from "@/components/marketing/DeviceShot";
@@ -57,14 +57,15 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
   const scene = useRef<HTMLDivElement>(null);
   const isCarousel = useSyncExternalStore(subscribeToCarousel, getCarouselSnapshot, getServerSnapshot);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const carouselIndexRef = useRef(0);
 
-  function goTo(index: number) {
+  const goTo = useCallback((index: number) => {
     const element = scene.current;
     if (!element) return;
     const clamped = Math.max(0, Math.min(steps.length - 1, index));
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     element.scrollTo({ left: clamped * element.clientWidth, behavior: reduced ? "instant" : "smooth" });
-  }
+  }, [steps.length]);
 
   // Track which slide is currently snapped into view, to drive the dot
   // indicator, the arrow disabled state, and each slide's dimmed state.
@@ -81,6 +82,7 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
         const index = slides.indexOf(visible.target as HTMLElement);
         if (index === -1) return;
         setCarouselIndex(index);
+        carouselIndexRef.current = index;
         for (const slide of slides) slide.dataset.active = String(slide === visible.target);
       },
       { root: element, threshold: 0.6 },
@@ -89,6 +91,28 @@ export function WalkthroughPeel({ steps }: { steps: WalkthroughStep[] }) {
     slides[0].dataset.active = "true";
     return () => observer.disconnect();
   }, [isCarousel, steps.length]);
+
+  // Desktop: the scene doesn't natively scroll (overflow-x: hidden, see CSS
+  // comment) so a page-scroll wheel gesture never gets misread as sideways
+  // carousel movement. A genuine horizontal trackpad/wheel gesture (deltaX
+  // dominant) is still a valid second way to step next/prev, alongside the
+  // arrows — one step per gesture, with a short cooldown so one flick
+  // doesn't fire several steps.
+  useEffect(() => {
+    const element = scene.current;
+    if (!isCarousel || !element || !matchMedia("(min-width: 64rem)").matches) return;
+    let cooling = false;
+    function onWheel(event: WheelEvent) {
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+      event.preventDefault();
+      if (cooling) return;
+      cooling = true;
+      goTo(carouselIndexRef.current + (event.deltaX > 0 ? 1 : -1));
+      setTimeout(() => { cooling = false; }, 500);
+    }
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => element.removeEventListener("wheel", onWheel);
+  }, [isCarousel, goTo]);
 
   return (
     <div className="walkthrough-peel">
