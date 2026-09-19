@@ -162,6 +162,15 @@ for (const width of widths) {
   });
 }
 
+test("verification shows a brief success confirmation before the Wallet step", async ({ page }) => {
+  await page.goto(checkin);
+  await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
+  await expect(page.getByText("Ověření úspěšné.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Ověřeno" })).toBeDisabled();
+  await expect(page.getByRole("status")).toHaveText("Ověření proběhlo úspěšně. Připravujeme ukázkový klíč…");
+  await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeFocused();
+});
+
 test("real mock POST succeeds and Wallet uses direct document navigation", async ({ page }) => {
   await page.goto(checkin);
   const requestPromise = page.waitForRequest(verify);

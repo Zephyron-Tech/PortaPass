@@ -6,18 +6,24 @@ import { PageHeading } from "@/components/AppHeader";
 import { AppleWalletButton } from "@/components/AppleWalletButton";
 import { BankIdButton } from "@/components/bankid/BankIdButton";
 import { KeyCard } from "@/components/KeyCard";
+import { CheckMark } from "@/components/marks";
 import { Screen } from "@/components/Screen";
 import { useAbortableRequest } from "@/hooks/useAbortableRequest";
 import type { MockBooking } from "@/lib/mockData";
 import { failureMessages, isBooking } from "./helpers";
 
-type Step = "intro" | "verifying" | "verified" | "error";
+type Step = "intro" | "verifying" | "success" | "verified" | "error";
 
 // Hidden for now: BankID's branded button always shows (even where BankID
 // isn't actually configured), but it never redirects to the real sandbox —
 // clicking it runs the same mocked verification as the no-BankID path. Flip
 // to false to go back to real config-driven behavior (bankIdEnabled prop).
 const MOCK_BANKID = true;
+// A real fetch to the mock API resolves almost instantly, which reads as
+// broken rather than fast. Keep "verifying" up for at least this long, then
+// hold a brief success confirmation before moving on to the Wallet step.
+const MIN_VERIFYING_MS = 900;
+const SUCCESS_DISPLAY_MS = 1100;
 
 export default function CheckinFlow({
   roomId,
@@ -93,6 +99,7 @@ export default function CheckinFlow({
     inFlight.current = true;
     setStep("verifying");
     const request = start(15_000);
+    const startedAt = Date.now();
     let failure = "Spojení se nezdařilo. Zkontrolujte připojení a spusťte simulaci znovu.";
     try {
       const res = await fetch("/api/checkin/verify", {
@@ -113,7 +120,13 @@ export default function CheckinFlow({
         throw new Error("Invalid verification response");
       }
       if (!isCurrent(request)) return;
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < MIN_VERIFYING_MS) await new Promise((resolve) => setTimeout(resolve, MIN_VERIFYING_MS - elapsed));
+      if (!isCurrent(request)) return;
       setBooking(data.booking);
+      setStep("success");
+      await new Promise((resolve) => setTimeout(resolve, SUCCESS_DISPLAY_MS));
+      if (!isCurrent(request)) return;
       setStep("verified");
     } catch {
       if (!isCurrent(request)) return;
@@ -126,10 +139,12 @@ export default function CheckinFlow({
     }
   }
 
-  const pending = step === "verifying";
-  const pendingText = usingRealBankId
-    ? "Přesměrováváme vás do Bank iD…"
-    : "Načítáme ukázkovou rezervaci…";
+  const pending = step === "verifying" || step === "success";
+  const pendingText = step === "success"
+    ? "Ověření proběhlo úspěšně. Připravujeme ukázkový klíč…"
+    : usingRealBankId
+      ? "Přesměrováváme vás do Bank iD…"
+      : "Načítáme ukázkovou rezervaci…";
 
   return (
     <ViewTransition
@@ -174,6 +189,13 @@ export default function CheckinFlow({
             className="mt-6 rounded-2xl border border-hairline-strong bg-background px-5 py-4 text-[15px] leading-relaxed text-ink [overflow-wrap:anywhere] focus:outline-none"
           >
             {errorText}
+          </p>
+        )}
+
+        {step === "success" && (
+          <p className="mt-6 flex items-center gap-3 rounded-2xl border border-hairline-strong bg-background px-5 py-4 text-[15px] leading-relaxed text-ink">
+            <CheckMark className="h-5 w-5 shrink-0 text-[#2f5d43]" />
+            Ověření úspěšné.
           </p>
         )}
 
@@ -222,14 +244,14 @@ export default function CheckinFlow({
           <Link href="/demo" transitionTypes={["nav-back"]} className="app-button w-full">Zpět na ukázku</Link>
         ) : pending && !usingRealBankId && !showBankId ? (
           <button type="button" disabled className="app-button w-full">
-            Probíhá simulace…
+            {step === "success" ? "Ověřeno" : "Probíhá simulace…"}
           </button>
         ) : showBankId ? (
           <div className="rounded-2xl border border-hairline-strong p-4">
             <BankIdButton
               onClick={usingRealBankId ? startBankId : mockVerify}
               pending={pending}
-              pendingLabel={usingRealBankId ? undefined : "Ověřování…"}
+              pendingLabel={usingRealBankId ? undefined : step === "success" ? "Ověřeno" : "Ověřování…"}
             />
           </div>
         ) : (
