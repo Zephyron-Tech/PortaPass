@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getBankIdConfig } from "@/lib/bankid";
+import { detectWalletPlatform } from "@/lib/device";
 import { findBookingByToken } from "@/lib/mockData";
 import { VERIFICATION_COOKIE, readVerificationCookie } from "@/lib/session";
 import CheckinFlow from "./CheckinFlow";
@@ -32,6 +33,7 @@ export default async function CheckinPage({
 
   const cookieStore = await cookies();
   const session = await readVerificationCookie(cookieStore.get(VERIFICATION_COOKIE)?.value);
+  const walletPlatform = detectWalletPlatform((await headers()).get("user-agent"));
 
   // A session only counts for the booking it was issued against.
   const verified =
@@ -46,6 +48,7 @@ export default async function CheckinPage({
       token={token}
       validLink={Boolean(linkedBooking)}
       bankIdEnabled={Boolean(getBankIdConfig())}
+      walletPlatform={walletPlatform}
       verifiedBooking={booking}
       verifiedName={verified?.name ?? null}
       failureReason={failureReason}

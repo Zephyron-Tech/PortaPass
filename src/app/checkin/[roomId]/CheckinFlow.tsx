@@ -5,10 +5,12 @@ import { useEffect, useRef, useState, useTransition, ViewTransition } from "reac
 import { PageHeading } from "@/components/AppHeader";
 import { AppleWalletButton } from "@/components/AppleWalletButton";
 import { BankIdButton } from "@/components/bankid/BankIdButton";
+import { GoogleWalletButton } from "@/components/GoogleWalletButton";
 import { KeyCard } from "@/components/KeyCard";
 import { CheckMark } from "@/components/marks";
 import { Screen } from "@/components/Screen";
 import { useAbortableRequest } from "@/hooks/useAbortableRequest";
+import type { WalletPlatform } from "@/lib/device";
 import type { MockBooking } from "@/lib/mockData";
 import { failureMessages, isBooking } from "./helpers";
 
@@ -30,6 +32,7 @@ export default function CheckinFlow({
   token,
   validLink,
   bankIdEnabled,
+  walletPlatform,
   verifiedBooking,
   verifiedName,
   failureReason,
@@ -38,6 +41,7 @@ export default function CheckinFlow({
   token: string;
   validLink: boolean;
   bankIdEnabled: boolean;
+  walletPlatform: WalletPlatform;
   verifiedBooking: MockBooking | null;
   verifiedName: string | null;
   failureReason: string | null;
@@ -249,11 +253,20 @@ export default function CheckinFlow({
 
       <div className="guest-actions" aria-busy={pending}>
         {step === "verified" && booking ? (
-            <AppleWalletButton
-              href={`/api/pass/${encodeURIComponent(roomId)}/${encodeURIComponent(
-                token,
-              )}/klic-${encodeURIComponent(booking.roomNumber)}.pkpass`}
-            />
+          <div className="flex flex-col gap-3">
+            {walletPlatform !== "google" && (
+              <AppleWalletButton
+                href={`/api/pass/${encodeURIComponent(roomId)}/${encodeURIComponent(
+                  token,
+                )}/klic-${encodeURIComponent(booking.roomNumber)}.pkpass`}
+              />
+            )}
+            {walletPlatform !== "apple" && (
+              <GoogleWalletButton
+                href={`/api/generate-google-pass?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(token)}`}
+              />
+            )}
+          </div>
         ) : !validLink ? (
           <Link href="/demo" transitionTypes={["nav-back"]} className="app-button w-full">Zpět na ukázku</Link>
         ) : pending && !usingRealBankId && !showBankId ? (

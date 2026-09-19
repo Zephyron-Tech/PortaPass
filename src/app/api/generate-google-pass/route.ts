@@ -9,18 +9,27 @@ import { findBookingByToken } from "@/lib/mockData";
  * error shapes, same "not configured" vs. "not found" vs. generic failure
  * split — so both wallets are wired into the app identically, only the
  * generated artifact differs (a signed save-link here, a .pkpass there).
+ *
+ * GET redirects straight to the signed pay.google.com URL, so the button in
+ * CheckinFlow.tsx can be a plain <a href> like AppleWalletButton's, with no
+ * client fetch/JS needed. POST returns the URL as JSON instead — used for
+ * programmatic/testing use.
  */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  return respondWithSaveUrl(searchParams.get("roomId"), searchParams.get("token"));
+  return respondWithSaveUrl(searchParams.get("roomId"), searchParams.get("token"), "redirect");
 }
 
 export async function POST(req: NextRequest) {
   const { roomId, token } = await req.json();
-  return respondWithSaveUrl(roomId, token);
+  return respondWithSaveUrl(roomId, token, "json");
 }
 
-async function respondWithSaveUrl(roomId: string | null | undefined, token: string | null | undefined) {
+async function respondWithSaveUrl(
+  roomId: string | null | undefined,
+  token: string | null | undefined,
+  mode: "redirect" | "json",
+) {
   const booking = roomId && token ? findBookingByToken(roomId, token) : undefined;
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
@@ -34,6 +43,9 @@ async function respondWithSaveUrl(roomId: string | null | undefined, token: stri
   try {
     const object = buildGenericObject(config, booking);
     const url = await buildSaveUrl(config, object);
+    if (mode === "redirect") {
+      return NextResponse.redirect(url, { status: 302, headers: { "Cache-Control": "no-store" } });
+    }
     return NextResponse.json({ url }, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {
     console.error(err);
