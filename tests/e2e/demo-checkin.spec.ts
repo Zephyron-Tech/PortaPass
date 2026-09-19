@@ -90,7 +90,7 @@ for (const width of widths) {
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(new URL(checkin, "http://127.0.0.1:3100").href);
     await expect(page.getByRole("heading", { name: "Ověření hosta" })).toBeVisible();
-    await expect(page.getByRole("button", { name: /s Bank iD/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /s Bank iD/ })).toBeVisible();
     await guestLayout(page, testInfo, "intro");
 
     let release!: () => void;
@@ -100,9 +100,9 @@ for (const width of widths) {
       await route.fulfill({ status: 500, json: { error: "Injected failure" } });
     });
     try {
-      await page.getByRole("button", { name: "Spustit simulaci" }).click();
+      await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
       await expect(page.getByRole("status")).toHaveText("Načítáme ukázkovou rezervaci…");
-      await expect(page.getByRole("button", { name: "Probíhá simulace…" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Ověřování…" })).toBeDisabled();
       await expect(page.locator(".guest-actions")).toHaveAttribute("aria-busy", "true");
       await guestLayout(page, testInfo, "pending");
     } finally {
@@ -119,7 +119,7 @@ for (const width of widths) {
       hotelName: "HotelVltava".repeat(14), guestName: "AlexandraNovakova".repeat(10),
     };
     await page.route(verify, (route) => route.fulfill({ json: { verified: true, booking: longBooking } }));
-    await page.getByRole("button", { name: "Spustit simulaci" }).click();
+    await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
     await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeFocused();
     await expect(page.getByText("Simulace dokončena. Totožnost nebyla ověřena.")).toBeVisible();
     await expect(page.getByText(/Na iPhonu potvrďte přidání/)).toHaveCount(0);
@@ -165,7 +165,7 @@ for (const width of widths) {
 test("real mock POST succeeds and Wallet uses direct document navigation", async ({ page }) => {
   await page.goto(checkin);
   const requestPromise = page.waitForRequest(verify);
-  await page.getByRole("button", { name: "Spustit simulaci" }).click();
+  await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
   const request = await requestPromise;
   expect(request.method()).toBe("POST");
   expect(request.postDataJSON()).toEqual({ roomId: "room-101", token: "abc" });
@@ -197,13 +197,13 @@ for (const fault of [
   test(`${fault.name} announces error and permits retry`, async ({ page }) => {
     await page.goto(checkin);
     await page.route(verify, (route) => route.fulfill({ status: fault.status, contentType: "application/json", body: fault.body }));
-    await page.getByRole("button", { name: "Spustit simulaci" }).click();
+    await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
     await expect(page.getByText(fault.message, { exact: false })).toBeFocused();
     await expect(page.getByRole("link", { name: "Přidat do Apple Wallet" })).toHaveCount(0);
     await expect(page.getByRole("status")).toBeEmpty();
-    await expect(page.getByRole("button", { name: "Spustit simulaci" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Ověřit se s Bank iD" })).toBeEnabled();
     await page.unroute(verify);
-    await page.getByRole("button", { name: "Spustit simulaci" }).click();
+    await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
     await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeFocused();
   });
 }
@@ -222,20 +222,20 @@ test("15-second timeout aborts pending verification and allows recovery", async 
   });
   const request = page.waitForRequest(verify);
   try {
-    await page.getByRole("button", { name: "Spustit simulaci" }).click();
+    await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
     await request;
-    await expect(page.getByRole("button", { name: "Probíhá simulace…" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Ověřování…" })).toBeDisabled();
     await page.clock.fastForward(14_999);
-    await expect(page.getByRole("button", { name: "Probíhá simulace…" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Ověřování…" })).toBeDisabled();
     await page.clock.fastForward(1);
     await expect(page.getByText("Simulace neodpověděla do 15 sekund. Zkuste ji prosím znovu.")).toBeFocused();
-    await expect(page.getByRole("button", { name: "Spustit simulaci" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Ověřit se s Bank iD" })).toBeEnabled();
   } finally {
     release();
   }
   await page.unrouteAll({ behavior: "wait" });
   await page.clock.resume();
-  await page.getByRole("button", { name: "Spustit simulaci" }).click();
+  await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
   await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeFocused();
 });
 
@@ -244,24 +244,24 @@ test("prototype-like failure reason renders safe generic error", async ({ page }
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(`${checkin}&verify=failed&reason=__proto__`);
   await expect(page.getByText("Ověření se nezdařilo. Zkuste to prosím znovu.")).toBeFocused();
-  await expect(page.getByRole("button", { name: "Spustit simulaci" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Ověřit se s Bank iD" })).toBeEnabled();
   expect(errors).toEqual([]);
 });
 
 test("unverified success query and reload never invent an identity session", async ({ page }) => {
   await page.goto(`${checkin}&verify=ok`);
-  await expect(page.getByRole("button", { name: "Spustit simulaci" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Ověřit se s Bank iD" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Přidat do Apple Wallet" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Spustit simulaci" }).click();
+  await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
   await expect(page.getByText("Simulace dokončena. Totožnost nebyla ověřena.")).toBeVisible();
   await page.reload();
-  await expect(page.getByRole("button", { name: "Spustit simulaci" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Ověřit se s Bank iD" })).toBeVisible();
 });
 
 test("200 percent text sizing keeps guest details and action reachable", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.goto(checkin);
-  await page.getByRole("button", { name: "Spustit simulaci" }).click();
+  await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
   await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeFocused();
   await page.getByText("Podrobnosti ukázkové rezervace", { exact: true }).click();
   // Magnify authored text, excluding the decorative card whose full data is in details.
@@ -299,7 +299,6 @@ for (const width of widths) {
     await page.evaluate(() => document.fonts.ready);
     const button = page.getByRole("button", { name: "Ověřit se s Bank iD" });
     await expect(button).toBeVisible();
-    await expect(page.getByRole("button", { name: "Spustit simulaci" })).toHaveCount(0);
     const readMetrics = () => button.evaluate((element) => {
       const style = getComputedStyle(element);
       const box = element.getBoundingClientRect();

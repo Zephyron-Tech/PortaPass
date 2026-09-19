@@ -13,11 +13,11 @@ import { failureMessages, isBooking } from "./helpers";
 
 type Step = "intro" | "verifying" | "verified" | "error";
 
-// Hidden for now: the BankID sandbox redirect is disabled, but the branded
-// step/button stay in place — clicking it runs the same mocked verification
-// as the no-BankID path instead of leaving the site. Flip back to true to
-// restore the real redirect.
-const REAL_BANKID_REDIRECT = false;
+// Hidden for now: BankID's branded button always shows (even where BankID
+// isn't actually configured), but it never redirects to the real sandbox —
+// clicking it runs the same mocked verification as the no-BankID path. Flip
+// to false to go back to real config-driven behavior (bankIdEnabled prop).
+const MOCK_BANKID = true;
 
 export default function CheckinFlow({
   roomId,
@@ -52,7 +52,8 @@ export default function CheckinFlow({
   const errorRef = useRef<HTMLParagraphElement>(null);
   const inFlight = useRef(false);
   const { start, isCurrent, finish } = useAbortableRequest();
-  const usingRealBankId = bankIdEnabled && REAL_BANKID_REDIRECT;
+  const showBankId = MOCK_BANKID || bankIdEnabled;
+  const usingRealBankId = bankIdEnabled && !MOCK_BANKID;
 
   useEffect(() => {
     // A full-page bank redirect can leave "verifying" in the back/forward cache.
@@ -160,7 +161,7 @@ export default function CheckinFlow({
           <p className="text-[15px] leading-relaxed text-ink-2">
             {usingRealBankId
               ? "Pokračujete ke službě Bank iD. Po ověření se vrátíte sem ke smyšlené rezervaci. Ukázka neporovnává totožnost s držitelem rezervace."
-              : bankIdEnabled
+              : showBankId
                 ? "Ověření přes Bank iD je pro tuto ukázku dočasně simulované — krok proběhne bez přesměrování do banky."
                 : "Bank iD není připojené. Simulace načte smyšlenou rezervaci. Neověřuje totožnost ani vás nepřihlašuje do banky."}
           </p>
@@ -219,11 +220,11 @@ export default function CheckinFlow({
             />
         ) : !validLink ? (
           <Link href="/demo" transitionTypes={["nav-back"]} className="app-button w-full">Zpět na ukázku</Link>
-        ) : pending && !usingRealBankId && !bankIdEnabled ? (
+        ) : pending && !usingRealBankId && !showBankId ? (
           <button type="button" disabled className="app-button w-full">
             Probíhá simulace…
           </button>
-        ) : bankIdEnabled ? (
+        ) : showBankId ? (
           <div className="rounded-2xl border border-hairline-strong p-4">
             <BankIdButton
               onClick={usingRealBankId ? startBankId : mockVerify}
