@@ -102,8 +102,15 @@ for (const width of widths) {
     try {
       await page.getByRole("button", { name: "Ověřit se s Bank iD" }).click();
       await expect(page.getByRole("status")).toHaveText("Načítáme ukázkovou rezervaci…");
-      await expect(page.getByRole("button", { name: "Ověřování…" })).toBeDisabled();
+      const pendingButton = page.getByRole("button", { name: "Ověřování…" });
+      await expect(pendingButton).toBeDisabled();
       await expect(page.locator(".guest-actions")).toHaveAttribute("aria-busy", "true");
+      // The pending label must sit centered in the button, not left-aligned
+      // in the brand grid's label column (there's no logo/divider to balance
+      // against once they're hidden).
+      const pendingLabel = page.getByText("Ověřování…");
+      const [buttonBox, labelBox] = await Promise.all([pendingButton.boundingBox(), pendingLabel.boundingBox()]);
+      expect(Math.abs((buttonBox!.x + buttonBox!.width / 2) - (labelBox!.x + labelBox!.width / 2))).toBeLessThan(3);
       await guestLayout(page, testInfo, "pending");
     } finally {
       release();

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, ViewTransition } from "react";
+import { useEffect, useRef, useState, useTransition, ViewTransition } from "react";
 import { PageHeading } from "@/components/AppHeader";
 import { AppleWalletButton } from "@/components/AppleWalletButton";
 import { BankIdButton } from "@/components/bankid/BankIdButton";
@@ -42,7 +42,7 @@ export default function CheckinFlow({
   verifiedName: string | null;
   failureReason: string | null;
 }) {
-  const [step, setStep] = useState<Step>(() => {
+  const [step, setStepState] = useState<Step>(() => {
     if (!validLink) return "error";
     if (verifiedBooking) return "verified";
     return failureReason ? "error" : "intro";
@@ -58,8 +58,16 @@ export default function CheckinFlow({
   const errorRef = useRef<HTMLParagraphElement>(null);
   const inFlight = useRef(false);
   const { start, isCurrent, finish } = useAbortableRequest();
+  const [, startStepTransition] = useTransition();
   const showBankId = MOCK_BANKID || bankIdEnabled;
   const usingRealBankId = bankIdEnabled && !MOCK_BANKID;
+  // Plain setState doesn't trigger React's <ViewTransition> — only updates
+  // wrapped in a Transition do — so every setStep call below goes through
+  // this wrapper. It only visibly animates where the "stage" derived from
+  // step (see below) actually changes, i.e. the Ověření → Wallet handoff.
+  function setStep(next: Step) {
+    startStepTransition(() => setStepState(next));
+  }
 
   useEffect(() => {
     // A full-page bank redirect can leave "verifying" in the back/forward cache.
@@ -145,6 +153,10 @@ export default function CheckinFlow({
     : usingRealBankId
       ? "Přesměrováváme vás do Bank iD…"
       : "Načítáme ukázkovou rezervaci…";
+  // Ověření (intro/verifying/success/error) and Wallet are the two "pages"
+  // of this flow; only the handoff between them crossfades, not every
+  // intermediate step change within Ověření.
+  const stage = step === "verified" ? "wallet" : "verify";
 
   return (
     <ViewTransition
@@ -153,6 +165,8 @@ export default function CheckinFlow({
       default="none"
     >
     <Screen desktop>
+    <ViewTransition key={stage} enter="nav-forward" exit="nav-forward" default="none">
+    <>
       <PageHeading
         headingRef={headingRef}
         progress={step === "verified" ? "2 ze 2 · Apple Wallet" : "1 ze 2 · Ověření"}
@@ -260,6 +274,8 @@ export default function CheckinFlow({
           </button>
         )}
       </div>
+    </>
+    </ViewTransition>
     </Screen>
     </ViewTransition>
   );

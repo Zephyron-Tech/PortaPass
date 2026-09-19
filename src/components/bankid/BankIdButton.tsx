@@ -52,7 +52,7 @@ export function BankIdButton({
         <BankIdLogo width={108} tone="white" decorative />
       </span>
       <span aria-hidden className={`h-5 w-px bg-white/30 transition-opacity duration-150 ${pending ? "opacity-0" : "opacity-100"}`} />
-      <span className="justify-self-start whitespace-nowrap text-[15px] font-medium tracking-[-0.01em]">
+      <span className={`whitespace-nowrap text-[15px] font-medium tracking-[-0.01em] ${pending ? "col-span-3 text-center" : "justify-self-start"}`}>
         {pending ? pendingLabel : label}
       </span>
     </button>
