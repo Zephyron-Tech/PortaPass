@@ -28,18 +28,23 @@ export function BankIdButton({
   label = "Ověřit se",
   className = "",
   pending = false,
+  pendingLabel = "Přesměrování…",
 }: {
   onClick: () => void;
   label?: BankIdAction;
   className?: string;
   pending?: boolean;
+  /** Text shown (and announced) while pending — the button is also used to
+   * kick off a mocked, non-redirecting verification, where "Přesměrování…"
+   * would be inaccurate. */
+  pendingLabel?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={pending}
-      aria-label={pending ? "Přesměrování do Bank iD" : `${label} s Bank iD`}
+      aria-label={pending ? pendingLabel : `${label} s Bank iD`}
       style={{ height: 48, minHeight: 48, maxHeight: 48, flexShrink: 0 }}
       className={`font-bankid grid w-full min-w-max select-none grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-[8px] bg-black px-3 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf9f7] ${className}`}
     >
@@ -48,7 +53,7 @@ export function BankIdButton({
       </span>
       <span aria-hidden className={`h-5 w-px bg-white/30 transition-opacity duration-150 ${pending ? "opacity-0" : "opacity-100"}`} />
       <span className="justify-self-start whitespace-nowrap text-[15px] font-medium tracking-[-0.01em]">
-        {pending ? "Přesměrování…" : label}
+        {pending ? pendingLabel : label}
       </span>
     </button>
   );

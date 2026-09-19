@@ -13,6 +13,12 @@ import { failureMessages, isBooking } from "./helpers";
 
 type Step = "intro" | "verifying" | "verified" | "error";
 
+// Hidden for now: the BankID sandbox redirect is disabled, but the branded
+// step/button stay in place — clicking it runs the same mocked verification
+// as the no-BankID path instead of leaving the site. Flip back to true to
+// restore the real redirect.
+const REAL_BANKID_REDIRECT = false;
+
 export default function CheckinFlow({
   roomId,
   token,
@@ -46,11 +52,12 @@ export default function CheckinFlow({
   const errorRef = useRef<HTMLParagraphElement>(null);
   const inFlight = useRef(false);
   const { start, isCurrent, finish } = useAbortableRequest();
+  const usingRealBankId = bankIdEnabled && REAL_BANKID_REDIRECT;
 
   useEffect(() => {
     // A full-page bank redirect can leave "verifying" in the back/forward cache.
     function restoreFromBank(event: PageTransitionEvent) {
-      if (event.persisted && bankIdEnabled && inFlight.current) {
+      if (event.persisted && usingRealBankId && inFlight.current) {
         inFlight.current = false;
         setErrorText("Vrátili jste se z banky bez dokončení ověření. Můžete ho spustit znovu.");
         setStep("error");
@@ -61,7 +68,7 @@ export default function CheckinFlow({
       window.removeEventListener("pageshow", restoreFromBank);
       inFlight.current = false;
     };
-  }, [bankIdEnabled]);
+  }, [usingRealBankId]);
 
   useEffect(() => {
     // Outcomes are announced through focus, not a second live-region message.
@@ -70,7 +77,7 @@ export default function CheckinFlow({
   }, [step]);
 
   function startBankId() {
-    if (!validLink || inFlight.current || step === "verified") return;
+    if (!validLink || !usingRealBankId || inFlight.current || step === "verified") return;
     inFlight.current = true;
     setStep("verifying");
     const url = new URL("/api/auth/bankid/start", window.location.origin);
@@ -81,7 +88,7 @@ export default function CheckinFlow({
   }
 
   async function mockVerify() {
-    if (!validLink || bankIdEnabled || inFlight.current || step === "verified") return;
+    if (!validLink || usingRealBankId || inFlight.current || step === "verified") return;
     inFlight.current = true;
     setStep("verifying");
     const request = start(15_000);
@@ -119,7 +126,7 @@ export default function CheckinFlow({
   }
 
   const pending = step === "verifying";
-  const pendingText = bankIdEnabled
+  const pendingText = usingRealBankId
     ? "Přesměrováváme vás do Bank iD…"
     : "Načítáme ukázkovou rezervaci…";
 
@@ -151,9 +158,11 @@ export default function CheckinFlow({
       <div className="guest-content mt-8 min-w-0">
         {step !== "verified" && validLink && (
           <p className="text-[15px] leading-relaxed text-ink-2">
-            {bankIdEnabled
+            {usingRealBankId
               ? "Pokračujete ke službě Bank iD. Po ověření se vrátíte sem ke smyšlené rezervaci. Ukázka neporovnává totožnost s držitelem rezervace."
-              : "Bank iD není připojené. Simulace načte smyšlenou rezervaci. Neověřuje totožnost ani vás nepřihlašuje do banky."}
+              : bankIdEnabled
+                ? "Ověření přes Bank iD je pro tuto ukázku dočasně simulované — krok proběhne bez přesměrování do banky."
+                : "Bank iD není připojené. Simulace načte smyšlenou rezervaci. Neověřuje totožnost ani vás nepřihlašuje do banky."}
           </p>
         )}
 
@@ -210,13 +219,17 @@ export default function CheckinFlow({
             />
         ) : !validLink ? (
           <Link href="/demo" transitionTypes={["nav-back"]} className="app-button w-full">Zpět na ukázku</Link>
-        ) : pending && !bankIdEnabled ? (
+        ) : pending && !usingRealBankId && !bankIdEnabled ? (
           <button type="button" disabled className="app-button w-full">
-            {bankIdEnabled ? "Přesměrování do Bank iD…" : "Probíhá simulace…"}
+            Probíhá simulace…
           </button>
         ) : bankIdEnabled ? (
           <div className="rounded-2xl border border-hairline-strong p-4">
-            <BankIdButton onClick={startBankId} pending={pending} />
+            <BankIdButton
+              onClick={usingRealBankId ? startBankId : mockVerify}
+              pending={pending}
+              pendingLabel={usingRealBankId ? undefined : "Ověřování…"}
+            />
           </div>
         ) : (
           <button type="button" onClick={mockVerify} className="app-button w-full">

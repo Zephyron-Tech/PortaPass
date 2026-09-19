@@ -278,7 +278,7 @@ test("200 percent text sizing keeps guest details and action reachable", async (
 });
 
 for (const width of widths) {
-  test(`real BankID button brand, focus, active state and guarded navigation at ${width}px`, async ({ page, context }, testInfo) => {
+  test(`BankID-branded button brand, focus, active state, and mocked verification (redirect hidden) at ${width}px`, async ({ page, context }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     const unexpected: string[] = [];
     const starts: string[] = [];
@@ -350,17 +350,18 @@ for (const width of widths) {
     expect(await readMetrics()).toEqual(before);
     await page.screenshot({ path: testInfo.outputPath("bankid-active.png"), fullPage: true });
     await page.mouse.up();
-    await expect(page).toHaveTitle("BankID start intercepted");
-    expect(starts).toHaveLength(1);
-    expect(new URL(starts[0]).searchParams.get("roomId")).toBe("room-101");
-    expect(new URL(starts[0]).searchParams.get("token")).toBe("abc");
+    // BankID sandbox redirect is hidden for now: clicking the branded
+    // button runs the same mocked verification as the no-BankID path
+    // instead of navigating away.
+    await expect(page.getByRole("heading", { name: "Ukázkový klíč je připraven" })).toBeVisible();
+    expect(starts).toHaveLength(0);
 
     for (const invalid of ["/checkin/room-101", "/checkin/missing?token=abc", "/checkin/room-101?token=wrong", "/checkin/room-101?token=abc&token=other"]) {
       await page.goto(`http://127.0.0.1:3101${invalid}`);
       await expect(page.getByRole("button", { name: /Bank iD/ })).toHaveCount(0);
       await expect(page.getByRole("link", { name: "Zpět na ukázku" }).last()).toBeVisible();
     }
-    expect(starts).toHaveLength(1);
+    expect(starts).toHaveLength(0);
     expect(unexpected).toEqual([]);
   });
 }
