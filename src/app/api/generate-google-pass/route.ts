@@ -35,12 +35,11 @@ async function respondWithSaveUrl(
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
 
-  const config = getGoogleWalletConfig();
-  if (!config) {
-    return NextResponse.json({ error: new GoogleWalletNotConfiguredError().message }, { status: 501 });
-  }
-
   try {
+    const config = getGoogleWalletConfig();
+    if (!config) {
+      return NextResponse.json({ error: new GoogleWalletNotConfiguredError().message }, { status: 501 });
+    }
     const object = buildGenericObject(config, booking);
     const url = await buildSaveUrl(config, object);
     if (mode === "redirect") {
@@ -48,6 +47,9 @@ async function respondWithSaveUrl(
     }
     return NextResponse.json({ url }, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {
+    if (err instanceof GoogleWalletNotConfiguredError) {
+      return NextResponse.json({ error: err.message }, { status: 501 });
+    }
     console.error(err);
     return NextResponse.json({ error: "Failed to generate Google Wallet pass" }, { status: 500 });
   }
